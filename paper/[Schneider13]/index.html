@@ -1,0 +1,704 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title> [Schneider13]GMW vs. Yao? Efficient Secure Two-Party Computation with Low Depth CItcuit</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+}
+
+.simple-table-header {
+	background: rgb(247, 246, 243);
+	color: black;
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+.paper-image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+.image {
+	border: solid 1px;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+	width: 70%;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(145, 145, 142, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(187, 132, 108, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(215, 129, 58, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 148, 51, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(108, 155, 125, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(91, 151, 189, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(167, 130, 195, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(205, 116, 159, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(225, 111, 100, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(145, 145, 142, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(187, 132, 108, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(215, 129, 58, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 148, 51, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(108, 155, 125, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(91, 151, 189, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(167, 130, 195, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(205, 116, 159, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(225, 111, 100, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="4cead026-3f2f-4668-aa5b-864a1715b9df" class="page serif"><header><div class="page-header-icon undefined"><span class="icon">📜</span></div><h1 class="page-title"> [Schneider13]GMW vs. Yao? Efficient Secure Two-Party Computation with Low Depth CItcuit</h1></header><div class="page-body"><p id="1eaf9328-5ab5-4fc6-972b-8c3e9e619e68" class="">Keywords: GMW protocol, optimizations, privacy-preserving face recognition</p><figure id="0936ac7e-f912-4941-9bd7-c7e23d6e92bb" class="paper-image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled.png"><img style="width:1570px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled.png"/></a></figure><nav id="01145edd-339e-42a3-b2d0-fb115c338a54" class="block-color-gray table_of_contents"><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#eef1af9e-adad-4dab-b5e8-65be2c65d0e2">ABSTRACT</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#63d91b0e-0664-4a70-b68a-3f6ce34ce4dd">1 Introduction</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#a1426f21-16f0-40bb-9f1e-62377240034e">Contributions</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#acd85de9-62ca-4b14-88b5-f959c29ef0dc">2 Preliminaries</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#54c19be5-855f-4842-a55b-992159363176">2.1 Oblivious Transfer</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#17787c20-a0af-4370-9529-d7f7670332bd">2.2 Approaches for Secure Two-Party Computation</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#c9ff6272-dbaa-449b-b7c9-d99c227eb5fd">2.2.1 Yao&#x27;s Garbled Circuits Protocol</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#edead034-c1d9-402a-b37d-f069ea7c050a">2.2.2 GMW Protocol</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#6677cd20-6dda-49d2-81da-9326977e98dd">2.3 Evaluation Metrics and Notation</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#fe3ff488-d809-4bfb-bcda-14eb2c9d3a18">3 Circuit Constructions with low Depth and Size</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#2279c406-2fc2-41aa-97d5-de361e7a0855">3.1 Addition</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#3408a789-2538-4814-8ed3-321684fef3dd">3.1.1 Ladner-Fscher Adder.</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#ad960709-5113-4173-b87f-7caea199d3ec">3.1.2 Carry-Save Adder</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#be82da1f-f5db-4205-8e6f-00e89bdab48b">3.2 Squaring</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#3c0e5343-5bb4-4d96-b5e7-578681b26f32">3.3 Comparison</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#9eeb3248-ff9a-4b18-bce6-c8559ab2933d">3.4 Hamming Weight</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#d7bda744-7b5c-473e-90fb-310c45f5308e">4 Optimizations for Two Party GMW</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#646c2ff9-81df-460e-9a80-0aa98b1ebca4">Benchmarking Environment</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#d52fe54d-bde0-47a1-ac71-70b10954e002">Table 1: Time improvements</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#60128194-4ac9-4019-a020-feb35f2fed21">4.1 Multiplication Triples</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#a825c9c6-b4c0-47d7-9bfd-533adc5e45f2">4.2 Using ASE instead of SHA as Pseudo-Random Function</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#48af4103-b6b1-4f89-a610-590f9358ab06">Table 2: Comparison of SHA-1 and AES128 implementation</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#17b467a0-1194-4328-ba1d-d34ec40a18c2">4.3 Load Balancing</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#fa2137e2-e4dc-4e9b-8bed-e424cae48027">4.4 Implementation-Specific Optimizations</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#4014e290-1bf8-43d9-af65-11c6ef8cfb83">4.5 Single Instruction Multiple Data (SIMD) Operations</a></div></nav><h1 id="eef1af9e-adad-4dab-b5e8-65be2c65d0e2" class="">ABSTRACT</h1><figure id="d2d6faa8-4449-4e8f-85ca-70e31fe9fc11" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%201.png"><img style="width:1456px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%201.png"/></a></figure><blockquote id="353a3f88-bea4-47ef-806b-b2a12ec9ec40" class="">提出了两种方案：Yao&#x27;s garbled circuits 和GMW协议。
+但因为Yao但方案有constant round complexity，所以大多数研究都表明其有更好的效率。</blockquote><figure id="456712a1-371b-4665-b5fb-c41fd0b14ea0" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%202.png"><img style="width:1458px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%202.png"/></a></figure><blockquote id="d331e19d-3312-4879-8967-a30eab780cb8" class="">这篇文章提出了一些GMW协议的优化。
+总结了depth-optimized circuit constructions.
+还考虑了隐私保护的人脸识别(privacy-preserving face recognition)</blockquote><h1 id="63d91b0e-0664-4a70-b68a-3f6ce34ce4dd" class="">1 Introduction</h1><figure id="da2b6a06-585b-4ef9-8afd-f4f7402822b3" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%203.png"><img style="width:1706px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%203.png"/></a></figure><ul id="c1d334ee-64e3-44f4-a2c3-f3322073d1ac" class="bulleted-list"><li style="list-style-type:disc">Yao&#x27;s garbled circuits, GMW: 都把函数表示为Boolean circuit，都提供security against semi-honest adversaries.</li></ul><ul id="c983434e-f6d0-43b5-a07b-9e7dce2696f8" class="bulleted-list"><li style="list-style-type:disc"><code>semi-honest adversaries</code>: honestly follow the protocol but try to learn additional information from observed messages.</li></ul><figure id="a22b85d4-9a93-4c06-a20f-9c776229a631" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%204.png"><img style="width:1704px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%204.png"/></a></figure><figure id="4d553c60-5cf9-4fe3-9c48-6eaae62ba0d0" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%205.png"><img style="width:1700px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%205.png"/></a></figure><ul id="14f81c09-f111-4922-9e39-f50e0c7ed66f" class="bulleted-list"><li style="list-style-type:disc">Yao&#x27;s protocol:<ul id="a9295fae-e59b-4dda-ae41-29947d745d67" class="bulleted-list"><li style="list-style-type:circle">a constant number of rounds</li></ul><ul id="9d721148-e36c-4b65-bd38-0ff76e65e016" class="bulleted-list"><li style="list-style-type:circle">requires OTs only for the input of one of the parties
+只有一方的输入需要OT</li></ul><ul id="9136c8bf-d01d-45e3-b659-449e8e35c56f" class="bulleted-list"><li style="list-style-type:circle">secure evaluation of a gate: requires only symmetric cryptographic operations
+计算门时只需要对称密码技术</li></ul></li></ul><ul id="829ddef8-b80e-4f2d-8811-8bc5c87d12fc" class="bulleted-list"><li style="list-style-type:disc">GMW protocol: <ul id="c686eaa9-bce8-491a-96d4-40ad92dbd12f" class="bulleted-list"><li style="list-style-type:circle">requires an interactive OT for each AND gate
+对每一个AND门都要求交互式的OT协议</li></ul></li></ul><h2 id="a1426f21-16f0-40bb-9f1e-62377240034e" class="">Contributions</h2><figure id="1eb0fd65-28df-4a11-917c-6b769d10bb6c" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%206.png"><img style="width:1702px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%206.png"/></a></figure><blockquote id="418b9d67-a42c-4ad5-bbef-54d6feca0876" class="">GMW协议在two semi-honest parties中是可行的。
+此外，GMW协议相对于Yao&#x27;s的协议有一些额外的优势。</blockquote><ul id="3f11e5ab-6f60-43da-ba92-78cef33ebae6" class="bulleted-list"><li style="list-style-type:disc">three</li></ul><h1 id="acd85de9-62ca-4b14-88b5-f959c29ef0dc" class="">2 Preliminaries</h1><h2 id="54c19be5-855f-4842-a55b-992159363176" class="">2.1 Oblivious Transfer</h2><figure id="897162e8-6e81-4bcf-8b71-79f5e2b33b7c" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%207.png"><img style="width:1712px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%207.png"/></a></figure><blockquote id="2409428b-d72d-4c4f-8fe5-f732db40485b" class="">在1-out-of n <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mrow><mi mathvariant="normal">O</mi><mi mathvariant="normal">T</mi></mrow><mi>l</mi><mi>m</mi></msubsup></mrow><annotation encoding="application/x-tex">\mathrm{OT}_l^m</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.984622em;vertical-align:-0.247em;"></span><span class="mord"><span class="mord"><span class="mord mathrm">OT</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.737622em;"><span style="top:-2.4530000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span></span></span><span style="top:-3.1362300000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">m</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.247em;"><span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span>中：
+S：提供m个n元组
+R：提供m个选择
+最后R会根据每一个选择得到元组中的一个数字。</blockquote><ul id="ca5ff4ba-0412-45a9-a541-25153c570f68" class="bulleted-list"><li style="list-style-type:disc">Naor-Pinkas OT protocol<p id="29551379-c57a-47c5-8489-2b81fcb30877" class="block-color-yellow_background">[25]Naor, M., Pinkas, B.: Computationally secure oblivious transfer. Journal of Cryptology 18(1), 1–35 (2005)</p><ul id="cf09d3d2-0478-4434-9382-0af1b7a2ffa1" class="bulleted-list"><li style="list-style-type:circle">secure against semi-honest adversaries</li></ul><ul id="2b0a810f-5f84-4e6b-9691-2221762fb86b" class="bulleted-list"><li style="list-style-type:circle">under Decisional Diffie-Hellman(DDH) assumption</li></ul><ul id="eb30da46-e6c4-4956-b8a7-eaddfefc2ca7" class="bulleted-list"><li style="list-style-type:circle">in the random-oracle model</li></ul><ul id="5b7d1968-0b3b-4315-8836-f7e82a36dda4" class="bulleted-list"><li style="list-style-type:circle">requires both parties to perform <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">O</mi><mo stretchy="false">(</mo><mi mathvariant="script">m</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\mathcal{O(m)} </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathcal" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathnormal">m</span><span class="mclose">)</span></span></span></span></span></span><span>﻿</span></span>modular exponentiations</li></ul></li></ul><ul id="08ac0289-e25a-456f-bd9f-e8f5078de905" class="toggle"><li><details open=""><summary>有两种加速OT的方法</summary><ul id="7499253c-7720-4e69-914d-79b8a6328346" class="bulleted-list"><li style="list-style-type:disc">OT pre-computations<p id="f8c931ba-a5f1-4e2b-9699-2f913f5a428a" class="block-color-yellow_background">[2]Beaver, D.: Precomputing oblivious transfer. In: Advances in Cryptology - CRYPTO’95. LNCS, vol. 963, pp. 97–109. Springer (1995)</p><ul id="72319119-b762-4e36-ab43-b3be98b0b95b" class="bulleted-list"><li style="list-style-type:circle">offline: pre-compute the OTs on random inputs</li></ul><ul id="08a373a7-bf6e-4cac-8e6e-1ecc284be8f9" class="bulleted-list"><li style="list-style-type:circle">online: use pre-computed values as one-time pads to run the OT on the actual inputs.<ul id="fd33477f-23ff-42bb-87f7-4504682c5c7b" class="bulleted-list"><li style="list-style-type:square">R: sends one message of m <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi>log</mi><mo>⁡</mo></mrow><mn>2</mn></msub><mi>n</mi></mrow><annotation encoding="application/x-tex">\log_2n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.93858em;vertical-align:-0.24414em;"></span><span class="mop"><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.20696799999999996em;"><span style="top:-2.4558600000000004em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24414em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">n</span></span></span></span></span><span>﻿</span></span> bits to S（隐藏选择）</li></ul><ul id="6bfd64e5-2b20-497c-994d-c9ef9637b77c" class="bulleted-list"><li style="list-style-type:square">S: sends back a message of size mnl bits </li></ul></li></ul></li></ul><ul id="7b354002-b09d-4511-9207-9f9c814c9a24" class="bulleted-list"><li style="list-style-type:disc">OT extensions<p id="b8b12db3-6952-4122-a276-e8583fa9ae8f" class="block-color-yellow_background">[16,22]</p><p id="3695aab2-92db-48df-8df9-df70a81efe4d" class="">
+</p></li></ul><p id="4a6fa448-ba8e-4ca4-9b29-e3ea2e8cdf20" class="">
+</p></details></li></ul><h2 id="17787c20-a0af-4370-9529-d7f7670332bd" class="">2.2 Approaches for Secure Two-Party Computation</h2><h3 id="c9ff6272-dbaa-449b-b7c9-d99c227eb5fd" class="">2.2.1 Yao&#x27;s Garbled Circuits Protocol</h3><p id="85ccdb6b-f6a2-414a-974e-0574cbbe782f" class="block-color-yellow_background">[33]Yao, A.C.: How to generate and exchange secrets. In: Foundations of Computer Science (FOCS’86). pp. 162–167. IEEE (1986)</p><figure id="969eae07-3ca4-4275-b228-6de760ae5125" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%208.png"><img style="width:1710px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%208.png"/></a></figure><blockquote id="68fb9d67-6598-40fa-ba9d-10995dffad27" class="">Yao&#x27;s protocol:
+1. non-interactively
+2. has a constant number of rounds</blockquote><ul id="6f52be84-31e0-4803-933c-bdddb4e7121a" class="bulleted-list"><li style="list-style-type:disc">creator（电路生成方）：encrypt the function to be computed<p id="a5edfe82-5b9d-40c0-9565-215aab4711df" class="">For each gate:</p><ol type="1" id="34a129d0-097c-49d9-99b5-28b5718e760f" class="numbered-list" start="1"><li>map the plain values to random-looking symmetric keys</li></ol><ol type="1" id="6309a048-beb3-48a2-8ad4-d085ad6ec0fd" class="numbered-list" start="2"><li>generate an encryption table<blockquote id="f77a3e63-0e0a-4275-a8be-27988a3b8caa" class=""> 通过该表，可以用给定的input keys计算gate&#x27;s output key</blockquote></li></ol><ol type="1" id="4b3537d6-b533-4622-9de5-145a1c4819d5" class="numbered-list" start="3"><li>transmit the encrypted circuit and (creator&#x27;s) encrypted inputs to evaluator</li></ol></li></ul><ul id="9b9adb9d-b416-4763-a889-2ddec1a72b15" class="bulleted-list"><li style="list-style-type:disc">evaluator（电路计算方）<ol type="1" id="8ea2615c-4ae4-4b61-b79f-53740504f7aa" class="numbered-list" start="4"><li>obtains his encrypted input via 1-out-of 2 OT (evaluator&#x27;s input key)</li></ol><ol type="1" id="f7b630b3-b347-435b-a4c9-e47af0119140" class="numbered-list" start="5"><li>use the encrypted inputs to evaluate the encrypted function gate by gate</li></ol></li></ul><ul id="ac91191a-0e14-42d8-a84d-94710b2333c6" class="bulleted-list"><li style="list-style-type:disc">creator<ol type="1" id="a1815962-7733-4604-8a11-89bcb6edd111" class="numbered-list" start="7"><li>provides a mapping from the encrypted output to plain output</li></ol></li></ul><p id="f76fa967-39dc-4053-9dad-1ef49432d40a" class="block-color-yellow_background">some extension</p><p id="8fd34ce3-bae0-4528-87f1-d68099810c30" class="">
+</p><h3 id="edead034-c1d9-402a-b37d-f069ea7c050a" class="">2.2.2 GMW Protocol</h3><p id="e7a015a7-33f1-4e14-9fec-6e646ca74de1" class="block-color-yellow_background">[11]Goldreich, O.: Foundations of Cryptography, vol. 2: Basic Applications. Cambridge University Press (2004)
+[12]Goldreich, O., Micali, S., Wigderson, A.: How to play any mental game or a completeness theorem for protocols with honest majority. In: Symposium on Theory of Computing (STOC’87). pp. 218–229. ACM (1987)</p><blockquote id="c8c381ed-59e0-40b6-a46c-872a3327367b" class="">GMW protocol: interactively compute a function using secret-shared values</blockquote><p id="27e30c94-1539-4536-98f1-9050d0a3da77" class="">
+</p><figure id="b2a8f1c7-4171-4956-b90f-c6287bacafad" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%209.png"><img style="width:1704px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%209.png"/></a></figure><ul id="2379d7ba-f8c7-4e77-820f-d2f82b485724" class="bulleted-list"><li style="list-style-type:disc">share each input and intermediate wire to 2 parties<blockquote id="61269015-c63b-4f7f-9322-a9d871b583e0" class="">用2-out-of-2 secret sharing sheme把value v 分享给两方，每一方得到的一个random-looking share <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>v</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">v_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span></blockquote><ul id="2a5f21a8-889e-43a7-825b-12d6383b42af" class="bulleted-list"><li style="list-style-type:circle"><style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mo>=</mo><msub><mi>v</mi><mn>1</mn></msub><mo>⊕</mo><msub><mi>v</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">v = v_1\oplus v_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.73333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⊕</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span></li></ul></li></ul><ul id="a8bfb534-2c32-49f9-8bcd-add5fe696772" class="bulleted-list"><li style="list-style-type:disc">XOR gates: securely evaluated locally by XORing the shares</li></ul><ul id="fb92d67f-a4e1-4d46-9cdf-efa7cd7f5af3" class="bulleted-list"><li style="list-style-type:disc">AND gates: parties run an interactively protocol</li></ul><ul id="167d0823-9518-4c0a-9826-a2bd16f5006b" class="bulleted-list"><li style="list-style-type:disc">output wire: <blockquote id="2b7ddf4c-99ac-40b0-9a0e-017e848b7ad4" class="">把和output wire相关的shares发送给需要得到output的参与方，计算output</blockquote></li></ul><p id="66dfc862-f6c3-42d6-b864-b3a041185aa2" class="">
+</p><ul id="1483cfe8-a1ad-4a6b-8c82-4b8cec5b506d" class="toggle"><li><details open=""><summary>AND gate: 两种实现方法</summary><ul id="7f3b72c6-c207-4db7-bb1d-baeab2a4a7e4" class="bulleted-list"><li style="list-style-type:disc">Oblivious Transfer</li></ul><ul id="8ead3d05-8f8a-4e69-9fb2-616f3ad3af55" class="bulleted-list"><li style="list-style-type:disc">Multiplication Triples<p id="6b1efab1-e1f0-44c3-9c78-8c2f5fca8ad7" class="block-color-yellow_background">[1] Goldreich, O., Micali, S., Wigderson, A.: How to play any mental game or a com- pleteness theorem for protocols with honest majority. In: Symposium on Theory of Computing (STOC’87). pp. 218–229. ACM (1987)</p><p id="0eeb7523-80d8-4ddb-90f2-876cf8f6a1a4" class="">
+</p><p id="2794b6b2-e8fd-4ca4-b151-2a2050eeb2c2" class="">
+</p></li></ul></details></li></ul><h2 id="6677cd20-6dda-49d2-81da-9326977e98dd" class="">2.3 Evaluation Metrics and Notation</h2><figure id="4ae4054a-1345-4241-87b9-63e151d5757d" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2010.png"><img style="width:1622px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2010.png"/></a></figure><blockquote id="99ab8943-92c4-4d0c-be27-10ce8e773e73" class="">因为Yao&#x27;s和GMW都提供free XORs，因此只比较AND gates</blockquote><ul id="c39ef3ad-7f74-4499-a1e6-8a248c2adb93" class="bulleted-list"><li style="list-style-type:disc">size S(C) : the number AND gates in circuit C</li></ul><ul id="92a54bd3-8b95-4a14-8bcf-6bc2dfb380b7" class="bulleted-list"><li style="list-style-type:disc">depth D(C): the maximum number of AND gates</li></ul><ul id="01717fd0-1d1d-4861-bc08-de5816c90ba4" class="bulleted-list"><li style="list-style-type:disc">other notations:</li></ul><figure id="6a78a8e3-eaea-48e3-a7d9-ae0cfc99ea6f" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2011.png"><img style="width:1626px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2011.png"/></a></figure><h1 id="fe3ff488-d809-4bfb-bcda-14eb2c9d3a18" class="">3 Circuit Constructions with low Depth and Size</h1><h2 id="2279c406-2fc2-41aa-97d5-de361e7a0855" class="">3.1 Addition</h2><figure id="ca94afd5-cb8b-44eb-9dcf-d1a920020665" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2012.png"><img style="width:1626px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2012.png"/></a></figure><blockquote id="5be19bf8-4f35-433c-a000-0b6ab71e3412" class="">linear size and depth</blockquote><p id="d8454a58-6131-4527-aecc-ae3a96e970ef" class="block-color-yellow_background">[18]Ripple-carry adder: 
+Kolesnikov, V., Sadeghi, A.R., Schneider, T.: Improved garbled circuit building blocks and applications to auctions and computing minima. In: Cryptology And Network Security (CANS’09). LNCS, vol. 5888, pp. 1–20. Springer (2009)</p><h3 id="3408a789-2538-4814-8ed3-321684fef3dd" class="">3.1.1 Ladner-Fscher Adder.</h3><figure id="dbf63e98-93ee-43c5-aace-7dd43484da84" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2013.png"><img style="width:1622px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2013.png"/></a></figure><p id="ef6f729b-8bfa-4a2d-90a1-eecba79900e3" class="block-color-yellow_background">[21] Ladner-Fischer adder
+Ladner,R.E.,Fischer,M.J.:Parallelprefixcomputation.JournaloftheACM27(4), 831–838 (1980)</p><blockquote id="e1d9a659-377f-4dbc-9401-716bcb2d19b2" class="">in logarthmic depth</blockquote><p id="9f195d0b-a01d-445a-9501-e2f045abb1a6" class="">
+</p><h3 id="ad960709-5113-4173-b87f-7caea199d3ec" class="">3.1.2 Carry-Save Adder</h3><p id="049d8a7e-9a06-446e-b243-e6e0e87b2c10" class="block-color-yellow_background">[8] carry-save adder:
+Earle, L.G.: Latched carry-save adder. IBM Technical Disclosure Bulletin 7(10), 909–910 (1965)</p><blockquote id="1209fa47-8d68-424d-b54b-5bdb16a406f9" class="">has linear size and constant depth</blockquote><p id="a2c76bd3-9ea3-47ec-930e-9ba319f28106" class="">
+</p><h2 id="be82da1f-f5db-4205-8e6f-00e89bdab48b" class="">3.2 Squaring</h2><figure id="ab00f025-f798-476b-bd01-f487a7d5b29c" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2014.png"><img style="width:1620px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2014.png"/></a></figure><blockquote id="f7b38d84-31d4-427d-b598-3773028fea34" class="">a squaring circuit is smaller by a factor of about 2
+<style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mi>j</mi></msub><msub><mi>x</mi><mi>i</mi></msub><mo>+</mo><msub><mi>x</mi><mi>i</mi></msub><msub><mi>x</mi><mi>j</mi></msub><mo>=</mo><mn>2</mn><msub><mi>x</mi><mi>i</mi></msub><msub><mi>x</mi><mi>j</mi></msub></mrow><annotation encoding="application/x-tex">x_jx_i+x_ix_j = 2x_ix_j</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8694379999999999em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.716668em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.9305479999999999em;vertical-align:-0.286108em;"></span><span class="mord">2</span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span>
+<style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mi>i</mi></msub><msub><mi>x</mi><mi>i</mi></msub><mo>=</mo><msub><mi>x</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">x_ix_i=x_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span></blockquote><h2 id="3c0e5343-5bb4-4d96-b5e7-578681b26f32" class="">3.3 Comparison</h2><ul id="87ffc335-e1f4-4216-9615-83066cecfd56" class="bulleted-list"><li style="list-style-type:disc">equal: </li></ul><figure id="e362f13a-a836-4ea8-b3da-2ff957696564" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2015.png"><img style="width:1648px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2015.png"/></a></figure><ul id="f77d59f2-94dc-4ef3-932b-3c0c15d6c0ab" class="bulleted-list"><li style="list-style-type:disc">greater  than:</li></ul><figure id="7e6307d1-7d19-4893-a783-5deba7646704" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2016.png"><img style="width:1624px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2016.png"/></a></figure><h2 id="9eeb3248-ff9a-4b18-bce6-c8559ab2933d" class="">3.4 Hamming Weight</h2><p id="c56b2580-188a-4382-b65f-3587679f348c" class="">
+</p><h1 id="d7bda744-7b5c-473e-90fb-310c45f5308e" class="">4 Optimizations for Two Party GMW</h1><figure id="1632d469-8737-4499-81d9-6362b9e2732b" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2017.png"><img style="width:1620px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2017.png"/></a></figure><p id="653ad679-6a29-4739-bd5b-b9541e588bd9" class="block-color-yellow_background">an implementation of GMW
+[5]Choi, S.G., Hwang, K.W., Katz, J., Malkin, T., Rubenstein, D.: Secure multi-party computation of Boolean circuits with applications to privacy in on-line market- places. In: Cryptographers’ Track at the RSA Conference (CT-RSA’12). LNCS, vol. 7178, pp. 416–432. Springer (2012)</p><p id="a705cf20-43e7-40a5-a650-0f4c09b48244" class="block-color-yellow_background">currently fastest garbled circuits implementation
+[15] Huang, Y., Evans, D., Katz, J., Malka, L.: Faster secure two-party computation using garbled circuits. In: Security Symposium. USENIX (2011)</p><blockquote id="a111ab29-d112-4cba-9435-eb736c0b3b93" class="">[5]能在n≥3时高效实现GMW协议，对于n=2的情况，[5]认为他们的速度会比当前最快的garbled circuits实现慢两倍。</blockquote><p id="d0d7c37b-7126-4199-b5f7-41a841ac01fc" class="">
+</p><p id="43039400-1a6c-4c05-a8c2-6baf50b9fb8f" class="">
+</p><h3 id="646c2ff9-81df-460e-9a80-0aa98b1ebca4" class="">Benchmarking Environment</h3><ul id="f0cca8c1-8719-4e5a-ab27-9c00c29b7a57" class="bulleted-list"><li style="list-style-type:disc">evaluate the time for: using average time for 100 executions<ul id="65a41893-1216-4a19-b7f9-435473d642c6" class="bulleted-list"><li style="list-style-type:circle">setup phase: <ul id="04c2f25a-cc5b-48cb-b3c3-32b221a68fb6" class="bulleted-list"><li style="list-style-type:square">Naor-Pinkas OTs: group <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi mathvariant="double-struck">Z</mi><mi>p</mi><mo>∗</mo></msubsup></mrow><annotation encoding="application/x-tex">\Z_p^*</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.071998em;vertical-align:-0.383108em;"></span><span class="mord"><span class="mord mathbb">Z</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.688696em;"><span style="top:-2.4530000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">p</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.383108em;"><span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span>with <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">∣</mi><mi>p</mi><mi mathvariant="normal">∣</mi><mo>=</mo><mn>512</mn></mrow><annotation encoding="application/x-tex">|p|=512</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">∣</span><span class="mord mathnormal">p</span><span class="mord">∣</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">512</span></span></span></span></span><span>﻿</span></span> bit</li></ul><ul id="a69ce07d-b201-4181-8d63-53bf924580fd" class="bulleted-list"><li style="list-style-type:square">OT extension: security parameter t = <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>80</mn></mrow><annotation encoding="application/x-tex">80</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">80</span></span></span></span></span><span>﻿</span></span></li></ul></li></ul><ul id="01fe23fa-814c-4f1b-81b4-6bc853819728" class="bulleted-list"><li style="list-style-type:circle">online phase: <ul id="bc2c58c4-8acc-4103-8be6-27aa13c8382c" class="bulleted-list"><li style="list-style-type:square">sharing of inputs</li></ul><ul id="7bd5bc9f-f184-467b-b26d-6eeba8267584" class="bulleted-list"><li style="list-style-type:square">circuit evaluation</li></ul><ul id="b85ebda6-2871-4c54-bf28-c43788904ac1" class="bulleted-list"><li style="list-style-type:square">combining output shares</li></ul></li></ul><ul id="7d8cc1dd-1c36-43c3-918e-42178a3e52ba" class="bulleted-list"><li style="list-style-type:circle">overall time:<ul id="1ef20737-6f73-4bdd-bb37-b1e8801d90a6" class="bulleted-list"><li style="list-style-type:square">circuit construction</li></ul><ul id="3cb53fe5-f87b-404d-a1bd-92b33223f0ae" class="bulleted-list"><li style="list-style-type:square">setup phase</li></ul><ul id="5342e989-6b73-405f-8753-60ed13780a22" class="bulleted-list"><li style="list-style-type:square">online phase </li></ul></li></ul></li></ul><ul id="38c036d3-207a-4423-a694-5f624afcbe18" class="bulleted-list"><li style="list-style-type:disc">circuit: an unoprmized 512-bit multiplication circuit C<ul id="b95d1e18-d720-4f9b-b1d8-12c1848ed9c4" class="bulleted-list"><li style="list-style-type:circle">S(C) = 800,227</li></ul><ul id="80f61b57-9390-406b-87bb-d462a229eb19" class="bulleted-list"><li style="list-style-type:circle">D(C)=38</li></ul></li></ul><ul id="4f6ce58a-991e-461d-9608-0089d199de6f" class="bulleted-list"><li style="list-style-type:disc">PC:<figure id="bea056cc-2663-429e-be95-9c619b055b7c" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2018.png"><img style="width:1626px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2018.png"/></a></figure></li></ul><h3 id="d52fe54d-bde0-47a1-ac71-70b10954e002" class="">Table 1: Time improvements</h3><blockquote id="3c96200d-ba70-4f5b-9425-e7e504d2a396" class="">list the modifications in the order.
+each modification include the improvement of all previous optimizations.</blockquote><figure id="6b9a56f0-4616-415a-bcb9-87f79a1cbe97" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2019.png"><img style="width:1526px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2019.png"/></a></figure><h2 id="60128194-4ac9-4019-a020-feb35f2fed21" class="">4.1 Multiplication Triples</h2><figure id="0988fb37-acfa-4529-876d-575f18cca8f0" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2020.png"><img style="width:1624px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2020.png"/></a></figure><p id="1fc0784d-e510-45f3-9533-e99b05914066" class="block-color-yellow_background">[1] multiplication triples
+Beaver, D.: Efficient multiparty protocols using circuit randomization. In: Ad- vances in Cryptology – CRYPTO’91. LNCS, vol. 576, pp. 420–432. Springer (1991)</p><ul id="6d08df28-0878-4c33-ba85-5d0c73b3debb" class="bulleted-list"><li style="list-style-type:disc">Beaver&#x27;s MT: (instead of pre-computed OTs)<ul id="965b9ef7-9e53-46d6-aa77-9d4aab0913b7" class="bulleted-list"><li style="list-style-type:circle">slightly slower in setup phase</li></ul><ul id="5ed5cdd1-8dac-4267-ab82-625d006fdc94" class="bulleted-list"><li style="list-style-type:circle">more efficient in online phase</li></ul></li></ul><p id="bfce3603-b258-4399-8287-473adaab0260" class="">time:</p><figure id="8d31d317-891e-4ec6-a80e-6919a1f44fa9" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2019.png"><img style="width:1526px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2019.png"/></a></figure><h2 id="a825c9c6-b4c0-47d7-9bfd-533adc5e45f2" class="">4.2 Using ASE instead of SHA as Pseudo-Random Function</h2><figure id="2bd03936-2294-4600-86ba-6eccb7a1461d" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2021.png"><img style="width:1698px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2021.png"/></a></figure><ul id="1c46e84e-8ece-4812-a422-33d0233cb4f0" class="bulleted-list"><li style="list-style-type:disc">SHA-1 in original implementation：<ul id="0335eeef-a83b-49dd-809f-2bf6dc6676eb" class="bulleted-list"><li style="list-style-type:circle">instantiant the random oracle</li></ul><ul id="2980dfb9-d096-4aaf-9d6b-bb8ad546421e" class="bulleted-list"><li style="list-style-type:circle">generate pseudo-random values in the OT extension</li></ul></li></ul><ul id="eb588768-7f66-4f2e-bffe-f80c55c88b80" class="bulleted-list"><li style="list-style-type:disc">ASE (CTR mode) as PRF:<ul id="f744eb11-b081-4dd9-adad-91b57ae540d6" class="bulleted-list"><li style="list-style-type:circle">decreased the number of expensive hash function calls per AND gate
+降低了每个AND门调用的hash函数次数<ul id="16e94254-0b08-4724-ac09-16a56890c1a7" class="bulleted-list"><li style="list-style-type:square">receiver R: from 3.5 to 1</li></ul><ul id="7b64befa-3d07-4900-bb8f-b9d948545bf5" class="bulleted-list"><li style="list-style-type:square">sender S: from 4.5 to 4</li></ul></li></ul><ul id="891d2ee5-5650-43ab-bb8f-a2cfcd77cc33" class="bulleted-list"><li style="list-style-type:circle">numer of calls to instantiate the PRF
+实例化PRF需要调用AES的次数<ul id="1d1897c1-583b-4ba2-8b55-472bc9b6c889" class="bulleted-list"><li style="list-style-type:square">R: 3.1 AES calls per AND gate</li></ul><ul id="72e30bcf-b3b9-42fb-a4e6-440491518e25" class="bulleted-list"><li style="list-style-type:square">S: 0.65 AES calls per AND gate</li></ul></li></ul><ul id="47d839d4-d6cb-4ad0-aec6-cfefb210af60" class="bulleted-list"><li style="list-style-type:circle">the sender and the receiver have different computational workload</li></ul></li></ul><h3 id="48af4103-b6b1-4f89-a610-590f9358ab06" class="">Table 2: Comparison of SHA-1 and AES128 implementation</h3><figure id="9a1ea0e4-e56a-4cb1-99ee-bbfe9b8a3b06" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2022.png"><img style="width:1718px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2022.png"/></a></figure><p id="c1109877-9404-49cc-bb3f-878960e50315" class="">
+</p><h2 id="17b467a0-1194-4328-ba1d-d34ec40a18c2" class="">4.3 Load Balancing</h2><figure id="9cc47e6d-77b6-46c0-97f1-be17acf5db0a" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2023.png"><img style="width:1716px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2023.png"/></a></figure><ul id="b7864af4-427f-4495-950f-4b9aa5b98c77" class="bulleted-list"><li style="list-style-type:disc">run the OTs in either direction, each party has the same workload
+因为MT在online phase 是对称形式的，所以可以双方各自并行运行OT协议<ul id="f8c446f8-de51-465c-aba7-f597502caf49" class="bulleted-list"><li style="list-style-type:circle">2.5 SHA-1 invoations per AND gate</li></ul><ul id="95050fbe-17ba-4dca-84fc-5adf27d667f0" class="bulleted-list"><li style="list-style-type:circle">1.8 AES invocations per AND gate</li></ul></li></ul><blockquote id="ceda61bc-cb1c-4384-a451-21838fb160c2" class="">run the Naor-Pinkas OT protocol for the seed OTs twice, which however amortizes fairly quickly
+虽然运行了两次，但非常快。</blockquote><ul id="ffe74216-1ea5-452a-ae5b-c6f97840cb3a" class="bulleted-list"><li style="list-style-type:disc">four parallel threads during setup phase<ul id="644bc0b2-08f5-4184-8d2c-a875d4722d42" class="bulleted-list"><li style="list-style-type:circle">one for pseudo-random function</li></ul><ul id="77dd2dec-3deb-4335-8974-35ae5af594c0" class="bulleted-list"><li style="list-style-type:circle">the other for random oracle </li></ul></li></ul><p id="65d7454e-feb6-4465-8465-977e74d27baa" class="">time:</p><figure id="63e0e47b-02ac-4618-97a6-aa8a9382c3e9" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2019.png"><img style="width:1526px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2019.png"/></a></figure><h2 id="fa2137e2-e4dc-4e9b-8bed-e424cae48027" class="">4.4 Implementation-Specific Optimizations</h2><figure id="4e3d6318-23e8-4c8c-81a8-9facd8c98bc4" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2024.png"><img style="width:1720px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2024.png"/></a></figure><ul id="efd16304-eb6e-488a-87d9-301dbd8bb635" class="bulleted-list"><li style="list-style-type:disc">arithmetic for modular arithmetics<ul id="2373f24a-c57b-4cfc-85e2-29429b376217" class="bulleted-list"><li style="list-style-type:circle">use GMP</li></ul></li></ul><ul id="8c41659d-d0cd-4e23-a03f-f68a2756847f" class="bulleted-list"><li style="list-style-type:disc">bitwise processing order during OT extension and online phase<ul id="29dc2859-52fa-471d-93c9-0383da2f6cab" class="bulleted-list"><li style="list-style-type:circle">perform operations bytewise
+按字节异或，而不是按位</li></ul></li></ul><ul id="12f2140b-71b3-4059-9598-a2720a6fff9d" class="bulleted-list"><li style="list-style-type:disc">SHA-1 for the random oracle<ul id="5607bd43-6be4-42b9-86eb-c8f2f33e2f44" class="bulleted-list"><li style="list-style-type:circle">use an assembler implementation of OpenSSL</li></ul></li></ul><p id="93222a7a-d524-4804-9cff-dddb918c855b" class="">time:</p><figure id="7f304473-3668-4062-967b-6636f4d3dfeb" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2019.png"><img style="width:1526px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2019.png"/></a></figure><h2 id="4014e290-1bf8-43d9-af65-11c6ef8cfb83" class="">4.5 Single Instruction Multiple Data (SIMD) Operations</h2><figure id="f88e15ae-842c-4a0a-a310-28a1bcd14850" class="image"><a href="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2025.png"><img style="width:1704px" src="%5BSchneider13%5DGMW%20vs%20Yao%20Efficient%20Secure%20Two-Party%200936ac7ef91249419bd7c7e23d6e92bb/Untitled%2025.png"/></a></figure><p id="37cd783c-4f10-4f11-b701-b230cdb7e82c" class="">
+</p></div></article></body></html>
