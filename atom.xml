@@ -62,9 +62,9 @@
     
       <category term="Poly-commit" scheme="https://f7ed.com/tags/Poly-commit/"/>
     
-      <category term="Bulletproofs" scheme="https://f7ed.com/tags/Bulletproofs/"/>
-    
       <category term="ECC" scheme="https://f7ed.com/tags/ECC/"/>
+    
+      <category term="Bulletproofs" scheme="https://f7ed.com/tags/Bulletproofs/"/>
     
   </entry>
   
@@ -110,13 +110,13 @@
     
       <category term="Cryptography" scheme="https://f7ed.com/tags/Cryptography/"/>
     
-      <category term="ZKP" scheme="https://f7ed.com/tags/ZKP/"/>
-    
-      <category term="KZG" scheme="https://f7ed.com/tags/KZG/"/>
-    
       <category term="Poly-commit" scheme="https://f7ed.com/tags/Poly-commit/"/>
     
       <category term="Bulletproofs" scheme="https://f7ed.com/tags/Bulletproofs/"/>
+    
+      <category term="ZKP" scheme="https://f7ed.com/tags/ZKP/"/>
+    
+      <category term="KZG" scheme="https://f7ed.com/tags/KZG/"/>
     
   </entry>
   
