@@ -3,9 +3,22 @@ body {
     font-family: Georgia, serif, helvetica, sans-serif;
 }
 
-h1		{ font-size: large;color: black; }
-a		{ color: blue; text-decoration: none; border-bottom:1px dashed;}
-span.boxhdr	{ font-size: large; font-weight: bold; color: black; }
+h1 {
+    font-size: large;
+    color: black;
+}
+
+a {
+    color: blue;
+    text-decoration: none;
+    border-bottom: 1px dashed;
+}
+
+span.boxhdr {
+    font-size: large;
+    font-weight: bold;
+    color: black;
+}
 
 div.textbox {
     border: 2px purple;
@@ -18,3 +31,6 @@ div.namebox {
     margin-bottom: 14px;
 }
 
+.padded-image {
+    margin-top: 24px;
+}
