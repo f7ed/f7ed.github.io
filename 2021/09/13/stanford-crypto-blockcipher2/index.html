@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Cryptography-Boneh」:Block Cipher 2 - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="作为BlockCipher的第二篇文章。第一部分介绍了块密码中的抽象概念PRF和PRP的安全定义。第二部分介绍了两个概念，一个是抵抗one-time key的语义安全，另一个是抵抗many-time key(CPA)的语义安全。 在one-time key中，每条消息都使用新的密钥，类似于流密码中的OTP。介绍了不能抵抗CPA的ECB模式，还阐述了能抵抗CPA的det. CTR模式。 在many-"><meta property="og:type" content="blog"><meta property="og:title" content="「Cryptography-Boneh」:Block Cipher 2"><meta property="og:url" content="https://f7ed.com/2021/09/13/stanford-crypto-blockcipher2/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="作为BlockCipher的第二篇文章。第一部分介绍了块密码中的抽象概念PRF和PRP的安全定义。第二部分介绍了两个概念，一个是抵抗one-time key的语义安全，另一个是抵抗many-time key(CPA)的语义安全。 在one-time key中，每条消息都使用新的密钥，类似于流密码中的OTP。介绍了不能抵抗CPA的ECB模式，还阐述了能抵抗CPA的det. CTR模式。 在many-"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/blockcipher-nail.png"><meta property="article:published_time" content="2021-09-12T16:00:00.000Z"><meta property="article:modified_time" content="2021-12-28T06:30:23.597Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="公开课"><meta property="article:tag" content="Cryptography"><meta property="article:tag" content="BlockCipher"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/blockcipher-nail.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2021/09/13/stanford-crypto-blockcipher2/"},"headline":"「Cryptography-Boneh」:Block Cipher 2","image":["https://f7ed.com/gallery/thumbnails/blockcipher-nail.png"],"datePublished":"2021-09-12T16:00:00.000Z","dateModified":"2021-12-28T06:30:23.597Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"作为BlockCipher的第二篇文章。第一部分介绍了块密码中的抽象概念PRF和PRP的安全定义。第二部分介绍了两个概念，一个是抵抗one-time key的语义安全，另一个是抵抗many-time key(CPA)的语义安全。 在one-time key中，每条消息都使用新的密钥，类似于流密码中的OTP。介绍了不能抵抗CPA的ECB模式，还阐述了能抵抗CPA的det. CTR模式。 在many-"}</script><link rel="canonical" href="https://f7ed.com/2021/09/13/stanford-crypto-blockcipher2/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Cryptography-Boneh」:Block Cipher 2</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2021-09-12T16:00:00.000Z" title="2021-09-12T16:00:00.000Z">2021-09-13</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2021-12-28T06:30:23.597Z" title="2021-12-28T06:30:23.597Z">2021-12-28</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Cryptography-Boneh/">Cryptography-Boneh</a></span><span class="level-item"><i class="far fa-clock"></i> 27 minutes read (About 3989 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>作为BlockCipher的第二篇文章。<br>第一部分介绍了块密码中的抽象概念PRF和PRP的安全定义。<br>第二部分介绍了两个概念，一个是抵抗one-time key的语义安全，另一个是抵抗many-time key(CPA)的语义安全。</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><p>在one-time key中，每条消息都使用新的密钥，类似于流密码中的OTP。介绍了不能抵抗CPA的ECB模式，还阐述了能抵抗CPA的det. CTR模式。</p>
+<p>在many-time key中，同一条密钥可以用于加密多条消息，攻击者可以轻易具备CPA能力，文中说明了如果确定性的加密算法，则不能抵抗CPA，而random IV或者unique nonce的方式则可以抵抗CPA。</p>
+<span id="more"></span>
+
+<h1 id="PRPs-and-PRFs"><a href="#PRPs-and-PRFs" class="headerlink" title="PRPs and PRFs"></a>PRPs and PRFs</h1><p>在前文中，有提到PRP和PRF的直觉性的定义。现在我们来看他们的安全定义。</p>
+<h2 id="PRF："><a href="#PRF：" class="headerlink" title="PRF："></a><strong>PRF：</strong></h2><p>如下图定义这样一个游戏，有挑战者和攻击者，挑战者有两个实验EXP(b)，$b=0,1$。</p>
+<img src="https://z3.ax1x.com/2021/09/20/4GPzlt.png" alt="Secure PRF" style="zoom:47%;" />
+
+<p>在EXP(0)中，挑战者随机选择一个密钥K，即确定了一个伪随机函数 $f \leftarrow \mathrm{F(k, ·)}$ ；而在EXP(1)中，挑战者随机选择了一个函数 $f\leftarrow \mathrm{Funs[X, Y]} $ 。</p>
+<p>攻击者会向挑战者发出许多输入询问 $x_1,x_2,…,x_q$ ，挑战者对于攻击者发出的询问，会随机选择 $b=0,1$ ，用 $f(x_1),f(x_2), …,f(x_q)$ 响应。</p>
+<p>攻击者对于收到的回复，他会输出 $b’$ ，表示攻击者视角下，他认为该输出是用伪随机函数计算的(b=0)，还是用随机函数计算的(b=1)；定义实验的输出为EXP(b)=b’​ 。</p>
+<p>因此安全定义如下，攻击者区分输出是伪随机函数计算的还是随机函数计算的优势是neg。</p>
+<p><strong>Def(PRF):</strong> F is a secure PRF if for all “efficient” A:<br>$$<br>\operatorname{Adv}_{\mathrm{PRF}}[\mathrm{A}, \mathrm{F}]:=\mid \operatorname{Pr}[\operatorname{EXP}(0)=1]-\operatorname{Pr}[\operatorname{EXP}(1)=1] \quad \text{is neg.}<br>$$</p>
+<h2 id="PRP"><a href="#PRP" class="headerlink" title="PRP:"></a>PRP:</h2><p>同理，对PRP来说，定义的游戏如下：</p>
+<img src="https://z3.ax1x.com/2021/09/20/4GPxSI.png" alt="Secure PRP" style="zoom:50%;" />
+
+<p>同理，PRP的安全定义为，攻击者区分是伪随机置换计算的还是随机置换计算的优势为neg。</p>
+<p><strong>Def(PRP):</strong> E is a secure PRP if for all “efficient” A:<br>$$<br>\operatorname{Adv}_{\mathrm{PRP}}[\mathrm{A}, \mathrm{E}]:=\mid \operatorname{Pr}[\operatorname{EXP}(0)=1]-\operatorname{Pr}[\operatorname{EXP}(1)=1] \quad \text{is neg.}<br>$$</p>
+<blockquote>
+<p>例题：</p>
+<p>Let X = {0,1}. Perms[X] contains two functions.</p>
+<p>Consider the following PRP:</p>
+<p>key space K={0,1}, PRP defined as:$\mathrm{E(k,x)=x\oplus k}$  </p>
+<p>Is this a secure PRP?</p>
+<p>答案：Yes</p>
+<p>当X = {0,1}下，随机置换如下：</p>
+<img src="https://z3.ax1x.com/2021/09/20/4GPXYd.png" alt="random PRP in {0,1}" style="zoom:33%;" />
+
+<p>而选择K的分布和选择随机置换的分布相同，所以攻击者不能区分。</p>
+<p>而如果问是否是secure PRF，答案则是：No。</p>
+<p>攻击者可以定义这样一个统计算法，如果f(0)=f(1)则输出1，否则输出0。</p>
+<p>则攻击者有 $\operatorname{Adv}_{\mathrm{PRF}}[\mathrm{A}, \mathrm{E}]:=｜0-1/2｜=1/2$ 的优势攻击成功。</p>
+</blockquote>
+<p>现实中常见安全PRPs，有3DES, AES等，比如AES-128的置换是：$\mathrm{K\times X\rightarrow X}$ where $\mathrm{K=X={0,1}^{128}}$ 。</p>
+<p>如果对AES的安全性定义的更具体，则是所有 $2^{80}$ 的算法A对AES攻击的优势 $\mathrm{Adv_{PRP}[A,AES]}&lt;2^{-40}$ .</p>
+<h2 id="PRF-Switching-Lemma"><a href="#PRF-Switching-Lemma" class="headerlink" title="PRF Switching Lemma"></a>PRF Switching Lemma</h2><p><strong>Any Secure PRP is also a secure PRF, if |X| is sufficiently large.</strong></p>
+<p>【对于任意的安全PRP，当定义域 $X$ 足够大时，它也是安全PRF，所以AES也是安全的PRF。】</p>
+<p>证明如下：</p>
+<p><strong>Lemma:</strong> Let E be a PRP over (K, X). Then for any q-query adversay A:<br>$$<br>|\mathrm{Adv_{PRF}[A,E]-\mathrm{Adv_{PRP}[A, E]}}|&lt;\mathrm{q^2/2|X|}<br>$$<br>该引理的结果是，当 ｜X｜很大时，$\mathrm{q^2/2|X|}$ 是neg.，因此左部分也是neg.。</p>
+<p>而当E是安全PRP时，$\mathrm{Adv_{PRP}[A, E]}$ 是neg.，因此 $\mathrm{Adv_{PRF}[A,E]}$ 也是neg.，所以E也是安全的PRF。</p>
+<p>证毕。 </p>
+<h1 id="One-Time-Key"><a href="#One-Time-Key" class="headerlink" title="One Time Key"></a>One Time Key</h1><p>使用块密码有很多种方式，而我们的目的就是希望能从安全的PRP构建安全的加密方式。</p>
+<p>本小节主要阐述one-time keys的方式，即每条消息都使用新的密钥，所以攻击者只能得到这一条有关该密钥的密文，即一次一密的唯密文攻击能力，但攻击者的攻击目标是希望能从密文中得到关于明文的信息，即破坏语义安全。</p>
+<p>one-time key:</p>
+<ol>
+<li>Adversary’s power: Adv sees only one ciphertext (one-time key)</li>
+<li>Adversary’s goal: Learn info about PT from CT (semantic security)</li>
+</ol>
+<p>在使用AES的ECB(Electronic Code Book)方式，当消息中的不同块 $\mathrm{m_1=m_2}$ 时，$\mathrm{c_1=c_2}$ ，攻击者能从密文中得到一些他不应该得到的信息。</p>
+<img src="https://z3.ax1x.com/2021/09/20/4GPOFH.png" alt="ECB" style="zoom:40%;" />
+
+<p>比如用ECB的方式加密图片，可以看到加密后的图片也是可见的：</p>
+<img src="https://z3.ax1x.com/2021/09/20/4GPjfA.png" alt="in pictures" style="zoom:40%;" />
+
+<h2 id="Semantic-Security-one-time-key"><a href="#Semantic-Security-one-time-key" class="headerlink" title="Semantic Security(one-time key)"></a>Semantic Security(one-time key)</h2><p>这里的one-time key方式对于攻击者来说，就是攻击者只能看到一条与密钥相关的密文。</p>
+<p>定义如下两个实验，挑战者随机选择一个密钥，以此确定用于加密的伪随机置换，攻击者发送任意两个消息 $\mathrm{m_0, m_1}$ ，长度相同。</p>
+<img src="https://z3.ax1x.com/2021/09/20/4GPqTe.png" alt="Semantic Secuity EXP" style="zoom:40%;" />
+
+<p>在EXP(0)中，挑战者对 $\mathrm{m_0}$ 加密；而在EXP(1)中，挑战者对 $\mathrm{m_1}$ 加密。</p>
+<p>攻击者收到挑战者响应的密文，通过一定的算法来判断该密文是对 $\mathrm{m_0}$ 加密的，还是对 $\mathrm{m_1}$ 加密的。</p>
+<p>如果one-time key方式是语义安全的，则：<br>$$<br>\mathrm{Adv_{SS}[A,OTP]=|Pr[EXP(0)=1]-Pr[EXP(1)=1]} \quad \text{should be “neg”.}<br>$$</p>
+<hr>
+<p>而我们上文提到的ECB，就不是语义安全的。</p>
+<p>因为一条消息实则有许多块，而这些块中如果有相同的明文，则对应的密文相同。</p>
+<p>攻击者可以利用这一点来区分 $\mathrm{m_0,m_1}$ ：</p>
+<img src="https://z3.ax1x.com/2021/09/20/4GPbwD.png" alt="ECB is not semantically secure" style="zoom:43%;" />
+
+<p>攻击者可以用算法判断密文块是否相等来判断是对哪一条消息加密的。</p>
+<p>该场景下， 攻击者攻击成功的优势为： $\mathrm{Adv_{SS}[A,ECB]}=|0-1|=1$ 。</p>
+<h2 id="Det-CTR"><a href="#Det-CTR" class="headerlink" title="Det. CTR"></a>Det. CTR</h2><p>这里介绍一种从PRF构造的安全流密码：确定的计数器模式（Deterministic counter mode）</p>
+<img src="https://z3.ax1x.com/2021/09/20/4GPHeO.png" alt="stream cipher built from a PRF" style="zoom:50%;" />
+
+<p>证明该种模式的安全性：</p>
+<p><strong>Theorem:</strong> </p>
+<p>For any L&gt;0, if F is a secure PRF over (K,X,X) then $\mathrm{E_{DETCTR}}$ is sem. sec. cipher over $\mathrm{(K,X^L,X^L)}$ .</p>
+<p>In particular, for any eff. adversary A attacking $\mathrm{E_{DETCTR}}$ there exists an eff. PRF adversary B s.t.:<br>$$<br>\mathrm{Adv_{SS}[A,E_{DETCTR}]=2\cdot Adv_{PRF}[B,F]}<br>$$<br>该定理告诉我们，如果F是一个(K,X,X)上安全的PRF，那么 $\mathrm{E_{DETCTR}}$ 就是 $\mathrm{(K,X^L,X^L)}$ 上满足语义安全的密码（L是消息块数）。</p>
+<p>此外，对于任意的有效攻击者A攻击 $\mathrm{E_{DETCTR}}$ 密码，都存在一个有效的PRF攻击者B攻击 $\mathrm{E_{DETCTR}}$ 底层的PRF，他们各自攻击的优势满足： $\mathrm{Adv_{SS}[A,E_{DETCTR}]=2\cdot Adv_{PRF}[B,F]}$ 。</p>
+<p>当PRF是安全的PRF时，即 $\mathrm{Adv_{PRF}[B,F]}$ is negligible。因此，$\mathrm{Adv_{SS}[A,E_{DETCTR}]}$ 也必须是negligible的。</p>
+<p>也可以通过下图直观的证明：</p>
+<img src="https://z3.ax1x.com/2021/09/20/4GPhWR.png" alt="proof" style="zoom:50%;" />
+
+<h1 id="Many-time-Key"><a href="#Many-time-Key" class="headerlink" title="Many-time Key"></a>Many-time Key</h1><p>块密码的另一种使用方式是many-time key方式，常用于文件系统，比如用同样的AES密钥加密许多文件；他也是IPsec的加密方式，相同的AES密钥用于加密许多IP包。</p>
+<p>many-time key的方式是说，同一条密钥用于加密多条消息，在这种情况下，攻击者有选择明文攻击的能力，可以获得他任意选择明文消息对应的密文。而攻击者的目标同样是破坏语义安全。</p>
+<p>many-time key:</p>
+<ol>
+<li>Adversary’s power: chosen-palintext attack(CPA): can obtain the encryption of arbitrary message of his choice.</li>
+<li>Adversary’s goal: break semantic security.</li>
+</ol>
+<h2 id="Semantic-Security-many-time-key"><a href="#Semantic-Security-many-time-key" class="headerlink" title="Semantic Security(many-time key)"></a>Semantic Security(many-time key)</h2><p>挑战者随机选择密钥，以此确定加密解密密码。因为是many-time key的加密方式，攻击者可以发送多组消息：$\mathrm{m_{i,0},m_{i,1}}$ 。定义如下两个实验，对于攻击者发出的每一个询问中，在EXP(0)中，挑战者加密 $\mathrm{m_{i,0}}$ ，在EXP(1)中，挑战者加密 $\mathrm{m_{i,1}}$ 。攻击者对于收到的密文，来判断该密文是对 $\mathrm{m_{i,0},m_{i,1}}$ 那条消息加密的。</p>
+<img src="https://z3.ax1x.com/2021/09/20/4GP5S1.png" alt="semantic security(many-time key)" style="zoom:40%;" />
+
+<p>当攻击者想要指定明文 $\mathrm{m}$ 的密文时，攻击者可以向挑战者发出询问，询问中 $\mathrm{m_{j,0}=m_{j,1}=m}$ 。因此在many-time key的加密方式下，攻击者拥有选择明文攻击的能力。</p>
+<p>定义many-time key 的语义安全：</p>
+<p><strong>Def:</strong> E is sem. sec. under CPA if for all “efficient” A:<br>$$<br>\mathrm{Adv_{CPA}[A,E]=|Pr[EXP(0)=1]-EXP(1)=1|}\quad \text{is neg.}<br>$$</p>
+<h2 id="CPA-Security"><a href="#CPA-Security" class="headerlink" title="CPA Security"></a>CPA Security</h2><p>如果 $\mathrm{E(k,m)}$ 对消息 $\mathrm{m}$ 总是输出相同的密文 $\mathrm{m}$ ，那该密码就不是语义安全的。</p>
+<p>攻击过程如下图，攻击者在第一个询问发送 $\mathrm{m_0,m_0}$ ，得到 $\mathrm{m_0}$ 的密文，在第二询问中发送 $\mathrm{m_0,m_1}$ 。攻击者可以通过算法 A(output 0 if $\mathrm{c=c_0}$) 破坏其语义安全。</p>
+<img src="https://z3.ax1x.com/2021/09/22/4NkwlQ.png" alt="ciphers insecure under CPA" style="zoom:40%;" />
+
+<p>在现实生活中，这样确定的加密算法(deterministic encryption)都不能达到语义安全，比如一个攻击者可以通过两个加密文件的内容是相同的，来判断这两份文件时相同的。</p>
+<p>所以，对于many-time key的加密方式来说，如果给定相同的密文消息，加密算法必须输出不同的密文，才能保证语义安全。</p>
+<h3 id="Solution-1-randomized-encryption"><a href="#Solution-1-randomized-encryption" class="headerlink" title="Solution 1: randomized encryption"></a>Solution 1: randomized encryption</h3><p>第一种解决方案是 $\mathrm{E(k,m)}$ 是一个随机算法(randomized algorithm)：</p>
+<img src="https://z3.ax1x.com/2021/09/20/4GPTOK.png" alt="randomized algorithm" style="zoom:50%;" />
+
+<p>随机算法的好处是，每次加密相同的消息都能得到不同的密文。</p>
+<p>但这样的性质需要满足，密文消息的长度比明文消息的长度长，即 CT-size = PT-size + #random bits</p>
+<p>例如这样的加密算法：$\mathrm{F:K\times R \rightarrow M}$ 是一个安全的PRF，$\mathrm{E(k,m)=[r\stackrel{R}\longrightarrow, \text{output}(r, F(k,r)\oplus m)]}$ 就是一个在CPA攻击下语义安全的加密算法。（不过需要保证R的空间足够大，以此保证r不会重复）</p>
+<h3 id="Solution-2-nonce-based-Encryption"><a href="#Solution-2-nonce-based-Encryption" class="headerlink" title="Solution 2: nonce-based Encryption"></a>Solution 2: nonce-based Encryption</h3><p>第二种解决方案是基于nonce的加密算法。对于每一条消息nonce n都应该是不同的，即 $\mathrm{(k,n)}$ 不会重复。</p>
+<img src="https://z3.ax1x.com/2021/09/20/4GPIQx.png" alt="nonce-based encryption" style="zoom:50%;" />
+
+<p>nonce可以是一个计数器(counter)，也可以是一个随机值(random nonce)。</p>
+<p>当nonce是攻击者选择时（每个询问的nonce都是不同的），系统保证语义安全的定义：</p>
+<img src="https://z3.ax1x.com/2021/09/20/4GPoy6.png" alt="CPA security" style="zoom:40%;" />
+
+<p><strong>Def</strong> : nonce-based E is sem. sec. under CPA if for all “efficient” A:<br>$$<br>\mathrm{Adv_{nCPA}=|Pr[EXP(0)=1]-Pr[EXP(1)=1]|}\quad \text{is neg.}<br>$$</p>
+<h2 id="CBC"><a href="#CBC" class="headerlink" title="CBC"></a>CBC</h2><p>一种many-time key方式的块密码是CBC（Cipher Block Chaining）。</p>
+<h3 id="CBC-with-random-IV"><a href="#CBC-with-random-IV" class="headerlink" title="CBC with random IV"></a>CBC with random IV</h3><p>Let $\mathrm{(E,D)}$ be a PRP.</p>
+<p>$\mathrm{E_{CBC}(k,m)}$ : choose <strong>random</strong> $\mathrm{IV\in X}$ and do:</p>
+<img src="https://z3.ax1x.com/2021/09/22/4NkdSg.png" alt="CBC with random IV" style="zoom:40%;" />
+
+<p>IV是随机的，因此要把IV的值放在密文中一起发送给解密方。</p>
+<p>解密的电路如下：</p>
+<img src="https://z3.ax1x.com/2021/09/22/4Nkrmn.png" alt="CBC: decryption circuit" style="zoom:33%;" />
+
+<h3 id="CBC-CPA-Analysis"><a href="#CBC-CPA-Analysis" class="headerlink" title="CBC: CPA Analysis"></a>CBC: CPA Analysis</h3><p>定理：对于任意块 L&gt;0（L就是每个消息能具备的最大块数），如果E在(K,X)上是一个安全的PRP，那么在CPA攻击下 $\mathrm{E_{CBC}} $ $\mathrm{=(K,X^L,X^{L+1})}$ 就是一个具备语义安全的密码。如果有一个攻击 $\mathrm{E_{CBC}}$ 的攻击者A，发起q个询问（q就是最大消息数），那么存在一个攻击其 PRP的攻击者B，满足：<br>$$<br>\mathrm{Adv_{CPA}[A,E_{CBC}]\le2\cdot Adv_{PRP}[B,E] +2q^2L^2/|X|}<br>$$</p>
+<blockquote>
+<p> <strong>CBC Theorem:</strong></p>
+<p>For any L&gt;0, if E is a secure PRP over (K,X) then $\mathrm{E_{CBC}} $ is a sem. sec. under CPA over $\mathrm{(K,X^L,X^{L+1})}$ .</p>
+<p>In particular, for a q-query adversary A attacking $\mathrm{E_{CBC}} $ , there exists a PRP adversary B s.t.:<br>$$<br>\mathrm{Adv_{CPA}[A,E_{CBC}]\le2\cdot Adv_{PRP}[B,E] +2q^2L^2/|X|}<br>$$<br>q = # messages encrypted with k, L = length of max message</p>
+</blockquote>
+<p>PRP是安全的，$\mathrm{ Adv_{PRP}[B,E]}$ 是neg.，因此只有当 $\mathrm{q^2L^2&lt;&lt;|X|}$ 时，CBC才是安全的。</p>
+<p>Example：</p>
+<p>假设我们希望 $\mathrm{Adv_{CPA}[A,E_{CBC}]}\le1/2^{32}$ ，即需要满足 $\mathrm{2q^2L^2/|X|\le1/2^{32}}$ ：</p>
+<ul>
+<li><p>对于AES来说，$\mathrm{|X|=2^{128}}$ ，所以 $\mathrm{qL\lt 2^{48}}$ 。</p>
+<p>因此，在 $2^{48}$ 个AES块后，必须改变密钥。</p>
+</li>
+<li><p>而对于DES来说，$\mathrm{|X|=2^{64}}$ ，所以 $\mathrm{qL\lt 2^{16}}$ 。</p>
+</li>
+</ul>
+<h4 id="Warning-an-attack-on-CBC-with-random-IV"><a href="#Warning-an-attack-on-CBC-with-random-IV" class="headerlink" title="Warning: an attack on CBC with random IV"></a>Warning: an attack on CBC with random IV</h4><p>当攻击者可以预测IV时，CBC就不再具备CPA-secure了。</p>
+<p>假设攻击者对于给定的密文$\mathrm{c\leftarrow E_{CBC}(k,m)}$可以预测下一条消息的IV。</p>
+<p>比如在SSL/TLS1.1中的一个bug：第i-1条报文的最后一个密文块就是第i条报文的IV。</p>
+<img src="https://z3.ax1x.com/2021/09/22/4NkBOs.png" alt="an attack on CBC with random IV" style="zoom:33%;" />
+
+<p>CPA attack:</p>
+<ul>
+<li>第一次询问<ul>
+<li>攻击者发送两条消息 $\mathrm{m_0=m_1=0}\in \mathrm{X}$ </li>
+<li>挑战者用 $\mathrm{c_1=[IV_1, E(k,0\oplus IV_1)]}$ 响应</li>
+</ul>
+</li>
+<li>攻击者通过密文预测下一条消息的IV</li>
+<li>第二次询问<ul>
+<li>攻击者发送两条消息 $\mathrm{m_0=IV\oplus IV_1,m_1\ne m_0}$ </li>
+<li>挑战者的密文 $\mathrm{c=[IV,E(k,IV_1)]\quad or \quad c=[IV,E(k, m_1\oplus IV)]}$ </li>
+</ul>
+</li>
+<li>攻击者的统计算法 A: output 0 if $\mathrm{c[1]=c_1[1]}$ </li>
+</ul>
+<p>所以IV必须是随机的。</p>
+<h3 id="nonce-based-CBC"><a href="#nonce-based-CBC" class="headerlink" title="nonce-based CBC"></a>nonce-based CBC</h3><p>CBC的另一种使用方式是基于<strong>unique</strong> nonce。</p>
+<p>在这种方式中，密钥由一组密钥对组成 key = (k, k1)，k1是用来加密nonce的。</p>
+<p>unique nonce的含义是，nonce可以不是随机的，但对于每一条消息，(key, nonce)对都必须是不同的。</p>
+<p>所以，对于用户提供的非随机nonce，必须经过加密。</p>
+<p><img src="https://z3.ax1x.com/2021/09/22/4Nk0yj.png" alt="nonce-based CBC" style="zoom:33%;" /><img src="https://z3.ax1x.com/2021/09/22/4Nkswq.png" alt="padding"></p>
+<p>在这种方式中，一个非常重要但步骤就是使用 k1来加密nonce。</p>
+<p>如果把nonce当作IV使用（忘掉k1加密nonce的步骤），CBC就没有CPA-secure。</p>
+<p>如果k1=k，CBC也没有CPA-secure（IV=0的模式）。</p>
+<h3 id="A-CBC-technicality-padding"><a href="#A-CBC-technicality-padding" class="headerlink" title="A CBC technicality: padding"></a>A CBC technicality: padding</h3><p>对于消息长度未能达到块的整数倍，需要padding技术进行填充消息。</p>
+<p><img src="https://z3.ax1x.com/2021/09/22/4Nkswq.png" alt="padding"></p>
+<p>在TLS中的填充方法是，对于需要填充n(n&gt;0)个bytes的消息块，n-byte pad中的每个字节都是n。</p>
+<p>如果不需要填充，就需要添加一个dummy block，该块中的每个字节都是16。</p>
+<h2 id="CTR"><a href="#CTR" class="headerlink" title="CTR"></a>CTR</h2><p>另一种方式是CTR。</p>
+<h3 id="rand-ctr-mode"><a href="#rand-ctr-mode" class="headerlink" title="rand ctr-mode"></a>rand ctr-mode</h3><p>Let F be a secure PRF.</p>
+<p>$\mathrm{E_{CBC}(k,m)}$ : choose <strong>random</strong> $\mathrm{IV\in X}$ and do:</p>
+<img src="https://z3.ax1x.com/2021/09/22/4Nmgt1.png" alt="ctr-mode" style="zoom:33%;" />
+
+<p>CTR模式的最大优点是可以并行计算。</p>
+<p>其次，因为CTR的加密其实是流密码的形式，所以只需要要求F是一个安全的PRF，不需要其可逆。</p>
+<h3 id="nonce-ctr-mode"><a href="#nonce-ctr-mode" class="headerlink" title="nonce ctr-mode"></a>nonce ctr-mode</h3><p>为例保证F(k,x)只会使用一次，对每条消息选择一个64 bits的nonce，同时使用一个64 bits的counter。</p>
+<img src="https://z3.ax1x.com/2021/09/22/4NmckR.png" alt="nonce" style="zoom:33%;" />
+
+<h3 id="CTR-CPA-analysis"><a href="#CTR-CPA-analysis" class="headerlink" title="CTR: CPA analysis"></a>CTR: CPA analysis</h3><p><strong>CTR Theorem:</strong></p>
+<p>For any L&gt;0, if F is a secure PRF over (K, X, X) then $\mathrm{E_{CTR}} $ is a sem. sec. under CPA over $\mathrm{(K,X^L,X^{L+1})}$ .</p>
+<p>In particular, for a q-query adversary A attacking $\mathrm{E_{CTR}} $ , there exists a PRF adversary B s.t.:<br>$$<br>\mathrm{Adv_{CPA}[A,E_{CTR}]\le2\cdot Adv_{PRF}[B,F] +2q^2L/|X|}<br>$$<br>q = # messages encrypted with k, L = length of max message</p>
+<p>CTR-mode中，只有当 $\mathrm{q^2L}&lt;&lt;|X|$ ，才具备CPA-secure，比CBC好。</p>
+<p>Example：</p>
+<p>假设我们希望 $\mathrm{Adv_{CPA}[A,E_{CTR}]}\le1/2^{32}$ ，即需要满足 $\mathrm{2q^2L/|X|\le1/2^{32}}$ ：</p>
+<ul>
+<li><p>对于AES来说，$\mathrm{|X|=2^{128}}$ ，所以 $\mathrm{qL^{1/2}\lt 2^{48}}$ 。</p>
+<p>因此，在 $2^{32}$ 条消息后（每条消息有 $2^{32}$个 AES块），必须改变密钥。</p>
+</li>
+</ul>
+<h2 id="CTR-v-s-CBC"><a href="#CTR-v-s-CBC" class="headerlink" title="CTR v.s. CBC"></a>CTR v.s. CBC</h2><img src="https://z3.ax1x.com/2021/09/22/4Nm2fx.png" alt="comparison" style="zoom:33%;" />
+
+
+
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Cryptography-Boneh」:Block Cipher 2</p><p><a href="https://f7ed.com/2021/09/13/stanford-crypto-blockcipher2/">https://f7ed.com/2021/09/13/stanford-crypto-blockcipher2/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2021-09-13</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-12-28</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课, </a><a class="link-muted" rel="tag" href="/tags/Cryptography/">Cryptography, </a><a class="link-muted" rel="tag" href="/tags/BlockCipher/">BlockCipher </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2021/10/19/vscode-remote-ssh/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Tools-VSCode」:Remote SSH-跳板机设置</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2021/09/09/stanford-crypto-blockcipher1/"><span class="level-item">「Cryptography-Boneh」:Block Cipher 1</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "79d52249367ec491388d69cf1ef0aa85",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">70</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">135</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#PRPs-and-PRFs"><span class="level-left"><span class="level-item">1</span><span class="level-item">PRPs and PRFs</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#PRF："><span class="level-left"><span class="level-item">1.1</span><span class="level-item">PRF：</span></span></a></li><li><a class="level is-mobile" href="#PRP"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">PRP:</span></span></a></li><li><a class="level is-mobile" href="#PRF-Switching-Lemma"><span class="level-left"><span class="level-item">1.3</span><span class="level-item">PRF Switching Lemma</span></span></a></li></ul></li><li><a class="level is-mobile" href="#One-Time-Key"><span class="level-left"><span class="level-item">2</span><span class="level-item">One Time Key</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Semantic-Security-one-time-key"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">Semantic Security(one-time key)</span></span></a></li><li><a class="level is-mobile" href="#Det-CTR"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">Det. CTR</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Many-time-Key"><span class="level-left"><span class="level-item">3</span><span class="level-item">Many-time Key</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Semantic-Security-many-time-key"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">Semantic Security(many-time key)</span></span></a></li><li><a class="level is-mobile" href="#CPA-Security"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">CPA Security</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Solution-1-randomized-encryption"><span class="level-left"><span class="level-item">3.2.1</span><span class="level-item">Solution 1: randomized encryption</span></span></a></li><li><a class="level is-mobile" href="#Solution-2-nonce-based-Encryption"><span class="level-left"><span class="level-item">3.2.2</span><span class="level-item">Solution 2: nonce-based Encryption</span></span></a></li></ul></li><li><a class="level is-mobile" href="#CBC"><span class="level-left"><span class="level-item">3.3</span><span class="level-item">CBC</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#CBC-with-random-IV"><span class="level-left"><span class="level-item">3.3.1</span><span class="level-item">CBC with random IV</span></span></a></li><li><a class="level is-mobile" href="#CBC-CPA-Analysis"><span class="level-left"><span class="level-item">3.3.2</span><span class="level-item">CBC: CPA Analysis</span></span></a></li><li><a class="level is-mobile" href="#nonce-based-CBC"><span class="level-left"><span class="level-item">3.3.3</span><span class="level-item">nonce-based CBC</span></span></a></li><li><a class="level is-mobile" href="#A-CBC-technicality-padding"><span class="level-left"><span class="level-item">3.3.4</span><span class="level-item">A CBC technicality: padding</span></span></a></li></ul></li><li><a class="level is-mobile" href="#CTR"><span class="level-left"><span class="level-item">3.4</span><span class="level-item">CTR</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#rand-ctr-mode"><span class="level-left"><span class="level-item">3.4.1</span><span class="level-item">rand ctr-mode</span></span></a></li><li><a class="level is-mobile" href="#nonce-ctr-mode"><span class="level-left"><span class="level-item">3.4.2</span><span class="level-item">nonce ctr-mode</span></span></a></li><li><a class="level is-mobile" href="#CTR-CPA-analysis"><span class="level-left"><span class="level-item">3.4.3</span><span class="level-item">CTR: CPA analysis</span></span></a></li></ul></li><li><a class="level is-mobile" href="#CTR-v-s-CBC"><span class="level-left"><span class="level-item">3.5</span><span class="level-item">CTR v.s. CBC</span></span></a></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「MPC-Mike Rosulek 」：Overview of Secure Computation and Yao&#039;s Protocol - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="本系列是总结Mike Rosulek教授在上海期智研究院的密码学学术讲座。 这是Mike教授的第一个分享：Overview of Secure Computation and Yao’s Protocol Roadmap  Secure computation: Concepts &amp;amp; definitions Yao’s protocol: semi-honest secure comput"><meta property="og:type" content="blog"><meta property="og:title" content="「MPC-Mike Rosulek 」：Overview of Secure Computation and Yao&#039;s Protocol"><meta property="og:url" content="https://f7ed.com/2021/07/03/MPC1-Yaos-protocol/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="本系列是总结Mike Rosulek教授在上海期智研究院的密码学学术讲座。 这是Mike教授的第一个分享：Overview of Secure Computation and Yao’s Protocol Roadmap  Secure computation: Concepts &amp;amp; definitions Yao’s protocol: semi-honest secure comput"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/uhhjkfakiqfafa.png"><meta property="article:published_time" content="2021-07-02T16:00:00.000Z"><meta property="article:modified_time" content="2021-07-04T09:55:40.486Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="MPC"><meta property="article:tag" content="Lectures"><meta property="article:tag" content="Secure Computation"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/uhhjkfakiqfafa.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2021/07/03/MPC1-Yaos-protocol/"},"headline":"「MPC-Mike Rosulek 」：Overview of Secure Computation and Yao's Protocol","image":["https://f7ed.com/gallery/thumbnails/uhhjkfakiqfafa.png"],"datePublished":"2021-07-02T16:00:00.000Z","dateModified":"2021-07-04T09:55:40.486Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"本系列是总结Mike Rosulek教授在上海期智研究院的密码学学术讲座。 这是Mike教授的第一个分享：Overview of Secure Computation and Yao’s Protocol Roadmap  Secure computation: Concepts &amp; definitions Yao’s protocol: semi-honest secure comput"}</script><link rel="canonical" href="https://f7ed.com/2021/07/03/MPC1-Yaos-protocol/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「MPC-Mike Rosulek 」：Overview of Secure Computation and Yao&#039;s Protocol</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2021-07-02T16:00:00.000Z" title="2021-07-02T16:00:00.000Z">2021-07-03</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2021-07-04T09:55:40.486Z" title="2021-07-04T09:55:40.486Z">2021-07-04</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/MPC/">MPC</a></span><span class="level-item"><i class="far fa-clock"></i> 24 minutes read (About 3671 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>本系列是总结Mike Rosulek教授在上海期智研究院的密码学学术讲座。</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><p>这是Mike教授的第一个分享：Overview of Secure Computation and Yao’s Protocol</p>
+<p>Roadmap</p>
+<ol>
+<li>Secure computation: Concepts &amp; definitions</li>
+<li>Yao’s protocol: semi-honest secure computation for boolean circuits</li>
+</ol>
+<p>主要内容包括安全多方计算的整体介绍及其应用场景、如何定义安全多方计算的security、Yao的混淆电路协议 (garbled circuits protocol)。</p>
+<p>（咕咕咕博客选手回来了，学长说：与其担心有没有学读，不如多学学密码学，泪目，我觉得他说的对！）</p>
+<span id="more"></span>
+
+<h1 id="Secure-computation"><a href="#Secure-computation" class="headerlink" title="Secure computation"></a>Secure computation</h1><h2 id="Concepts"><a href="#Concepts" class="headerlink" title="Concepts"></a>Concepts</h2><p>什么是安全计算？</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRZtqf.png" alt="什么是安全多方计算" style="zoom:50%;" />
+
+<ul>
+<li><p>Mutually distrusting parties, each with a private input.</p>
+<p>【参与方之间互不信任，且都有一个隐私输入】</p>
+</li>
+<li><p>Learn the result of agreed-upon computation.</p>
+<p>【参与方希望能得到一个各方商定的计算结果】</p>
+</li>
+</ul>
+<p>安全计算能保证什么？</p>
+<ul>
+<li><p>Privacy (“learn no more than” prescribed output)</p>
+<p>【隐私性：参与方除了得到商定的计算结果，其他都不能得到】</p>
+</li>
+<li><p>Input independence</p>
+<p>【各参与方的输入无关】</p>
+</li>
+<li><p>Output consistency</p>
+<p>【各参与方的输出是一个商定一致的计算结果】</p>
+</li>
+</ul>
+<p>以上性质及时在某些参与方勾结欺骗的情况下，也是成立的。</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRZUZ8.png" alt="有恶意参与方的多方安全计算" style="zoom:50%;" />
+
+<h3 id="scenarios"><a href="#scenarios" class="headerlink" title="scenarios"></a>scenarios</h3><p>Example 1: Sugar Beets——甜菜定价</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRZYsP.png" style="zoom:43%;" />
+
+<ul>
+<li><p>Farmers make bids (“at price X, I will produce Y amount”)</p>
+<p>【Farmers：会根据甜菜的定价决定产量，价格对产量的影响如上图蓝色的线】</p>
+</li>
+<li><p>Purchaser bids (“at price X, I will buy Y amount”)</p>
+<p>【Purchaser：会根据甜菜的定价觉得购买量，价格对购买量的影响如上图红色的线】</p>
+</li>
+<li><p><strong>Market clearing price</strong> (MCP): price at which total supply = demand</p>
+<p>【双方希望甜菜价格能达到市场出清价，即产量=需求量】</p>
+</li>
+</ul>
+<p>但是双方不希望透露自己心中的定价，因为这会破坏经济市场的balabala</p>
+<p>因此，在2009年，通过双方可以通过安全计算得到市场出请价。</p>
+<p>Example 2: Ad conversion——广告投放</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRZBGj.png" style="zoom:43%;" />
+
+<p>特斯拉存储了到店购买汽车的用户邮箱，而谷歌希望能个性化的投放汽车广告。</p>
+<p>因此，如果双方公开数据库中的数据，就可以通过上图的SQL语句筛选出目标用户。</p>
+<p>但这样会侵犯用户的用户的隐私，所以特斯拉和谷歌都不会直接公开用户的信息。由此，双方可以通过安全计算得到广告投放的目标用户。</p>
+<p>Example 3: Wage Equity Study——薪资公平性研究</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRZrzn.png" style="zoom:43%;" />
+
+<p>研究人员想研究Boston的薪资水平是否是性别平等的，但各企业不会愿意直接公开薪资。</p>
+<p>而通过安全计算，可以在保护企业薪资隐私的情况下，得到相关研究结果。</p>
+<h2 id="Definitions"><a href="#Definitions" class="headerlink" title="Definitions"></a>Definitions</h2><h3 id="“securely”-compute-f"><a href="#“securely”-compute-f" class="headerlink" title="“securely” compute f ?"></a>“securely” compute f ?</h3><p>如何理解“安全地“计算f？</p>
+<p>可以先从安全性需求/威胁来理解什么是不安全。</p>
+<ul>
+<li><p>What if adversary learns more than f(x, y)?</p>
+<p>【如果攻击者学到了除商定计算结果f(x,y)以外的信息？】</p>
+</li>
+<li><p>What if adversary learns f(x, y) but then prevents honest party from learning it too?</p>
+<p>【如果攻击者能够得到计算结果，但是阻碍诚信的参与方得到正确的计算结果？】</p>
+</li>
+<li><p>What if adversary forces several parties to have inconsistent outputs?</p>
+<p>【如果攻击者通过某种手段使得一些参与方得到不一致的计算结果】</p>
+</li>
+<li><p>What if adversary’s choice of input depends on honest party’s input?</p>
+<p>【如果攻击者的输入会依赖一些诚信参与方的输入？】（不太理解这是一个什么样的情况？）</p>
+</li>
+</ul>
+<h3 id="Security-in-ideal-world"><a href="#Security-in-ideal-world" class="headerlink" title="Security in ideal world"></a>Security in ideal world</h3><p>在理想情况下，假设有一个可信第三方，Alice和Bob把自己的输入<code>x, y</code> 告诉她，可信第三方计算<code>f(x, y)</code> ，再把计算结果分别分发给Alice和Bob。</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRZ0iQ.png" style="zoom:43%;" />
+
+<p>在理想情况中，如果有一个恶意的参与方，结果会怎么样？（你看图，变坏的人变丑了2333</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRZDRs.png" style="zoom:43%;" />
+
+<p>corrupt party’s view:</p>
+<ol>
+<li>随意选择一个输入y</li>
+<li>除了知道<code>f(x, y)</code> ，其他信息都不知道。</li>
+<li>致使诚信参与方得到一致的<code>f(x, y)</code> </li>
+</ol>
+<p>可见，在理想情况下，即使有恶意的参与方，也能达到之前提到的“安全地”计算<code>f(x, y)</code> 的要求。</p>
+<p>Security goal: real protocol interaction is <strong>as secure as</strong> the ideal-world interaction</p>
+<p>For every “attack” against real protocol, there is a way to achieve “same effect” in ideal world</p>
+<p>【因此，现实情况的安全计算目标应该是达到和理想情况中的同等安全性。】</p>
+<p>【对于每一个尝试攻击真实安全计算协议的攻击者来说，总有一种方式达到 和攻击理想情况的 相同影响。】</p>
+<p>首先，先解释在real protocol中，恶意参与方会产生什么样的effect？</p>
+<p>下图是一个现实的MPC协议交互图（有恶意参与方）：</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRZyMq.png" style="zoom:43%;" />
+
+<p>effect：</p>
+<ul>
+<li><p>Something the adversary learns / can compute about honest party</p>
+<p>【恶意参与方通过MPC得到的计算结果，可能能计算一些关于可信参与方的信息】</p>
+</li>
+<li><p>Some influence on honest party’s output</p>
+<p>【恶意参与方能够影响可信参与方得到的计算结果】</p>
+</li>
+</ul>
+<h3 id="Defining-security"><a href="#Defining-security" class="headerlink" title="Defining security"></a>Defining security</h3><blockquote>
+<p>完整的安全定义: RanCanetti13</p>
+<p>Universally Composable Security: A New Paradigm for Cryptographic Protocols</p>
+</blockquote>
+<p><strong>Security definition</strong>: For every real-world adversary $\mathcal{A}$, there exists an ideal adversary $\mathcal{A’}$ s.t. joint distribution (HonestOutput,AdvOutput) is indistinguishable.</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRZRdU.png" style="zoom:53%;" />
+
+<p>【对于每一个真实协议交互下的攻击者 $\mathcal{A}$ ，都存在一个在理论协议情况下的攻击者 $\mathcal{A’}$ ，这两个攻击者产生的effect是相同的，两种情况下的诚信参与方的输出和恶意参与方的输出的 联合分布 是不可区分的。】</p>
+<p>现在，来解释如何产生上文提到的：For every “attack” against real protocol, there is a way to achieve “same effect” in ideal world.</p>
+<p>假设在理想情况中有一个simulator：simulates real-world interaction in ideal world</p>
+<p>【可以在理想情况中模拟现实协议的交互。】</p>
+<p>对于该模拟器来说，他可以扮演两种角色：</p>
+<ol>
+<li><p>Send protocol messages that look like they came from honest party</p>
+<ul>
+<li>Demonstrates that honest party’s messages leak no more than f(x, y)</li>
+</ul>
+<p>【和恶意参与方交互，模拟现实协议中的诚信参与方：对模拟器来说，他除了知道计算结果<code>f(x, y)</code> 外】</p>
+</li>
+<li><p>Extract an f-input by examining adversary’s protocol messages</p>
+<ul>
+<li>“Explains” the effect on honest party’s output in terms of ideal world</li>
+</ul>
+<p>【在理想协议中，模拟器提取来自恶意参与方的输入信息，模拟理想情况中的参与方。】</p>
+<blockquote>
+<p>Q: yuyu老师问，这里的extract是什么意思？</p>
+<p>A：在现实安全计算的协议交互中，不管恶意参与方提交什么输入，总能商定一个结果。因此在理想情况中，也许恶意参与方只是上传了一些garbage bit，模拟器需要从这些garbage bits中提取一些信息，作为参与交互的输入。</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="Semi-Honest-security"><a href="#Semi-Honest-security" class="headerlink" title="Semi- Honest security"></a>Semi- Honest security</h3><p>有一种特殊的情况，即攻击者是semi-honest：</p>
+<ul>
+<li><p>Adversary assumed to follow the protocol on a given input</p>
+<p>【攻击者在给定输入下遵守协议】</p>
+</li>
+<li><p>Adversary may try to learn information based on what it sees</p>
+<p>【但攻击者会尝试从得到的信息中学到一些其他信息】</p>
+</li>
+<li><p>No need to extract, only simulate transcript given ideal input+output</p>
+<p>【因为攻击者会遵守协议，所以模拟器不需要extract来自半诚实的攻击者，只需要传送来自半诚实参与方的输入和可信第三方的计算输出结果。】</p>
+</li>
+</ul>
+<h1 id="Yao’s-protocol"><a href="#Yao’s-protocol" class="headerlink" title="Yao’s protocol"></a>Yao’s protocol</h1><p>Yao’s protocol : semi-honest secure computation for boolean circuits.</p>
+<h2 id="warm-up-protocol-garbled-truth-table"><a href="#warm-up-protocol-garbled-truth-table" class="headerlink" title="warm-up protocol: garbled truth table"></a>warm-up protocol: garbled truth table</h2><p>Alice方：会计算一个混淆真值表（garbled truth table）</p>
+<ol>
+<li><p>Write truth table of function f</p>
+<p>【写下函数f的真值表，该函数对于Alice方有4种输入，对Bob方有4种输入】</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRn8z9.png" style="zoom:53%;" />
+</li>
+<li><p>For each possible input, choose random cryptographic key</p>
+<p>【对于函数的每一种输入，Alice都选择一个随机的密钥（也叫label），对于Alice方的输入有4种密钥，对于Bob方的输入有4种密钥。】</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRZ2ZT.png" style="zoom:53%;" />
+</li>
+<li><p>Encrypt each output with corresponding keys</p>
+<p>【再用对应的输入密钥加密每一个函数的输出】</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRZhi4.png" style="zoom:53%;" />
+</li>
+<li><p>Randomly permute ciphertexts, send to Bob</p>
+<p>【对第三步的加密真值表随机置换，得到garbled truth table，再发给Bob。】</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRn3RJ.png" style="zoom:53%;" />
+
+</li>
+</ol>
+<p>而对于Bob方：（先不考虑如何得到正确的密钥Ax和By）Bob得到了密钥Ax和By，对garbled truth table进行尝试性解密，就只能得到f(x, y)</p>
+<blockquote>
+<p>对于Bob来说，是通过OT来得到正确的密钥Ax和By。后面会解释OT的简易版本和更为常用的做法。</p>
+</blockquote>
+<blockquote>
+<p>Q：Bob如何判断这是正确的解密？</p>
+<p>A：在对字符加密前，可以对字符加一些标记，比如前导0，或者特殊字符串之类。</p>
+</blockquote>
+<p>在Bob收到garbled truth table和garbled input后，Bob的视角可以模拟成下图：</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRZ4JJ.png" style="zoom:53%;" />
+
+<p>并且，对于distinguisher来说，只要密钥{A, B}中有一个不知道，那么 $\mathbb{E}<em>{A, B}(C)\approx \mathbb{E}</em>{A’, B’}(C’)$ ，（即和其他不知道的输入的加密是不可区分的）这样的模拟就是不可区分的。                                                                                                                                                                                                                                                                                                                                                                                                                                     </p>
+<h3 id="Extending-warm-up-protocol"><a href="#Extending-warm-up-protocol" class="headerlink" title="Extending warm-up protocol"></a>Extending warm-up protocol</h3><p>但这样的协议还存在一些问题：</p>
+<ul>
+<li><p>Problem: Cost scales with the truth table size of f</p>
+<p>【对于复杂函数来说，真值表的大小会很大，计算开销和存储开销都会很大】</p>
+</li>
+<li><p>How does Bob magically learn “correct” Ax, By?</p>
+<p>【之前忽略的假设，Bob如何才能得到Alice制定的密钥Ax和By】</p>
+</li>
+</ul>
+<p>这里会先解决第一个问题，想法是把这个复杂函数拆分成多个garbled truth table，可以用一个garbled table 的garbled outputs作为另一个garbled table的keys，就像这样：</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRZ5W9.png" style="zoom:53%;" />
+
+<p>第二个问题，关于OT的部分，后文会继续解释。</p>
+<h3 id="Garbled-circuit-framework"><a href="#Garbled-circuit-framework" class="headerlink" title="Garbled circuit framework"></a>Garbled circuit framework</h3><p>对于garbled circuit framework的提出，出自姚期智院士86年的论文。</p>
+<p>用boolean电路表示一个函数，电路由一些门组成：</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRZTQ1.png" style="zoom:53%;" />
+
+<p>(Alice) Garbling a circuit: </p>
+<ol>
+<li><p>Pick random labels W0, W1 on each wire</p>
+<p>【对于每一个wire，都会选择两个label来表示true和false，比如选择A0是true，A1是false，这里的label其实就是上文提到的加密密钥。】</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRZIzR.png" style="zoom:53%;" />
+</li>
+<li><p>“Encrypt” truth table of each gate</p>
+<p>【然后，对每一个门，都用对应的label加密真值表】</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRZ7sx.png" style="zoom:53%;" />
+</li>
+<li><p>Garbled circuit = all encrypted gates</p>
+<p>Garbled encoding = one label per wire</p>
+<p>【这样就把一个混淆电路变成一些加密真值表，同样的，把混淆电路的编码变成了每个wire的一个label】</p>
+</li>
+</ol>
+<p>(Bob) Garbled evaluation: </p>
+<p>Bob收到了混淆电路（garbled circuit）和混淆输入（garbled input），就可以进行garbled evaluation</p>
+<ol>
+<li><p>Only one ciphertext per gate is decryptable</p>
+<p>【对于Bob来说，他只有输入wire的单个label，因此对于每一个门，他都只能解密加密真值表中的一项】</p>
+</li>
+<li><p>Result of decryption = value on outgoing wire</p>
+<p>【输出门的值就是最后的计算结果】</p>
+</li>
+</ol>
+<p>对于接受方Bob来说，它的任务就是用garbled input来evaluate garbled circuits。他只能学习到每个wire的一个label，计算上不可能的去猜测这个wire的另一个label是什么。而对于输出门的输出wire，即使揭露输出wire的两个label也只会泄漏电路的输出。</p>
+<p>在BellareHoangRogaway12中有对gabled circuit做一些正式的符号定义：</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRZHL6.png" style="zoom:53%;" />
+
+<ul>
+<li><p>Privacy: (F,X,d) reveals nothing beyond f and f(x)</p>
+</li>
+<li><p>Obliviousness: (F,X) reveals nothing beyond f</p>
+</li>
+<li><p>Authenticity: given (F, X), hard to find Y‘ that decodes $\notin$ {f(x), ⊥}</p>
+</li>
+</ul>
+<h3 id="Oblivious-transfer"><a href="#Oblivious-transfer" class="headerlink" title="Oblivious transfer"></a>Oblivious transfer</h3><p>回到之前说的第二个问题，对于evaluator，也就是Bob，如何才能得到garbled circuit的garbled input？</p>
+<p>对于下图的garbled circuit，需要Alice输入A和B，需要Bob输入C和D。</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRZLdO.png" style="zoom:50%;" />
+
+<p><strong>Garbler’s input</strong>: Alice 作为garbler，她知道每个wire的两个label（比如A0, A1)，也知道label对应的真值关系(比如A0是false，A1是true），那Alice只需要把她的输入的对应的那个label发送给Bob就好了。</p>
+<p><strong>Evaluator’s input</strong>: 我们需要用OT（oblivious transfer）来实现，让Bob从Alice手中获得他想要的label，但又不让Alice知道他想要的是哪一个label。</p>
+<hr>
+<p>如何构造不经意传输(OT)？</p>
+<p>下图是一种简单实现的OT，不是最优的协议，后面的文章会继续介绍常用的OT。</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRndIO.md.png" alt="RRndIO.md.png" style="zoom:63%;" />
+
+<p>Alice有两个label：W0和W1，Bob想要得到其中一个，假设是Wc ( $c=0,1$ ) 。</p>
+<p>Bob需要用KeyGen算法生成一对公私钥 $(sk_c, pk_c)$ ，同样还需要BlindKeyGen算法生成一个不知道（或者硕士无法知道）其对应私钥的公钥 $pk_{1-c}$ 。</p>
+<ol>
+<li>Bob将两个公钥 $pk_0, pk_1$ 发给Alice</li>
+<li>Alice用 $pk_0$ 加密W0，用 $pk_1$ 加密W1，把两个密文发送给Bob</li>
+<li>因为Bob只知道Wc的私钥，而无法计算得到W1-c的私钥。所以Bob可以从Alice手中得到想要的label。</li>
+</ol>
+<blockquote>
+<p>Need public-key encryption that supports blind key generation:</p>
+<ul>
+<li>sample a public key without knowledge of secret key</li>
+<li>E.g.: ElGamal (sample group element without knowing discrete log)</li>
+</ul>
+<p>需要用一些支持blind key生成的公钥加密算法，比如ElGamal，群中的某些元素没有对应的离散对数，也就无法知道其对应的私钥。</p>
+</blockquote>
+<h3 id="Yao’s-protocol-overview"><a href="#Yao’s-protocol-overview" class="headerlink" title="Yao’s protocol: overview"></a>Yao’s protocol: overview</h3><p>Yao协议：</p>
+<img src="https://z3.ax1x.com/2021/07/03/RRZOoD.png" style="zoom:63%;" />
+
+<ol>
+<li>Gabler生成每个wire的label，把garbled circuit f（加密的真值表）、garbled input x（Alice输入对应的labels)和output wire labels（输出wire对应的labels）发送给Evaluator</li>
+<li>Evaluator用n次OT，在和Alice交互中，得到Bob每一个输入wire的label，每一次OT，Alice都不知道Bob选择的输入是什么。</li>
+<li>对于Evaluator来说：garbled f + garbled inputs + all output labels ⇒ Bob learns only f(x, y)</li>
+</ol>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「MPC-Mike Rosulek 」：Overview of Secure Computation and Yao&#039;s Protocol</p><p><a href="https://f7ed.com/2021/07/03/MPC1-Yaos-protocol/">https://f7ed.com/2021/07/03/MPC1-Yaos-protocol/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2021-07-03</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-07-04</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/MPC/">MPC, </a><a class="link-muted" rel="tag" href="/tags/Lectures/">Lectures, </a><a class="link-muted" rel="tag" href="/tags/Secure-Computation/">Secure Computation </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2021/07/05/MPC2-GarbledCircuits/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「MPC-Mike Rosulek 」：Advanced Techniques and Optimizations for Garbled Circuits</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2021/04/09/aflpp/"><span class="level-item">「Paper Reading」：AFL++：Combine Incremental Steps of Fuzzing Research</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "137da813b90cc44a7bf70ba44a407179",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">70</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">135</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Secure-computation"><span class="level-left"><span class="level-item">1</span><span class="level-item">Secure computation</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Concepts"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">Concepts</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#scenarios"><span class="level-left"><span class="level-item">1.1.1</span><span class="level-item">scenarios</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Definitions"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">Definitions</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#“securely”-compute-f"><span class="level-left"><span class="level-item">1.2.1</span><span class="level-item">“securely” compute f ?</span></span></a></li><li><a class="level is-mobile" href="#Security-in-ideal-world"><span class="level-left"><span class="level-item">1.2.2</span><span class="level-item">Security in ideal world</span></span></a></li><li><a class="level is-mobile" href="#Defining-security"><span class="level-left"><span class="level-item">1.2.3</span><span class="level-item">Defining security</span></span></a></li><li><a class="level is-mobile" href="#Semi-Honest-security"><span class="level-left"><span class="level-item">1.2.4</span><span class="level-item">Semi- Honest security</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Yao’s-protocol"><span class="level-left"><span class="level-item">2</span><span class="level-item">Yao’s protocol</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#warm-up-protocol-garbled-truth-table"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">warm-up protocol: garbled truth table</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Extending-warm-up-protocol"><span class="level-left"><span class="level-item">2.1.1</span><span class="level-item">Extending warm-up protocol</span></span></a></li><li><a class="level is-mobile" href="#Garbled-circuit-framework"><span class="level-left"><span class="level-item">2.1.2</span><span class="level-item">Garbled circuit framework</span></span></a></li><li><a class="level is-mobile" href="#Oblivious-transfer"><span class="level-left"><span class="level-item">2.1.3</span><span class="level-item">Oblivious transfer</span></span></a></li><li><a class="level is-mobile" href="#Yao’s-protocol-overview"><span class="level-left"><span class="level-item">2.1.4</span><span class="level-item">Yao’s protocol: overview</span></span></a></li></ul></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「机器学习-李宏毅」：Convolution Neural Network（CNN） - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="这篇文章中首先介绍了为什么要用CNN做图像识别，或者说图像识别问题的特点是什么？文章中也详细介绍了CNN的具体架构，主要包括Convolution、Max Pooling、Flatten。文章最后简要介绍了CNN在诸多领域的应用。"><meta property="og:type" content="blog"><meta property="og:title" content="「机器学习-李宏毅」：Convolution Neural Network（CNN）"><meta property="og:url" content="https://f7ed.com/2020/04/25/CNN/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="这篇文章中首先介绍了为什么要用CNN做图像识别，或者说图像识别问题的特点是什么？文章中也详细介绍了CNN的具体架构，主要包括Convolution、Max Pooling、Flatten。文章最后简要介绍了CNN在诸多领域的应用。"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/76062610_p0_master1200.jpg"><meta property="article:published_time" content="2020-04-24T16:00:00.000Z"><meta property="article:modified_time" content="2020-10-17T12:16:20.231Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="机器学习"><meta property="article:tag" content="DeepLearning"><meta property="article:tag" content="CNN"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/76062610_p0_master1200.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2020/04/25/CNN/"},"headline":"「机器学习-李宏毅」：Convolution Neural Network（CNN）","image":["https://f7ed.com/gallery/thumbnails/76062610_p0_master1200.jpg"],"datePublished":"2020-04-24T16:00:00.000Z","dateModified":"2020-10-17T12:16:20.231Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"这篇文章中首先介绍了为什么要用CNN做图像识别，或者说图像识别问题的特点是什么？文章中也详细介绍了CNN的具体架构，主要包括Convolution、Max Pooling、Flatten。文章最后简要介绍了CNN在诸多领域的应用。"}</script><link rel="canonical" href="https://f7ed.com/2020/04/25/CNN/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「机器学习-李宏毅」：Convolution Neural Network（CNN）</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2020-04-24T16:00:00.000Z" title="2020-04-24T16:00:00.000Z">2020-04-25</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2020-10-17T12:16:20.231Z" title="2020-10-17T12:16:20.231Z">2020-10-17</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E6%9D%8E%E5%AE%8F%E6%AF%85/">机器学习-李宏毅</a></span><span class="level-item"><i class="far fa-clock"></i> 18 minutes read (About 2685 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>这篇文章中首先介绍了为什么要用CNN做图像识别，或者说图像识别问题的特点是什么？<br>文章中也详细介绍了CNN的具体架构，主要包括Convolution、Max Pooling、Flatten。<br>文章最后简要介绍了CNN在诸多领域的应用。</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><span id="more"></span>
+
+<h1 id="Why-CNN-for-Image"><a href="#Why-CNN-for-Image" class="headerlink" title="Why CNN for Image?"></a>Why CNN for Image?</h1><p>图片本质都是pixels。</p>
+<p>在做图像识别时，本质是对图片中的某些特征像素（properities)识别。</p>
+<p><strong>So Why CNN for image?</strong></p>
+<ol>
+<li><p>Some patterns are much smaller than the whole image.</p>
+<p>A neuron does <strong>not have to see the whole image</strong> to discover the pattern.</p>
+<p>Connecting to small region with <strong>less parameters.</strong></p>
+<p>【很多特征图案的大小远小于整张图片的大小，因此一个neuron不需要为了识别某个pattern而看完整张图片。并且，如果只识别某个小的region，会减少大量参数的数目。】</p>
+<p>如下图，用一个neuron识别红框中的beak，即能大概率认为图片中有bird。</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyitKJ.md.png" alt="JyitKJ.md.png" style="zoom:75%;" />
+</li>
+<li><p>The same patterns appear in different regions. They can <strong>use the same set of parameters.</strong></p>
+<p>【同样的pattern可能出现在图片的不同位置。pattern几乎相同，因此可以用同一组参数。】</p>
+<p>如下图，两个neuron识别两个不同位置的beak。被识别的beak几乎无差别，因此neuron的参数可以是相同的。</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyiNr9.md.png" alt="JyiNr9.md.png" style="zoom:50%;" />
+</li>
+<li><p><strong>Subsampling</strong> the pixels will not change the object.</p>
+<p>【一张图片是由许多pixel组成的，如下图，如果去掉图片的所有奇数行偶数列的pixel，图片内容几乎无差别。并且，Subsample pixels，即减少了输入的size，也可以减少NN的参数数量。】</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyiJv4.md.png" alt="JyiJv4.md.png" style="zoom:50%;" />
+
+</li>
+</ol>
+<h1 id="The-whole-CNN"><a href="#The-whole-CNN" class="headerlink" title="The whole CNN"></a>The whole CNN</h1><p>CNN的架构如下图。</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyiG2F.md.png" alt="JyiG2F.md.png" style="zoom:67%;" />
+
+<p>一张图片经过多次Convolution、Max Pooling得到新的image，再将新的image Flatten（拉直）得到一组提取好的features，将这组features放入前馈神经网络。</p>
+<p>Convolution满足图片识别的：</p>
+<ul>
+<li>Property 1 : Some patterns are much smaller than the whole image.</li>
+<li>Property 2 : The same patterns appear in different regions.</li>
+</ul>
+<p>Max Pooling满足图片识别的：</p>
+<ul>
+<li>Property 3 : Subsamplingthe pixels will not change the object.</li>
+</ul>
+<h2 id="CNN-Convolution"><a href="#CNN-Convolution" class="headerlink" title="CNN-Convolution"></a>CNN-Convolution</h2><p>一张简单的黑白图片如下图，0为白色，1为黑色。</p>
+<img src="https://s1.ax1x.com/2020/04/25/Jyi88U.md.png" alt="Jyi88U.md.png" style="zoom:33%;" /> 
+
+<p>如果图片是彩色的，即用RGB三原色来表示，用三个matrix分别表示R、G、B的值，如下图：</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyiMEq.md.png" alt="JyiMEq.md.png" style="zoom:50%;" />
+
+<p>下文中，以黑白图举例。</p>
+<h3 id="Property-1"><a href="#Property-1" class="headerlink" title="Property 1"></a>Property 1</h3><p>设计Filer matrix满足Property 1，如下图：</p>
+<img src="https://s1.ax1x.com/2020/04/25/Jyi3CT.png" alt="Jyi3CT.png" style="zoom:33%;" /> 
+
+<p>上图中，filter的大小是3*3，可以检测到小区域的某个pattern。</p>
+<p>每个filter的参数都是NN中的参数，需要learned。</p>
+<p>如果是彩色图片，filter应该是3张3*3matrix组成的，分别代表R、G、B的filter。</p>
+<h3 id="Property-2"><a href="#Property-2" class="headerlink" title="Property 2"></a>Property 2</h3><p>为了满足Property 2，filter可以在图片中移动。设置stride，即每次filter移动的步长。</p>
+<p>filter与覆盖图片的位置做内积，需要走完整张图片，最后得到一张feature map。</p>
+<p>下图为stride=1的convolution结果：</p>
+<img src="https://s1.ax1x.com/2020/04/25/Jyil5V.md.png" alt="Jyil5V.md.png" style="zoom:50%;" />
+
+<p>Convolution layer（卷积层）有几个filter，就会得到几张feature maps。</p>
+<h3 id="Convolution-v-s-Fully-Connected"><a href="#Convolution-v-s-Fully-Connected" class="headerlink" title="Convolution v.s. Fully Connected"></a>Convolution v.s. Fully Connected</h3><p><strong>Fully Connected:</strong> </p>
+<p>如果用全连接的方式做图片识别，图片的每一个pixel都要和第一层的所有neurons连接，需要大量参数。</p>
+<p>如下图：</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyinDs.md.png" alt="JyinDs.md.png" style="zoom:70%;" />
+
+<hr>
+<p><strong>Convolution:</strong> </p>
+<p>而在Convolution中，把feature map中的每一个值作为neuron的输出，因此图片中只有部分pixels会和第一层的第一个neuron连接，而不是全部pixels。</p>
+<p>对于一个3*3的filter，一个neuron的连接如下：</p>
+<img src="https://s1.ax1x.com/2020/04/25/Jyiubn.md.png" alt="Jyiubn.md.png" style="zoom:70%;" />
+
+<p>filter中的值是连接参数，则每一个neuron只需要与3*3个input连接，与全连接相比减少了大量参数。</p>
+<p><strong>shared weights</strong> </p>
+<p>filter在图中移动时，filter的参数不变，即第二个neuron的连接参数和第一个neuron的连接参数是相同的，连接图如下：</p>
+<img src="https://s1.ax1x.com/2020/04/25/Jyimuj.md.png" alt="Jyimudj.md.png" style="zoom:70%;" />
+
+<p>通过filter实现了shared weights（参数共享），更大幅度减少了参数数量。</p>
+<h2 id="CNN-Max-Pooling"><a href="#CNN-Max-Pooling" class="headerlink" title="CNN-Max Pooling"></a>CNN-Max Pooling</h2><p>Max Pooling：将convolution layer的neuron作为输入，neuron的activation function其实就是Maxout（Maxout介绍见 <a href="#">Post not found: tips-for-DL/#Maxout 这篇</a> 的介绍）。</p>
+<p>将convolution layer得到的feature map做Max pooling（池化），即取下图中每个框中的最大值。</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyiZvQ.md.png" alt="JyifZvddQ.md.png" style="zoom:50%;" />
+
+<p>如下图，6*6的image经过Convolution layer 和 Max Pooling layer后，得到了new but smaller image，新的image的由两层channel组成，每层channel都是2 * 2的image。</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyiAC8.md.png" alt="JyiAC8.md.png" style="zoom:67%;" />
+
+<p>一个image每经过一次Convolution layer 和 Max Pooling layer，都会得到a new image。</p>
+<p>This new image is smaller than the origin image. And the number of channel (of the new image) is the number of filters.</p>
+<p>举个例子：</p>
+<p>Convolution layer有25个filters，再经过Max Pooling，得到的新的image有25 个channel。</p>
+<p>再重复一次Convolution 和Max Pooling，新的Convolution layer也有25个filters，再经过Max Pooling，得到的新的image有多少个channel呢？</p>
+<p>答案是25个channel。</p>
+<p><strong>注意</strong> ：在第二次Convolution中，image有depth，depth=25。因此在convolution中，filter其实是一个cubic，也有depth，depth=image-depth=25，再做内积。</p>
+<p>因此，新的image的channel数是等于filter数的。</p>
+<h2 id="Flatten"><a href="#Flatten" class="headerlink" title="Flatten"></a>Flatten</h2><p>Flatten很好理解，将最后得到的新的image 拉直（Flatten）为一个vector。</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyiE8S.md.png" alt="Jy8iE8S.md.png" style="zoom:50%;" />
+
+<p>拉直后的vector是一组提取好的features，作为 前馈神经网络的输入。</p>
+<h2 id="zero-padding"><a href="#zero-padding" class="headerlink" title="zero padding"></a>zero padding</h2><p>如何让卷积后的图像不变小？</p>
+<p>答案就是zero padding，在原图的padding填0，再做卷积。</p>
+<p>zero-padding后如下图：</p>
+<img src="https://s1.ax1x.com/2020/10/17/0LvkR0.png" alt="0LvdkR0.png" style="zoom:40%;" />
+
+<p>卷积后，图像大小不变：</p>
+<img src="https://s1.ax1x.com/2020/10/17/0LvZsU.png" alt="0LvZdsU.png" style="zoom:40%;" />
+
+
+
+<h1 id="What-dose-CNN-learn"><a href="#What-dose-CNN-learn" class="headerlink" title="What dose CNN learn"></a>What dose CNN learn</h1><p>为什么CNN能够学习pattern，最终达到识别图像的目的？</p>
+<h2 id="Filter"><a href="#Filter" class="headerlink" title="Filter"></a>Filter</h2><p>在下图CNN过程中，我们先分析能从Convolution layer的filter能够学到什么？</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyiF4f.md.png" alt="JyiF4f.md.png" style="zoom:33%;" />
+
+<p>每个filter本质上是一组shared weights 的neuron。</p>
+<p>因此，定义这组filter的激活程度，即：</p>
+<p> Degree of the activation of the k-th filter: $a^k=\sum_{i=1}^{11}\sum_{j=1}^{11}a_{ij}^{k}$ .</p>
+<p>目标是找到使k-th filter激活程度最大的输入image，即</p>
+<p>$x^{*}=\arg \max _{x} a^{k}$ ，(method :gradient descent).</p>
+<p>部分结果如下图：</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyiVgg.md.png" alt="JyiVgg.md.png" style="zoom:33%;" /> 
+
+<p>(每一张图都代表一个让filter激活程度最大的 $x$)</p>
+<p>上图中，找到使filter激活程度最大的image，即上图中每个filter可以检测一定的条纹，只有当图像中有该条纹，filter（一组neuron）的激活程度（即输出）才能达到最大。</p>
+<h2 id="Neuron（Hidden-layer）"><a href="#Neuron（Hidden-layer）" class="headerlink" title="Neuron（Hidden layer）"></a>Neuron（Hidden layer）</h2><p>这里的neuron指前馈神经网络中的neuron，如下图的 $a_j$ :</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyiiUP.png" alt="JyiiUP.png" style="zoom:50%;" />
+
+<p>目标：找到使neuron的输出最大的输入image，即：</p>
+<p>$x^{*}=\arg \max _{x} a^{j}$ .</p>
+<p>部分结果如下：</p>
+<img src="https://s1.ax1x.com/2020/04/25/JykouQ.md.png" alt="JykouQ.md.png" style="zoom:33%;" /> 
+
+<p>（每一张图代表一个neuron)</p>
+<p>在上图中，感觉输入像一个什么东西吧emmmm。</p>
+<p>但和filter学到的相比，neuron学到的不仅是图中的小小的pattern（比如条纹、鸟喙等），neuron学的是看整张图像什么。</p>
+<h2 id="Output（Output-layer）"><a href="#Output（Output-layer）" class="headerlink" title="Output（Output layer）"></a>Output（Output layer）</h2><p>再用同样的方法，看看输出层的neuron学到了什么，如下图的 $y_i$  ：</p>
+<img src="https://s1.ax1x.com/2020/04/25/Jyk5jg.png" alt="Jyk5jg.png" style="zoom:33%;" />
+
+<p>在手写数字辨识中 $y_i$ 是数字为 $i$ 的概率，因此目标是：找到一个使输出是数字 $i$ 概率最大的输入image，即：</p>
+<p>$x^{*}=\arg \max _{x} y^{i}$ .</p>
+<p>结果如下图：</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyiSud.md.png" alt="JyiSud.md.png" style="zoom:33%;" /> 
+
+<p>结果和我们期望相差甚远，根本不能辨别以上图片是某个数字。</p>
+<p>这其实也是DNN的一个特点: Deep Neural Networks are Easily Fooled [1]，即NN学到的东西往往和人类学到的东西是不一样的。</p>
+<h2 id="CNN"><a href="#CNN" class="headerlink" title="CNN"></a>CNN</h2><p>所以CNN到底学到了什么？</p>
+<p>上文中，output 学到的都是一团密密麻麻杂乱的像素点，根本不像数字。</p>
+<p>但是，再考虑手写数字image的特点：图片中应该有少量模式，大片空白部分。</p>
+<p>因此目标改进为：  $x^{*}=\arg \max _{x}\left(y^{i}+\sum_{i, j}\left|x_{i j}\right|\right)$  </p>
+<p>$\sum_{i, j}\left|x_{i j}\right|$ 就像是regularization的限制。</p>
+<p>结果如下：</p>
+<img src="https://s1.ax1x.com/2020/04/25/Jyi9HI.md.png" alt="Jyi9HI.md.png" style="zoom:33%;" /> 
+
+<p>（注：图中白色为墨水，黑色为空白）</p>
+<h1 id="Application"><a href="#Application" class="headerlink" title="Application"></a>Application</h1><h2 id="Deep-Dream"><a href="#Deep-Dream" class="headerlink" title="Deep Dream"></a>Deep Dream</h2><p>CNN exaggerates what it sees.</p>
+<p>CNN可以夸大图片中他所看到的东西。</p>
+<p>比如：</p>
+<p>可以把下图</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyiPEt.md.png" alt="JyiPEt.md.png" style="zoom:50%;" />  
+
+<p>变成下图（emmmm看着有点难受）</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyPxjH.md.png" alt="JyPxjH.md.png" style="zoom:50%;" /> 
+
+<p>附上生成deep dream image的网站<a target="_blank" rel="noopener" href="http://deepdreamgenerator.com/">[2]</a> .</p>
+<h2 id="Deep-Style-3"><a href="#Deep-Style-3" class="headerlink" title="Deep Style[3]"></a>Deep Style<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1508.06576">[3]</a></h2><p>Given a photo, make its style like famous paintings.</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyPX9O.md.png" alt="JyPX9O.md.png" style="zoom:50%;" />
+
+<p>上图中，用一个CNN学习图中的content，用另一个CNN学习风格图中的style。</p>
+<p>再用一个CNN使得输入的图像content像原图，风格像另一张图。</p>
+<h2 id="Playing-Go"><a href="#Playing-Go" class="headerlink" title="Playing Go"></a>Playing Go</h2><p>CNN 还可以用在下围棋中，如下图，输入是19 * 19的围棋局势（matrix/image），通过CNN，学出下一步应该走哪？</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyPL4K.md.png" alt="JyPL4K.md.png" style="zoom:50%;" />
+
+<h3 id="Why-CNN-playing-Go"><a href="#Why-CNN-playing-Go" class="headerlink" title="Why CNN playing Go?"></a>Why CNN playing Go?</h3><p>下围棋满足以下两个property：</p>
+<ol>
+<li><p>Some patterns are much smaller than the whole image.</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyPou9.png" alt="JyPou9.png" style="zoom:50%;" /> 
+
+<p>（围棋新手，博主只下赢过几次hhh)</p>
+<p>如果白棋棋手，看到上图的pattern，上图的白子只有一口气了，被堵住就会被吃掉，那白棋棋手大概率会救那个白子，下在白棋的下方。</p>
+<p>Alpha Go uese 5 * 5 for first layer.</p>
+</li>
+<li><p>The same patterns appear in different regions.</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyP7H1.md.png" alt="JyP7H1.md.png" style="zoom:50%;" /> 
+
+</li>
+</ol>
+<hr>
+<p>但如何解释CNN的另一结构——Max Pooling？</p>
+<p>因为围棋的棋谱matrix不像image的pixel，subsample后，围棋的棋谱就和原棋谱完全不像了。</p>
+<p>Alpha Go的论文中：Alpha Go并没有用Max Pooling。</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyPbAx.md.png" alt="JyPbAx.md.png" style="zoom:75%;" />
+
+<p>所以，可以根据要训练的东西调整CNN模型。</p>
+<h2 id="Speech"><a href="#Speech" class="headerlink" title="Speech"></a>Speech</h2><p>可以用CNN学习<a href="[https://zh.wikipedia.org/wiki/%E6%97%B6%E9%A2%91%E8%B0%B1](https://zh.wikipedia.org/wiki/时频谱)">Spectrogram</a> ，即识别出这一时段说的是什么话。</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyPqN6.md.png" alt="JyPqN6.md.png" style="zoom:75%;" />
+
+<h2 id="Text"><a href="#Text" class="headerlink" title="Text"></a>Text</h2><p>CNN还可以用在文本的情感分析中，对句子中每个word embedding后，通过CNN，学习sentence表达的是negative 还是positive还是neutral的情绪。</p>
+<img src="https://s1.ax1x.com/2020/04/25/JyPTBR.md.png" alt="JyPTBR.md.png" style="zoom:75%;" />
+
+
+
+<h3 id="More"><a href="#More" class="headerlink" title="More"></a>More</h3><p>（挖坑…生命很漫长，学无止境QAQ）</p>
+<ul>
+<li><p>The methods of visualization in these slides：</p>
+<p> <a target="_blank" rel="noopener" href="https://blog.keras.io/how-convolutional-neural-networks-see-the-world.html">https://blog.keras.io/how-convolutional-neural-networks-see-the-world.html</a></p>
+</li>
+<li><p>More about visualization：</p>
+<p><a target="_blank" rel="noopener" href="http://cs231n.github.io/understanding-cnn/">http://cs231n.github.io/understanding-cnn/</a></p>
+</li>
+<li><p>Very cool CNN visualization toolkit</p>
+<p><a target="_blank" rel="noopener" href="http://yosinski.com/deepvis">http://yosinski.com/deepvis</a></p>
+<p><a target="_blank" rel="noopener" href="http://scs.ryerson.ca/~aharley/vis/conv/">http://scs.ryerson.ca/~aharley/vis/conv/</a></p>
+</li>
+<li><p>The 9 Deep Learning Papers You Need To Know About</p>
+<p><a target="_blank" rel="noopener" href="https://adeshpande3.github.io/adeshpande3.github.io/The-9-Deep-Learning-Papers-You-Need-To-Know-About.html">https://adeshpande3.github.io/adeshpande3.github.io/The-9-Deep-Learning-Papers-You-Need-To-Know-About.html</a></p>
+</li>
+<li><p>How to let machine draw an image</p>
+<ul>
+<li><p>PixelRNN</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1601.06759">https://arxiv.org/abs/1601.06759</a></p>
+</li>
+<li><p>Variation Autoencoder (VAE)</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1312.6114">https://arxiv.org/abs/1312.6114</a></p>
+</li>
+<li><p>Generative Adversarial Network (GAN)</p>
+<p><a target="_blank" rel="noopener" href="http://arxiv.org/abs/1406.2661">http://arxiv.org/abs/1406.2661</a></p>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li><p>Deep Neural Networks are Easily Fooled： <a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=M2IebCN9Ht4">https://www.youtube.com/watch?v=M2IebCN9Ht4</a></p>
+</li>
+<li><p>deep dream generator: <a target="_blank" rel="noopener" href="http://deepdreamgenerator.com/">http://deepdreamgenerator.com/</a></p>
+</li>
+<li><p>A Neural Algorithm of Artistic Style: <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1508.06576">https://arxiv.org/abs/1508.06576</a></p>
+</li>
+</ol>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「机器学习-李宏毅」：Convolution Neural Network（CNN）</p><p><a href="https://f7ed.com/2020/04/25/CNN/">https://f7ed.com/2020/04/25/CNN/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2020-04-25</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2020-10-17</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习, </a><a class="link-muted" rel="tag" href="/tags/DeepLearning/">DeepLearning, </a><a class="link-muted" rel="tag" href="/tags/CNN/">CNN </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/06/11/rnn/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「机器学习-李宏毅」：Recurrent Neural Network（RNN）</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2020/04/21/tips-for-DL/"><span class="level-item">「机器学习-李宏毅」：Tips for Deep Learning</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "f5e9a84cf57024cb2f497397817fce1e",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">70</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">135</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Why-CNN-for-Image"><span class="level-left"><span class="level-item">1</span><span class="level-item">Why CNN for Image?</span></span></a></li><li><a class="level is-mobile" href="#The-whole-CNN"><span class="level-left"><span class="level-item">2</span><span class="level-item">The whole CNN</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#CNN-Convolution"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">CNN-Convolution</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Property-1"><span class="level-left"><span class="level-item">2.1.1</span><span class="level-item">Property 1</span></span></a></li><li><a class="level is-mobile" href="#Property-2"><span class="level-left"><span class="level-item">2.1.2</span><span class="level-item">Property 2</span></span></a></li><li><a class="level is-mobile" href="#Convolution-v-s-Fully-Connected"><span class="level-left"><span class="level-item">2.1.3</span><span class="level-item">Convolution v.s. Fully Connected</span></span></a></li></ul></li><li><a class="level is-mobile" href="#CNN-Max-Pooling"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">CNN-Max Pooling</span></span></a></li><li><a class="level is-mobile" href="#Flatten"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">Flatten</span></span></a></li><li><a class="level is-mobile" href="#zero-padding"><span class="level-left"><span class="level-item">2.4</span><span class="level-item">zero padding</span></span></a></li></ul></li><li><a class="level is-mobile" href="#What-dose-CNN-learn"><span class="level-left"><span class="level-item">3</span><span class="level-item">What dose CNN learn</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Filter"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">Filter</span></span></a></li><li><a class="level is-mobile" href="#Neuron（Hidden-layer）"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">Neuron（Hidden layer）</span></span></a></li><li><a class="level is-mobile" href="#Output（Output-layer）"><span class="level-left"><span class="level-item">3.3</span><span class="level-item">Output（Output layer）</span></span></a></li><li><a class="level is-mobile" href="#CNN"><span class="level-left"><span class="level-item">3.4</span><span class="level-item">CNN</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Application"><span class="level-left"><span class="level-item">4</span><span class="level-item">Application</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Deep-Dream"><span class="level-left"><span class="level-item">4.1</span><span class="level-item">Deep Dream</span></span></a></li><li><a class="level is-mobile" href="#Deep-Style-3"><span class="level-left"><span class="level-item">4.2</span><span class="level-item">Deep Style[3]</span></span></a></li><li><a class="level is-mobile" href="#Playing-Go"><span class="level-left"><span class="level-item">4.3</span><span class="level-item">Playing Go</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Why-CNN-playing-Go"><span class="level-left"><span class="level-item">4.3.1</span><span class="level-item">Why CNN playing Go?</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Speech"><span class="level-left"><span class="level-item">4.4</span><span class="level-item">Speech</span></span></a></li><li><a class="level is-mobile" href="#Text"><span class="level-left"><span class="level-item">4.5</span><span class="level-item">Text</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#More"><span class="level-left"><span class="level-item">4.5.1</span><span class="level-item">More</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Reference"><span class="level-left"><span class="level-item">5</span><span class="level-item">Reference</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

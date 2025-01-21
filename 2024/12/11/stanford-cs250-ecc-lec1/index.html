@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Algebraic ECCs」: Lec1 Basics of ECCs - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="In this series, I will be learning Algebraic Error Correcting Codes, lectured by Mary Wootters. The lecture videos are available here. Feedback and sugguestions are always welcome! ^ - ^     To"><meta property="og:type" content="blog"><meta property="og:title" content="「Algebraic ECCs」: Lec1 Basics of ECCs"><meta property="og:url" content="https://f7ed.com/2024/12/11/stanford-cs250-ecc-lec1/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="In this series, I will be learning Algebraic Error Correcting Codes, lectured by Mary Wootters. The lecture videos are available here. Feedback and sugguestions are always welcome! ^ - ^     To"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/stanford-cs250-ecc-lec1-thumbnail.png"><meta property="article:published_time" content="2024-12-10T16:00:00.000Z"><meta property="article:modified_time" content="2024-12-26T06:45:12.835Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Cryptography"><meta property="article:tag" content="ECC"><meta property="article:tag" content="Hamming Bound"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/stanford-cs250-ecc-lec1-thumbnail.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2024/12/11/stanford-cs250-ecc-lec1/"},"headline":"「Algebraic ECCs」: Lec1 Basics of ECCs","image":["https://f7ed.com/gallery/thumbnails/stanford-cs250-ecc-lec1-thumbnail.png"],"datePublished":"2024-12-10T16:00:00.000Z","dateModified":"2024-12-26T06:45:12.835Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"In this series, I will be learning Algebraic Error Correcting Codes, lectured by Mary Wootters. The lecture videos are available here. Feedback and sugguestions are always welcome! ^ - ^     To"}</script><link rel="canonical" href="https://f7ed.com/2024/12/11/stanford-cs250-ecc-lec1/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Algebraic ECCs」: Lec1 Basics of ECCs</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2024-12-10T16:00:00.000Z" title="2024-12-10T16:00:00.000Z">2024-12-11</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2024-12-26T06:45:12.835Z" title="2024-12-26T06:45:12.835Z">2024-12-26</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Cryptography-ECCs/">Cryptography-ECCs</a></span><span class="level-item"><i class="far fa-clock"></i> 18 minutes read (About 2698 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><article class="message message-immersive is-info">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="message-body">
+<i class="fas fa-info-circle mr-2"></i>
+    In this <a href="/categories/Cryptography-ECCs">series</a>, I will be learning <strong>Algebraic Error Correcting Codes</strong>, lectured by Mary Wootters. The lecture videos are available <a target="_blank" rel="noopener" href="https://youtube.com/playlist?list=PLkvhuSoxwjI_UudECvFYArvG0cLbFlzSr">here</a>. Feedback and sugguestions are always welcome! ^ - ^
+</div>
+</article>
+
+
+<p><b>Topics Covered:</b></p>
+<ul>
+<li>Basic problem in coding theory</li>
+<li>Code and codeword</li>
+<li>Hamming distance and minimum distance</li>
+<li>Rate</li>
+<li><strong>Hamming bound</strong> on trade-off of the rate and distance</li>
+</ul>
+<span id="more"></span>
+
+<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>This course is named “Algebraic Error Correcting Codes”, containing two parts:</p>
+<ol>
+<li>Error Correcting Codes (ECC): ECC are a fundamental tool for communication, storage, complexity theory, algorithm design, cryptography, pseudorandomness and etc.</li>
+<li>Algebraic: algebraic techniques are a fundamental tool for designing ECCs.</li>
+</ol>
+<h1 id="Basic-Problem-in-Coding-Theory"><a href="#Basic-Problem-in-Coding-Theory" class="headerlink" title="Basic Problem in Coding Theory"></a>Basic Problem in Coding Theory</h1><p>Let’s start with the basic problem in coding theory:</p>
+<p>We encode a message $x$ of length $k$ into a codeword $c$ of length $n$, which adds some redundancy when $n&gt;k$.  When we transmit or store this codeword, something bad might happen, i.e. some bits might be corrupted. Thus, we are left with a corrupted codeword $\tilde{c}$.</p>
+<img src="https://s21.ax1x.com/2024/12/12/pAb1sKK.png" alt="image.png" style="zoom:50%;" />
+
+<p>The <strong>goal</strong> is to find (something about) the message $x$ given the corrupted codeword $\tilde{c}$.</p>
+<p>This has many applications, including communication and storage:</p>
+<p><u>Application1: Communication</u></p>
+<img src="https://s21.ax1x.com/2024/12/11/pAHvPE9.png" alt="image.png" style="zoom:50%;" />
+
+<ol>
+<li>Suppose Alice has a message  $x\in \{0,1\}^{k}$ and wants to sends it to Bob.</li>
+<li>In order to add some redundancy, she encodes the message into a codeword $c$ and sends the codeword through a noisy channel.</li>
+<li>After Alice passes $c$ through the noisy channel, Bob receives $\tilde{c}$ and tries to figure out the original message $x$ that Alice intended to send. </li>
+</ol>
+<p><u>Application2: Storage</u></p>
+<img src="https://s21.ax1x.com/2024/12/11/pAHviNR.png" alt="image.png" style="zoom:50%;" />
+
+<ol>
+<li>Suppose $x$ is a file we want to store.</li>
+<li>Instead of storing $x$ directly, we encode it as a codeword $c$, introducing redundancy.</li>
+<li>If $c$ is stored on a CD or in a RAID array, something bad, like a fire, might happen.</li>
+<li>However, the owner still wants to recover the original file $x$.</li>
+</ol>
+<hr>
+<p>Based on the above two applications, we summarize four things we care about in the coding schemes:</p>
+<p><font color=blue><u><b> Things We Care About (Take 1): </b></u></font> </p>
+<ol>
+<li><p>We should be able to handle <strong>SOMETHING BAD</strong>.</p>
+</li>
+<li><p>We should be able to recover <strong>WHAT WE WANT TO KNOW</strong> about $x$.</p>
+</li>
+<li><p>We want to <strong>MINIMIZE OVERHEAD</strong>.</p>
+<p> Jumping ahead, the overhead is defined as the quantity $k/n\in (0, 1]$, which should be as big as possible.</p>
+</li>
+<li><p>We want to do all this <strong>EFFICIENTLY</strong>.</p>
+</li>
+</ol>
+<p>The question about these things are: what is the best <u><strong>trade-off</strong></u> between 1-4?</p>
+<p>The trade-off depends on how we model things:</p>
+<ol>
+<li>What is something bad?</li>
+<li>What exactly do we want to know about $x$?<br>All of $x$ or the first bit of $x$?</li>
+<li>What counts as efficient? </li>
+</ol>
+<p>This lecture will gives one way of answering these questions and there are many legit ways.</p>
+<p>Now, let’s give some formal definitions for a code.</p>
+<h1 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h1><p>Let $\Sigma$ be any finite set and let $n&gt;0$ be a positive integer. </p>
+ <article class="message is-info"> <div class="message-header">  Code:   </div> <div class="message-body">   A <b>code</b> $\mathcal{C}$ of <u>block length</u> $n$ over an <u>alphabet</u> $\Sigma$ is a subset $\mathcal{C}\subseteq\Sigma^n$.  An element $c\in \mathcal{C}$ is called a <b>codeword</b>.   </div> </article> 
+
+<article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>  Sometimes, block length is referred to simply as length. </div> </article>
+
+<p>So far, this is not a very interesting definition. A descriptive example for this definition is provided below.</p>
+<p><u><b>Example 1:</b></u></p>
+<img src="https://s21.ax1x.com/2024/12/11/pAHvpB4.png" alt="image.png" style="zoom:50%;" />
+
+<p>Another example is slightly more interesting.</p>
+<p><u><b>Example 2:</b></u></p>
+<p>The following is a set of 7 vectors, which forms a binary code of length 4 over $\Sigma=\{0, 1\}$.</p>
+<img src="https://s21.ax1x.com/2024/12/11/pAHvSuF.png" alt="image.png" style="zoom:50%;" />
+
+<p>We can relate this code to the communication between Alice and Bob mentioned earlier. </p>
+<img src="https://s21.ax1x.com/2024/12/11/pAHv9HJ.png" alt="image.png" style="zoom:50%;" />
+
+<p>Thus, the code $\mathcal{C}$ is the image of this map, i.e. $\mathcal{C}=\mathrm{Im(ENC)}$. In other words, $\mathcal{C}$ is the <u>set of all codewords that can be obtained using this encoding map.</u></p>
+<p>Example 2 can actually be used to <u>correct one erasure</u> (something bad). </p>
+<p>An <strong>erasure</strong> means we know which bit got erased, but we don’t know its original value. Based on the map definition, the missing bit must be 1.</p>
+<img src="https://s21.ax1x.com/2024/12/11/pAHvA9x.png" alt="image.png" style="zoom:50%;" />
+
+<p>Furthermore, it can also be used to <u>detect one error</u> (something bad).</p>
+<p>An <strong>error</strong> means we know one bit my have been changed, but we don’t know which one.</p>
+<img src="https://s21.ax1x.com/2024/12/11/pAHvF41.png" alt="image.png" style="zoom:50%;" />
+
+<p>To sum up, we say that the code in Example 2 can correct one erasure or detect one error. But it <strong>cannot</strong> correct one error.</p>
+<p>Let’s see a code that can correct one error.</p>
+<p><u><b>Example 3:</b></u></p>
+<img src="https://s21.ax1x.com/2024/12/11/pAHvE36.png" alt="image.png" style="zoom:50%;" />
+
+<p>Given this encoding map, we can define a code $\mathcal{C}=\mathrm{Im(ENC)}$ . Hence, $\mathcal{C}\subseteq\{0,1\}^7$ is a binary code of length 7.</p>
+<p>This code has a nice way to visualize as three overlapping circles.</p>
+<img src="https://s21.ax1x.com/2024/12/12/pAb1a59.png" alt="image.png" style="zoom:50%;" />
+
+<p>We place the messages $x_1, x_2, x_3, x_4$ in the middle and the remaining spaces in the circles correspond to the <strong>parity bits</strong>, which are the sum of the other bits in each circle. This ensures that <u>the sum of the bits in each circle equals 0.</u></p>
+<p>With these parity bits, this code can correct one error.</p>
+<hr>
+<p>With these circles in mind, we can solve the following puzzle more easily.</p>
+<img src="https://s21.ax1x.com/2024/12/12/pAb1Bgx.png" alt="image.png" style="zoom:50%;" />
+
+<p>In a legit codeword, all three circles should sum to 0. Here, both the green and red circles are messed up while the blue circle is correct. Therefore,  $\tilde{c}_3$ must be flipped.</p>
+<p>But this solution with the help of circles seems pretty ad hoc. In order to make the solution less ad hoc, we’ll introduce more definitions to formalize the solution and flesh out the four things we care about for ECCs mentioned before.</p>
+<h1 id="Hamming-Distance"><a href="#Hamming-Distance" class="headerlink" title="Hamming Distance"></a>Hamming Distance</h1><p>We first give the definition of hamming distance, which equals to the number of positions on which two vectors $x, y\in \Sigma^n$ differ.</p>
+ <article class="message is-info"> <div class="message-header">  Hamming Distance:  </div> <div class="message-body">  The <b>Hamming Distance</b> between $x,y\in \Sigma^n$ is  $$ \Delta(x,y)=\sum_{i=1}^n \mathbb{1}(x_i\ne y_i) $$   </div> </article> 
+
+
+
+<p>Then we can define the relative hamming distance, which is the hamming distance normalized by $n$. It’s the fraction of positions on which two vectors differ.</p>
+ <article class="message is-info"> <div class="message-header">  Relative Hamming Distance:  </div> <div class="message-body">  The <b>Relative Hamming Distance</b> between $x,y\in \Sigma^n$ is  $$ \delta(x,y)=\frac1 n \sum_{i=1}^n \mathbb{1}(x_i\ne y_i)=\frac{\Delta(x,y)}{n} $$    </div> </article> 
+
+<p>Another useful definition is the minimum distance, which is the minimum hamming distance over all distinct pairs. Jumping ahead, we will see that the code with <u>large minimum distance can be used to correct errors.</u></p>
+ <article class="message is-info"> <div class="message-header">  Minimum Distance:  </div> <div class="message-body">  The <b>Minimum Distance</b> of a code $\mathcal{C}\subseteq \Sigma^n$ is  $$ \min_{c\ne c'\in \mathcal{C}}\Delta(c,c') $$ Sometimes, the minimum distance is referred to simply as <b>distance</b>.   </div> </article> 
+
+
+
+<article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>  Aside: The hamming distance is a metric, which obeys the triangle inequality $\Delta(x, z)\le \Delta(x, y) + \Delta(y, z)$. </div> </article>
+
+
+
+<p><font color=blue><u><b> Claim: </b></u></font></p>
+<p>The code in Example 3 has minimum distance 3.</p>
+<article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>  Now we can convince ourselves the claim is true with the circles in mind. But we’ll see a much less ad hoc way to prove the distance in Lecture 2. </div> </article>
+
+<p>If this claim is true, it explains why that code can correct one error using  the triangle inequality for hamming distance. </p>
+<p>The minimum distance equal to 3 means that the hamming distance $\Delta(c,c’)\ge 3$ for every distinct pair $c, c’\in \mathcal{C}$. </p>
+<p>As depicted in the following figure, suppose the corrupted codeword we received is $\tilde{c}$ and $c$ is the correct code should be $c$. There is another codeword $c’\in \mathcal{C}$.</p>
+<img src="https://s21.ax1x.com/2024/12/12/pAb1081.png" alt="image.png" style="zoom:60%;" />
+
+<p>We know that the codeword $\tilde{c}$ has exactly one error so the hamming distance $\Delta(\tilde{c}, c)=1$. The triangle inequality tells us:</p>
+<p>$$<br>3\le \Delta(c,c’)\le \Delta(c, \tilde{c}) + \Delta(\tilde{c}, c’)<br>$$</p>
+<p>that the hamming distance $\Delta(\tilde{c}, c’)\ge 2$ for every codeword $c’$ other than the correct codeword $c$.</p>
+<p>Thus, the correct codeword $c\in \mathcal{C}$ is uniquely defined by “the one that is closest to $\tilde{c}$”.</p>
+<h1 id="Minimum-Distance-Proxy-for-Robustness"><a href="#Minimum-Distance-Proxy-for-Robustness" class="headerlink" title="Minimum Distance: Proxy for Robustness"></a>Minimum Distance: Proxy for Robustness</h1><p>The point of this discussion is that the minimum distance is a reasonable proxy for robustness.</p>
+<p>To be more specific, in example 2, the code had <u>minimum distance 2</u> and could <u>correct 1 erasure and detect 1 error</u>.</p>
+<p>In example 3, the code had <u>minimum distance 3</u> and could <u>correct 1 error</u>.</p>
+<p>More generally, <strong>a code with minimum distance $d$</strong> can:</p>
+<ol>
+<li>correct $\le d-1$ erasures</li>
+<li>detect $\le d-1$ errors</li>
+<li>correct $\lfloor \frac{d-1}2\rfloor$ errors</li>
+</ol>
+<p>For point 1 and point 3, the (inefficient) <strong>algorithm</strong> is <u>“if you see $\tilde{c}$, return $c\in \mathcal{C}$ that’s closest to $\tilde{c}$.</u> </p>
+<p>For point 2, the (inefficient) <strong>algorithm</strong> is <u>“if $\tilde{c}\notin \mathcal{C}$, say that something wrong.”</u></p>
+<p>To understand why the algorithm works, we look at the following picture:</p>
+<img src="https://s21.ax1x.com/2024/12/12/pAb1Dv6.png" alt="image.png" style="zoom:50%;" />
+
+<ol>
+<li><p><font color = "red">Red Points</font> represent the codewords $c, c’\in \mathcal{C}$.</p>
+</li>
+<li><p><font color=orange> Orange Circle</font> correspond to the <strong>hamming balls</strong> of radius $\lfloor \frac{d-1}{2} \rfloor$ centered at codewords. These hamming balls are <u>disjoint</u> because the minimum distance is $d$.</p>
+ <article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>  This <b>hamming ball</b> around a codeword $c$ is indeed <u>a set of points</u> $\{x\in \Sigma^n:\Delta(c, x)\le \lfloor\frac{d-1}{2} \rfloor\}$. </div> </article></li>
+<li><p><font color=green>Green Circles</font> correspond to the hamming balls of radius $d-1$ centered at codewords. These hamming balls are not disjoint, but they each contain exactly one codeword.</p>
+</li>
+</ol>
+<p>The hamming balls help explain the (inefficient) algorithm we mention before.</p>
+<ul>
+<li><p>Correct  $\lfloor \frac{d-1}2\rfloor$ errors:<br>If $c$ is the <font color=red>“correct” codeword</font> (the left red point) and $\le \lfloor \frac{d-1}{2}\rfloor$ errors are introduced, we may end up with <font color=purple> $\tilde{c}_1$ (the purple point)</font> within its <font color=orange> orange circle</font>. Since the <font color=orange> orange circle</font> are disjoint, the algorithm can correct codeword $c$ from $\tilde{c}_1$.</p>
+</li>
+<li><p>Detect  $d-1$ errors:</p>
+<p>  If $\le d-1$ errors are introduced, we may end up with <font color=pink> $\tilde{c}_2$ (the pink point)</font> within its <font color=green>green circles</font>. Now it’s possible that $\tilde{c}_2$ came from $c$ or that it came from $c’$; we can’t tell. However, since each <font color=green>green circles</font> <u>only contain exactly one codeword, meaning other codewords has to live outside of this ball</u>, we can tell that something wrong.</p>
+</li>
+<li><p>Correct $d-1$ erasures:</p>
+<p>  If $\le d-1$ erasures are introduced in $\tilde{c}$, suppose the candidate codewords are the correct codeword $c$ and some other $c’$. We erase the corresponding positions in both candidate codewords $c$ and $c’$. Since the hamming distance between $c$ and $c’$  is at least $d$,there must be at least one position where $c$ and $c’$ differ. This differing position allows us to resolve the ambiguity the identify the correct codeword $c$.</p>
+</li>
+</ul>
+<p>Returning to the things we care about, we can now clarify the firs two things:</p>
+<p><font color=blue><u><b> Things We Care About (Take 2): </b></u></font></p>
+<ol>
+<li><p>We should be able to handle $\lfloor \frac{d-1}{2}\rfloor$ <u>worst-case</u> errors or $d-1$ <u>worst-case</u> erasures.</p>
+</li>
+<li><p>We should be able to recover <u>all</u> of $x$ (aka correct the errors or erasures)</p>
+</li>
+<li><p>We want to <strong>MINIMIZE OVERHEAD</strong>.</p>
+<p> Jumping ahead, the overhead is defined as the quantity $k/n\in (0, 1]$, which should be as big as possible.</p>
+</li>
+<li><p>We want to do all this <strong>EFFICIENTLY</strong>.</p>
+</li>
+</ol>
+<p>Moreover, the first two things can be combined to the <u>minimum distance</u> $d$ and we want it as large as possible.</p>
+<article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>  Aside:<br>  In this class, we only focus on the <b>worst-case model</b> (also called the “Hamming model” or “adversarial model”. We will discuss a little bit about the <b>random-error model</b> (also called the “Shannon model” or “Stochastic model”. </div> </article>
+
+<h1 id="Rate"><a href="#Rate" class="headerlink" title="Rate"></a>Rate</h1><p>Moving on to the point 3, what do we mean by “overhead”?</p>
+ <article class="message is-info"> <div class="message-header">  Dimension:  </div> <div class="message-body">  The <b>Message Length</b> (sometimes called <b>Dimension</b>) of a code $\mathcal{C}$ over an alphabet $\Sigma$ is defined to be  $$ k=\log_{|\Sigma|}|\mathcal{C}| $$   </div> </article> 
+
+
+
+<p>This definition is in line of the the encoding operation</p>
+<img src="https://s21.ax1x.com/2024/12/12/pAb1UUJ.png" alt="image.png" style="zoom:60%;" />
+
+<p>which encodes a message $x$ of length $k$ over $\Sigma$ into a codeword $c\in \mathcal{C}$.</p>
+<p>This map assigns each possible message to a single codeword so we have $|\Sigma^k|=|\mathcal{C}|$ aka $k=\log_{|\Sigma|}|\mathcal{C}|$.</p>
+ <article class="message is-info"> <div class="message-header">  Rate:  </div> <div class="message-body">  The <b>Rate</b> of a code $\mathcal{C}\subseteq \Sigma^n$ with block length $n$ over an alphabet $\Sigma$ is  $$ \mathcal{R}=\frac{\log_{|\Sigma|}|\mathcal{C}|}{n}=\frac{\text{message length }k}{\text{block length }n} $$    </div> </article> 
+
+
+
+<p>The rate captures the notion of overhead so minimizing the overhead means to maximize the rate. </p>
+<p>So if $\mathcal{R}$ is close to $1$, it means not too much overhead. And if $\mathcal{R}$ is close to 0, it means lots of overhead. We want the rate to be as close to 1 as possible.</p>
+<p>Now we can denote a code by these parameters</p>
+ <article class="message is-info"> <div class="message-header">  Code:  </div> <div class="message-body">  A code with distance $d$, message length $k$, block length $n$, and alphabet $\Sigma$ is called a $(n, k, d)_{\Sigma}$ code.    </div> </article> 
+
+
+
+<p>After clarifying the things we care about, a <strong><u>question</u></strong> arises:</p>
+<p><font color="red"><strong>What is the best trade-off between rate and distance?</strong></font></p>
+<article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>  This question is still open for binary codes! </div> </article>
+
+<h1 id="Hamming-Bound-Rate-vs-Distance"><a href="#Hamming-Bound-Rate-vs-Distance" class="headerlink" title="Hamming Bound: Rate vs. Distance"></a>Hamming Bound: Rate vs. Distance</h1><p>The Hamming bound gives us one bound on the trade of rate and distance. It establishes some limitations on how good this trade-off can be.</p>
+<p>Let’s return to the picture we had before, with $|C|$ disjoint Hamming balls of radius $\lfloor \frac{d-1}{2}\rfloor$ in the space $\Sigma^n$.</p>
+<img src="https://s21.ax1x.com/2024/12/12/pAb1wCR.png" alt="image.png" style="zoom:50%;" />
+
+<p>The idea of the Hamming bound is: there can’t be too much of them or they wouldn’t all fit in space $\Sigma^n$.</p>
+<p>To be more precise, we define the Hamming ball as follows.</p>
+ <article class="message is-info"> <div class="message-header">  Hamming Ball:  </div> <div class="message-body">  The Hamming Ball in $\Sigma^n$ of radius $e$ about some point $x\in \Sigma^n$ is  $$ B_{\Sigma^n}(x, e)=\{y\in \Sigma^n: \Delta(x, y)\le e\} $$ The <b>Volume</b> of $B_{\Sigma^n}(x, e)$ is denoted by $\mathrm{Vol_{|\Sigma|}}(e, n)=|B_{\Sigma^n}(x, e)|$, representing the number of points in the Hamming ball.   </div> </article> 
+
+
+
+ <article class="message message-immersive is-warning"> <div class="message-body"> <i class="fas fa-exclamation-triangle mr-2"></i> Notice that the right hand side, $|B_{\Sigma^n}(x, e)|$, includes $x$ while the volume notation only refers to the radius $e$ and block length $n$. This is because the volume does not depend on $x$. </div> </article> 
+
+
+
+ <article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>   Note: the $\Sigma$ is sometimes dropped from the notation $B_{\Sigma^n}(x, e)$. Note: The notation $B_{\Sigma^n}(x, e/n)$ refers to the Hamming ball with relative distance.  </div> </article> 
+
+
+
+<p>Say that $|\Sigma|=q$, then we can express the volume of a $q$-array Hamming ball as</p>
+<p>$$<br>\mathrm{Vol}_q(e, n) = 1 + \binom{n}{1}\cdot (q-1) + \binom{n}{2}\cdot (q-1)^2 + \dots + \binom{n}{e}(q-1)^e<br>$$</p>
+<p>where term $1$ refers to the $\vec{0}$, term $\binom{n}{1}\cdot (q-1)$ refers to all the elements of $\Sigma^n$ of weight 1.</p>
+<p>Armed with these definitions, we can formalize the bound. </p>
+<p>If a code $\mathcal{C}\subseteq \Sigma^n$ has distance $d$ and message length $k$, where $|\Sigma|=q$, we have</p>
+<p>$$<br>|\mathcal{C}|\cdot \mathrm{Vol}_q\left(\left\lfloor \frac{d-1}{2}\right \rfloor, n\right) \le q^n<br>$$</p>
+<p>The LHS corresponds to the total volume taken up by all disjoint Hamming balls while the RHS corresponds to the total volume in the whole space $\Sigma^n$.</p>
+<p>Taking logs base $q$ of both sides, it can be written as</p>
+<p>$$<br>\log_q |\mathcal{C}|+\log_q \left(\mathrm{Vol}_q\left(\left\lfloor \frac{d-1}{2}\right \rfloor, n\right)\right)\le n<br>$$</p>
+<p>It gives the bound of the rate in terms of the distance.</p>
+ <article class="message is-info"> <div class="message-header">  Hamming Bound:  </div> <div class="message-body">   $$ \text{Rate}=\frac{k}{n} \le 1-\frac{\log_q \left(\mathrm{Vol}_q\left(\left\lfloor \frac{d-1}{2}\right \rfloor, n\right)\right)}{n} $$   </div> </article> 
+
+<p>Back to Example 3, which was a $(n=7, k=4, d=3)_{q=2}$ code.</p>
+<p>We have $\lfloor\frac{d-1}{2}\rfloor=1$, $\mathrm{Vol}_2(1, 7) = 1 + \binom{7}{1}\cdot 1 = 8$.</p>
+<p>So we have rate bounded by $\frac k n \le 1 - \frac{\log_2(8)}{n} = 1 - \frac 3 7 = \frac 4 7$.</p>
+<p>In fact, the rate $\frac k n= \frac 4 7$, so in this case the Hamming bound is tight!</p>
+<p>It means this code achieves the <u>best trade-off between the minimum distance and rate.</u></p>
+<p>When the Hamming bound is tight, we say the code is <strong>perfect</strong>.<br>Example 3 (which is perfect) is a special case of something called a <strong>Hamming Code.</strong></p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Algebraic ECCs」: Lec1 Basics of ECCs</p><p><a href="https://f7ed.com/2024/12/11/stanford-cs250-ecc-lec1/">https://f7ed.com/2024/12/11/stanford-cs250-ecc-lec1/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2024-12-11</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2024-12-26</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Cryptography/">Cryptography, </a><a class="link-muted" rel="tag" href="/tags/ECC/">ECC, </a><a class="link-muted" rel="tag" href="/tags/Hamming-Bound/">Hamming Bound </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2024/12/16/stanford-cs250-ecc-lec2/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Algebraic ECCs」: Lec2 Linear Codes and Finite Fields</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2023/08/02/zkp-lec7/"><span class="level-item">「Cryptography-ZKP」: Lec7 Poly-commit based on ECC</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "4d526ce89072365a585b6d8d7ad507ea",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">70</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">135</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Introduction"><span class="level-left"><span class="level-item">1</span><span class="level-item">Introduction</span></span></a></li><li><a class="level is-mobile" href="#Basic-Problem-in-Coding-Theory"><span class="level-left"><span class="level-item">2</span><span class="level-item">Basic Problem in Coding Theory</span></span></a></li><li><a class="level is-mobile" href="#Code"><span class="level-left"><span class="level-item">3</span><span class="level-item">Code</span></span></a></li><li><a class="level is-mobile" href="#Hamming-Distance"><span class="level-left"><span class="level-item">4</span><span class="level-item">Hamming Distance</span></span></a></li><li><a class="level is-mobile" href="#Minimum-Distance-Proxy-for-Robustness"><span class="level-left"><span class="level-item">5</span><span class="level-item">Minimum Distance: Proxy for Robustness</span></span></a></li><li><a class="level is-mobile" href="#Rate"><span class="level-left"><span class="level-item">6</span><span class="level-item">Rate</span></span></a></li><li><a class="level is-mobile" href="#Hamming-Bound-Rate-vs-Distance"><span class="level-left"><span class="level-item">7</span><span class="level-item">Hamming Bound: Rate vs. Distance</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

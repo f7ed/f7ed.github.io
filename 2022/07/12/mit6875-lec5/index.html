@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Cryptography-MIT6875」: Lecture 5 - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Topics covered:  Applications of PRFs  Note:"><meta property="og:type" content="blog"><meta property="og:title" content="「Cryptography-MIT6875」: Lecture 5"><meta property="og:url" content="https://f7ed.com/2022/07/12/mit6875-lec5/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Topics covered:  Applications of PRFs  Note:"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/covers/mit6875-lec5-banner.png"><meta property="article:published_time" content="2022-07-11T16:00:00.000Z"><meta property="article:modified_time" content="2022-08-12T04:31:17.691Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Cryptography"><meta property="article:tag" content="MIT6875"><meta property="article:tag" content="PRF"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/covers/mit6875-lec5-banner.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2022/07/12/mit6875-lec5/"},"headline":"「Cryptography-MIT6875」: Lecture 5","image":["https://f7ed.com/gallery/covers/mit6875-lec5-banner.png"],"datePublished":"2022-07-11T16:00:00.000Z","dateModified":"2022-08-12T04:31:17.691Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Topics covered:  Applications of PRFs  Note:"}</script><link rel="canonical" href="https://f7ed.com/2022/07/12/mit6875-lec5/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><div class="card-image"><span class="image is-7by3"><img class="fill" src="/gallery/covers/mit6875-lec5-banner.png" alt="「Cryptography-MIT6875」: Lecture 5"></span></div><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Cryptography-MIT6875」: Lecture 5</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2022-07-11T16:00:00.000Z" title="2022-07-11T16:00:00.000Z">2022-07-12</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2022-08-12T04:31:17.691Z" title="2022-08-12T04:31:17.691Z">2022-08-12</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Cryptography-MIT6875/">Cryptography-MIT6875</a></span><span class="level-item"><i class="far fa-clock"></i> 5 minutes read (About 800 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><article class="message message-immersive is-info">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="message-body">
+<i class="fas fa-info-circle mr-2"></i>
+In this <a href="/categories/Cryptography-MIT6875">series</a>, I will learn MIT 6.875, <strong>Foundations of Cryptography</strong>, lectured by <strong>Vinod Vaikuntanathan</strong>.
+<br>Any corrections and advice are welcome. ^ - ^
+</div>
+</article>
+
+<p><strong>Topics covered:</strong></p>
+<ul>
+<li>Applications of PRFs</li>
+</ul>
+<p><u>Note</u>: The second half of Lecture 5, Number Theory, is contained in Lecture 6.</p>
+<span id="more"></span>
+
+<h1 id="Recap"><a href="#Recap" class="headerlink" title="Recap"></a>Recap</h1><p>In last blog, we introduced the <strong>security definition</strong> of the  stateless secret-key encryption.</p>
+<p>Then we elaborated on the <strong>theorem of PRF</strong>, if there are PRGs, then there are PRFs, and gave <strong>the Goldreich-Goldwasser-Micali (GGM) construction.</strong></p>
+<h1 id="Applications-of-PRFs"><a href="#Applications-of-PRFs" class="headerlink" title="Applications of PRFs"></a>Applications of PRFs</h1><p>In this blog, we will show some applications of PRF.</p>
+<ul>
+<li>Identification Protocols</li>
+<li>Authentication</li>
+<li>Application to Learning Theory.</li>
+</ul>
+<h2 id="Identification-Protocols"><a href="#Identification-Protocols" class="headerlink" title="Identification Protocols"></a>Identification Protocols</h2><p>PRF is widely used in identification protocols.</p>
+<p>Think about the situation that you take your ID card and put it on a RFID to pay the money.</p>
+<p>The ID card has <strong>a secret</strong> embedded in it that <u>is specific to your cost right</u>. So it’s sort of a key that the card contains.</p>
+<p>The device <u>has access to a database</u> which stores all the students keys.</p>
+<p>The student need the ID card to authenticate to the device.</p>
+<p>However, there is an <strong>eavesdropper</strong> in the channel, who is <u>listening to the communications and wants to impersonate Tim.</u></p>
+<img src="https://s1.ax1x.com/2022/07/15/jhaVVH.png" alt="eaversdropper" style="zoom:43%;" />
+
+<p>PRFs can prevent the adversary from impersonating.</p>
+<h3 id="Unpredictability-of-PRF"><a href="#Unpredictability-of-PRF" class="headerlink" title="Unpredictability of PRF"></a>Unpredictability of PRF</h3><p>Before that, let’s introduce a simple lemma about unpredictability of PRF.</p>
+
+
+Let $f_s:\{0,1\}^l\rightarrow \{0,1\}^m$ be a pseudorandom function.
+
+
+
+<p>Consider an <strong>adversary</strong> who <u>requests and obtains</u> $f_s(x_1),\dots,f_s(x_q)$ for a polynomial $q=q(n)$.</p>
+<p>Can she <u>predict</u> $f_s(x^*)$ for some $x^*$ of her choosing where  $x^*\notin \{x_1,\dots, x_q\}$?</p>
+<p><font color=blue><u><b>Lemma: </b></u></font> </p>
+<p>If she succeeds with probability $\frac{1}{2^m}+1/p(n)$, then she broke PRF security.<br>This $(\frac{1}{2^m})$ is negligible in $n$ is $m$ is large enough.</p>
+<hr>
+<p>It’s easy to comprehend that the <strong>adversary</strong> <u>cannot even distinguish it</u> and <u>certainly she cannot predict it.</u></p>
+<p>So indistinguishability implies unpredictability and it turns out the lemma is right.</p>
+<p>In <a href="/2022/07/06/mit6875-lec3/" title="[the lecture 3]">[the lecture 3]</a>, we proved that the <u>Unpredictability = Indistinguishability</u> for <strong>bits</strong> (or, for PRG).</p>
+<p>However, <strong>for PRF</strong>, <u>Indistinguishability → Unpredictability</u>, but <strong>not</strong> vice versa.</p>
+<h3 id="Challenge-Response-Protocol"><a href="#Challenge-Response-Protocol" class="headerlink" title="Challenge-Response Protocol"></a>Challenge-Response Protocol</h3><p>The secret in the ID card is the PRF key $s$.</p>
+<p>The device has access to the database which stores all the students’ mapping relation, (ID number $ID$, PRF Key $s$).</p>
+<p>Whenever Tim wants to authenticate to the device, the protocol is as follows:</p>
+<ol>
+<li>The device <u>sends a random</u> $r$ to the ID card.</li>
+<li>The ID card use the embedded key $s$ to evaluate $f_s(r)$, and <u>sends the pair</u> $(ID, f_s(r))$ to the device.</li>
+</ol>
+<img src="https://s1.ax1x.com/2022/07/15/jhaAqe.png" alt="Challenge-Response Protocol" style="zoom:40%;" />
+
+<p>According to the lemma of unpredictability, it’s easy to prove the security of the protocol.</p>
+<p>The adversary collects $(r_i, f_s(r_i))$ for poly. many $r_i$(potentially of her choosing).</p>
+<p>She eventually has to produce $f_s(r^*)$ for a <strong>fresh</strong> random $r^*$ when she is trying to impersonate.</p>
+<p>This is hard <u>as long as the input and output lengths of the PRF are long enough.</u></p>
+<h2 id="Authentication"><a href="#Authentication" class="headerlink" title="Authentication"></a>Authentication</h2><p>Another scenario is to use PRF as the Message Authentication Code(MAC).</p>
+<p>Consider the initial secure communication.</p>
+<p>Alice and Bob have an agreed key $k$, and they use the one-time pad to encrypt the message.</p>
+<p>The adversary can learning nothing from the ciphertext according to Perfect Secrecy.</p>
+<p>But <strong>one-time pad</strong> (<u>and encryption schemes in general</u>) are <strong>malleable</strong>. The adversary can toggle between $m$ and $m’$ easily. She can change the valid ciphertext $m\oplus k$ to a totally different ciphertext $m’\oplus k$.</p>
+<img src="https://s1.ax1x.com/2022/07/15/jhakrD.png" alt="one-time pad are malleable" style="zoom:43%;" />
+
+<p>Likewise, the adversary can change the valid ciphertext $(r, f_k(r)\oplus m)$ to a totally different ciphertext $(r,f_k(r)\oplus m’)$ <strong>in the stateless secret-key encryption.</strong></p>
+<img src="https://s1.ax1x.com/2022/07/15/jhaFKO.png" alt="stateless secret-key encryption is malleable" style="zoom:40%;" />
+
+<h3 id="MAC"><a href="#MAC" class="headerlink" title="MAC"></a>MAC</h3><p>It is of importance to use Message Authentication Codes.</p>
+<p>Alice and Bob have an agreed key $k$ to specify a pseudorandom function $f_k$.</p>
+<p>MAC is evaluated by <strong>the pseudorandom function</strong> $f_k$, the message $m$ taken as <strong>input</strong>.</p>
+<p>People can <u>see a bunch of messages and tags</u> (MAC) and <strong>cannot</strong> come up with the <u>new message and the corresponding tag.</u></p>
+<img src="https://s1.ax1x.com/2022/07/15/jhaC26.png" alt="MAC" style="zoom:40%;" />
+
+<p>MACs give us <strong>integrity</strong>, but not privacy.</p>
+<p>There is a solution to guarantee the privacy, Encrypt, then MAC.</p>
+<p>Note that there are two <strong>difference</strong> PRF $f_k$ and $f_{k’}$ since the <u>input length is different.</u></p>
+<img src="https://s1.ax1x.com/2022/07/15/jhaPxK.png" alt="Encrypt, then MAC" style="zoom:40%;" />
+
+<h2 id="Learning-Theory"><a href="#Learning-Theory" class="headerlink" title="Learning Theory"></a>Learning Theory</h2><p>There is a negative results in learning theory.</p>
+<p><font color=blue><u><b><i>Theorem [Kearns and Valiant 1994]:</i></b></u></font> </p>
+<p>Assuming PRFs exist, there are hypothesis classes that cannot be learned by polynomial-time algorithms.</p>
+<p>It’s showed that the function cannot be learned if PRFs exist.</p>
+<p>But it gives a <strong>counterpoint</strong> to machine learning that says everything can be learned. You just throw the samples to a deep neural network.</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Cryptography-MIT6875」: Lecture 5</p><p><a href="https://f7ed.com/2022/07/12/mit6875-lec5/">https://f7ed.com/2022/07/12/mit6875-lec5/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2022-07-12</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2022-08-12</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Cryptography/">Cryptography, </a><a class="link-muted" rel="tag" href="/tags/MIT6875/">MIT6875, </a><a class="link-muted" rel="tag" href="/tags/PRF/">PRF </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2022/07/14/mit6875-lec6/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Cryptography-MIT6875」: Lecture 6 - Number Theory</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2022/07/08/mit6875-lec4/"><span class="level-item">「Cryptography-MIT6875」: Lecture 4</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "0c6e0377e8cfd42c00b8c9281e74fd27",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">70</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">135</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Recap"><span class="level-left"><span class="level-item">1</span><span class="level-item">Recap</span></span></a></li><li><a class="level is-mobile" href="#Applications-of-PRFs"><span class="level-left"><span class="level-item">2</span><span class="level-item">Applications of PRFs</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Identification-Protocols"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">Identification Protocols</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Unpredictability-of-PRF"><span class="level-left"><span class="level-item">2.1.1</span><span class="level-item">Unpredictability of PRF</span></span></a></li><li><a class="level is-mobile" href="#Challenge-Response-Protocol"><span class="level-left"><span class="level-item">2.1.2</span><span class="level-item">Challenge-Response Protocol</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Authentication"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">Authentication</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#MAC"><span class="level-left"><span class="level-item">2.2.1</span><span class="level-item">MAC</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Learning-Theory"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">Learning Theory</span></span></a></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

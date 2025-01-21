@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Cryptography-MIT6875」: Lecture 16 - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Topics Covered:    IP for Quadratic Non-Resid"><meta property="og:type" content="blog"><meta property="og:title" content="「Cryptography-MIT6875」: Lecture 16"><meta property="og:url" content="https://f7ed.com/2022/08/23/mit6875-lec16/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Topics Covered:    IP for Quadratic Non-Resid"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/mit6875-lec16-thumbnial.png"><meta property="article:published_time" content="2022-08-22T16:00:00.000Z"><meta property="article:modified_time" content="2022-09-11T04:01:36.495Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="ZK"><meta property="article:tag" content="PoK"><meta property="article:tag" content="NIZK"><meta property="article:tag" content="CRS Model"><meta property="article:tag" content="QNR"><meta property="article:tag" content="3SAT"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/mit6875-lec16-thumbnial.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2022/08/23/mit6875-lec16/"},"headline":"「Cryptography-MIT6875」: Lecture 16","image":["https://f7ed.com/gallery/thumbnails/mit6875-lec16-thumbnial.png"],"datePublished":"2022-08-22T16:00:00.000Z","dateModified":"2022-09-11T04:01:36.495Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Topics Covered:    IP for Quadratic Non-Resid"}</script><link rel="canonical" href="https://f7ed.com/2022/08/23/mit6875-lec16/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Cryptography-MIT6875」: Lecture 16</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2022-08-22T16:00:00.000Z" title="2022-08-22T16:00:00.000Z">2022-08-23</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2022-09-11T04:01:36.495Z" title="2022-09-11T04:01:36.495Z">2022-09-11</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Cryptography-MIT6875/">Cryptography-MIT6875</a></span><span class="level-item"><i class="far fa-clock"></i> 20 minutes read (About 2936 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><article class="message message-immersive is-info">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="message-body">
+<i class="fas fa-info-circle mr-2"></i>
+In this <a href="/categories/Cryptography-MIT6875">series</a>, I will learn MIT 6.875, <strong>Foundations of Cryptography</strong>, lectured by <strong>Vinod Vaikuntanathan</strong>.
+<br>Any corrections and advice are welcome. ^ - ^
+</div>
+</article>
+
+<p><font color=blue><u><b>Topics Covered: </b></u></font> </p>
+<ul>
+<li>IP for Quadratic Non-Residuosity</li>
+<li>Non-interactive ZK<ul>
+<li>NIZK in The Common Random String(CRS) Model</li>
+<li>Construction in CRS Model: Blum-Feldman-Micali’88 (quadratic residuosity)</li>
+<li>NIZK for QNR</li>
+<li>NIZK for 3SAT</li>
+</ul>
+</li>
+<li>Proofs vs. Argument</li>
+</ul>
+<span id="more"></span>
+
+<p>At the end of last blog, we said that Non-Interactive Zero-Knowledge (NIZK) is <u>achievable in random oracle model.</u>  </p>
+<p>Today, we move to the <u>NIZK in the common random string model.</u></p>
+<h1 id="The-Power-of-Interactive-Proofs"><a href="#The-Power-of-Interactive-Proofs" class="headerlink" title="The Power of Interactive Proofs"></a>The Power of Interactive Proofs</h1><p>Before proceeding to NIZK, let’s focus on <strong>the power of Interaction Proofs(IP).</strong></p>
+<p><strong>Is IP more powerful than NP ?</strong></p>
+<p>We have been <u>using interaction to get zero knowledge proofs for NP.</u></p>
+<p>Indeed, <u>interaction is necessary.</u></p>
+<p>But, never mind zero knowledge for a moment.</p>
+<p>Can you <strong>prove more stuff with interactive proofs</strong> than with traditional (i.e. NP) proofs ?</p>
+<p>The thing to point is that we know <strong>there is NP proof for quadratic residues</strong>, i.e. proof = the square root, but <strong>there is no NP proof for quadratic non-residues.</strong></p>
+<p>In Lecture 14, we gave <u>interactive proofs for quadratic residuosity.</u></p>
+<p>Indeed, we can also <u>give an (honest-verifier perfect ZK) interactive for</u> <strong>quadratic non-residuosity.</strong></p>
+<h3 id="IP-for-QNR"><a href="#IP-for-QNR" class="headerlink" title="IP for QNR"></a>IP for QNR</h3><p>The prover wants to <strong>convince</strong> the verifier <u>that the $y$ is a quadratic non-residuosity.</u></p>
+<p>The interactive protocol is as shown below. </p>
+<img src="https://s1.ax1x.com/2022/08/24/vgA3DK.png" alt="IP for QNR" style="zoom:33%;" />
+
+<p><font color=blue><u><b> ZK Proof for Quadratic Non-residue: </b></u></font> </p>
+<ul>
+<li>Verifier:<ol>
+<li>pick a random $r$ </li>
+<li>pick a random $b\gets{0,1}$</li>
+<li>send $s=r^2y^b$</li>
+</ol>
+</li>
+<li>Prover:<ul>
+<li>guess $b’$</li>
+</ul>
+</li>
+<li>Verifier Check: $b=b’$</li>
+</ul>
+<p>The protocol is <strong>complete</strong>, <strong>sound</strong> and <strong>(honest-verifier perfect) zero-knowledge.</strong></p>
+<p><font color=blue><u><b><i>Completeness: </i></b></u></font> </p>
+<p>Recall that the completeness is the property of the protocol when the prover and the verifier are both honest.</p>
+<p>If $y$ is <u>non-square, the prover should be able to win.</u></p>
+<p>The thing to point is that the prover knows $y$ is non-square, so <u>maybe the she is unbounded or she knows the factorization</u> of $N$ since there is no NP proof for QNR.</p>
+<p>Hence, if $y$ is <strong>non-square</strong>, then the <u>prover can tell $s$ is square or non-square to answer $b’$.</u></p>
+<p><font color=blue><u><b><i>Soundness: </i></b></u></font> </p>
+<p>Recall that the soundness is the property of the protocol against malicious prover.</p>
+<p>If $y$ is a square, then $r^2y^b$ is also a square.</p>
+<p>Hence, the prover <strong>cannot cheat the verifier</strong> with probability <u>better than</u> $1/2$.</p>
+<p>Then we can <u>use sequential repetition or parallel repetition</u> to reduce the soundness error.</p>
+<p><font color=blue><u><b><i>Honest-Verifier Perfect Zero Knowledge: </i></b></u></font> </p>
+<p>Recall that the <strong>zero-knowledge</strong> is the property of the protocol against verifier.</p>
+<p>The view of $V$ is $(r,b,b’)$, so the simulator can do exactly what $V$ dose.</p>
+<p>The simulated view is $(r,b,b’=b)$ for a random $r$ and a random $b$.</p>
+<hr>
+<p>Similarly, although there is <u>no NP proof</u> for graph non-isomorphism, there is <u>an (honest-verifier perfect) interactive proof</u> for <strong>graph non-isomorphism.</strong></p>
+<p>It turns out that <strong>IP can prove more stuff than NP.</strong></p>
+<p>Indeed, the <strong>IP = PSPACE &gt;&gt; NP.</strong> </p>
+<p><strong>PSPACE</strong> is the <u>set of things that we can decide</u> if we have polynomial memory to work <u>with but potential exponential time.</u></p>
+<p>It’s surprising that we can prove such a language, i.e. QNR, using interactive proofs.</p>
+ <article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>IP = PSPACE >> NP[Lund-Fortnow-Karloof-Nisan’89, Shamir’90] 
+<p><a target="_blank" rel="noopener" href="https://www.cs.princeton.edu/courses/archive/spring09/cos522/BabaiEmail.pdf">https://www.cs.princeton.edu/courses/archive/spring09/cos522/BabaiEmail.pdf</a></p>
+ </div> </article> 
+
+<h1 id="NIZK-The-Common-Random-String-Model"><a href="#NIZK-The-Common-Random-String-Model" class="headerlink" title="NIZK: The Common Random String Model"></a>NIZK: The Common Random String Model</h1><p>In last blog is introduced that we can achieve <strong>NIZK in the random oracle model.</strong></p>
+<p>In this section, we will introduce another way, <strong>the common random string model.</strong></p>
+<p>In this model, there is <u>an angle coming up with random sequence of polynomial bits.</u></p>
+<p>The angle could be the sunspots.</p>
+<img src="https://s1.ax1x.com/2022/08/24/vgAuC9.png" alt="CRS Model" style="zoom:33%;" />
+
+<ul>
+<li><p><strong>Completeness</strong>: For  every $G\in 3COL$, $V$ accepts $P$’s proof.</p>
+</li>
+<li><p><strong>Soundness</strong>: For every $G\notin3COL$ and any “proof” $\pi^\star$, $V(CRS,\pi^\star)$ accepts with probability $\le neg(n)$.</p>
+</li>
+<li><p><strong>Zero Knowledge</strong>: There is a PPT simulator such that for every $G\in 3COL$, $S$ simulates the view of the verifier $V$.</p>
+<p>  $$<br>  S(G)\approx(CRS\gets D, \pi \gets P(G,\text{colors})<br>  $$</p>
+<ul>
+<li>The view of verifier is $(CRS, \pi)$.</li>
+<li>The <strong>simulator</strong> has to produce the simulated view <strong>without knowing the witness and the CRS.</strong> So the simulator has to <u>fake potentially the common random and the proof.</u></li>
+<li>If we sort of <strong>change the definition</strong> that the <u>simulator gets a common random string</u> and has to <strong>produce the view with a fixed CRS</strong>, then this definition is impossible to achieve.<br>For the same reason that we prove the NIZK is impossible (Lecture 15), it dose <u>not satisfy the soundness.</u></li>
+</ul>
+</li>
+</ul>
+<p>Similarly, the <strong>Common Reference String Model</strong> is that there is an <u>angle coming up the random product of two primes</u>, not a sequence of random bits. And it cannot be achieved by the sunspots.</p>
+<img src="https://s1.ax1x.com/2022/08/24/vgAK3R.png" alt="CRS(Reference) Model" style="zoom:33%;" />
+
+<h1 id="Construct-NIZK-in-the-CRS-Model"><a href="#Construct-NIZK-in-the-CRS-Model" class="headerlink" title="Construct NIZK in the CRS Model"></a>Construct NIZK in the CRS Model</h1><p>There are several constructions of NIZK in the CRS model.</p>
+<ol>
+<li><strong>Blum-Feldman-Micali’88 (quadratic residuosity)</strong></li>
+<li>Feige-Lapidot-Shamir’90 (factoring)</li>
+<li>Groth-Ostrovsky-Sahai’06 (bilinear maps)</li>
+<li>Canetti-Chen-Holmgren-Lombardi-Rothblum^2-Wichs’19 and Peikert-Shiehian’19 (learning with errors)</li>
+</ol>
+<p>In this Lecture, we will introduce the first construction.</p>
+<h2 id="Blum-Feldman-Micali’88-quadratic-residuosity"><a href="#Blum-Feldman-Micali’88-quadratic-residuosity" class="headerlink" title="Blum-Feldman-Micali’88 (quadratic residuosity)"></a>Blum-Feldman-Micali’88 (quadratic residuosity)</h2><ol>
+<li>Review our number theory hammers &amp; polish them.</li>
+<li>Construct <strong>NIZK for</strong> a special NP language, namely <strong>quadratic non-residuosity.</strong></li>
+<li>Bootstrap to <strong>NIZK for 3SAT</strong>, an NP-complete language.</li>
+</ol>
+<h3 id="Quadratic-Residuosity"><a href="#Quadratic-Residuosity" class="headerlink" title="Quadratic Residuosity"></a>Quadratic Residuosity</h3> <article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>More introduction is referred in Lecture 9 
+
+ </div> </article> 
+
+<p>Let $N=pq$ be a product of two large primes.</p>
+<p>Jacobi symbol ($Jac$) divides $\mathbb{Z}_N^*$ evenly unless $N$ is a perfect square.</p>
+<ul>
+<li>$Jac_{-1}$: non-squares</li>
+<li>$Jac_{+1}$: pseudo-squares</li>
+</ul>
+<img src="https://s1.ax1x.com/2022/08/24/vgAMg1.png" alt="Jac divides ZN*" style="zoom:23%;" />
+
+<p>A <strong>surprising fact</strong> is Jacobi symbol $\left(\frac{x}{N}\right)=\left(\frac{x}{P}\right) \left(\frac{x}{Q}\right)$ is <u>computable in poly. time without knowing $p$ and $q$.</u> (using Law of Quadratic Reciprocity.[* 二次互反定理])</p>
+<p>$x$ is square mod $N$ iff $x$ is square mod $p$ and square mod $q$, so we can even $Jac_{+1}$.</p>
+<ul>
+<li>$QR_N$: the set of squares mod $N$.</li>
+<li>$QNR_N$: the set of non-squares mod $N$. (but with Jacobi symbol $+1$)</li>
+</ul>
+<img src="https://s1.ax1x.com/2022/07/29/vPBJkq.png" alt="QR and QNR with Jac+1" style="zoom:33%;" />
+
+ <article class="message message-immersive is-warning"> <div class="message-body"> <i class="fas fa-exclamation-triangle mr-2"></i>Note: The following are new claims: 
+
+ </div> </article> 
+
+<p>We call $N$ <font color="blue">good</font> if exactly <u>half the elements</u> of $\mathbb{Z}_N^*$ <u>with Jacobi symbol</u> $+1$ are squares.</p>
+<p>Exactly half residues <strong>even</strong> iff $N=p^iq^j$ is odd, and $i,j\ge 1$, not both even.</p>
+<p>If $N$ is good, there is <font color="blue">an important property</font> is if $y_1$ and $y_2$ are both in $QNR$, then their product $y_1y_2$ is in $QR$.</p>
+<p>(This property will be used in the following NIZK for QNR)</p>
+<img src="https://s1.ax1x.com/2022/08/24/vgAEHU.png" alt="N is good: exactly half residues even" style="zoom:23%;" />
+
+<p>But if $N$ has three or more prime factors, <strong>the fraction of residues is smaller.</strong></p>
+ <article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>Analysis of $N=pqr$:  
+<p>$x$ is <strong>square</strong> mod $N$ iff $x$ is square mod $p$, mod $q$ and mod $r$.</p>
+<p>If $N=pqr$, the <u>fraction</u> of residues in $Jac_{+1}$ is $1/4$ as shown in table below.</p>
+<table>
+<thead>
+<tr>
+<th align="center">Jac</th>
+<th align="center">(x/p)</th>
+<th align="center">(x/q)</th>
+<th align="center">(x/r)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">-1</td>
+<td align="center">-1</td>
+</tr>
+<tr>
+<td align="center">1</td>
+<td align="center">-1</td>
+<td align="center">1</td>
+<td align="center">-1</td>
+</tr>
+<tr>
+<td align="center">1</td>
+<td align="center">-1</td>
+<td align="center">-1</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">-1</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">-1</td>
+</tr>
+<tr>
+<td align="center">-1</td>
+<td align="center">1</td>
+<td align="center">-1</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">-1</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">-1</td>
+</tr>
+<tr>
+<td align="center">-1</td>
+<td align="center">-1</td>
+<td align="center">-1</td>
+<td align="center">-1</td>
+</tr>
+</tbody></table>
+ </div> </article> 
+
+<p>Besides, the property, “ if $y_1$ and $y_2$ are both in $QNR$, then their product $y_1y_2$ is in $QR$”, is<font color=blue> <strong>no longer satisfied.</strong> </font></p>
+<img src="https://s1.ax1x.com/2022/08/24/vgAABT.png" alt="The fraction of residues is smaller" style="zoom:23%;" />
+
+<hr>
+<p><font color=blue><u><b> Quadratic Residuosity Assumption (QRA): </b></u></font> </p>
+<p>Let $N=pq$ be a product of two large primes.</p>
+<p>No PPT algorithm can <strong>distinguish</strong> between a random element of $QR_N$ from a random element of $QNR_N$ <strong>given only</strong> $N$.</p>
+<h3 id="NIZK-for-QNR"><a href="#NIZK-for-QNR" class="headerlink" title="NIZK for QNR"></a>NIZK for QNR</h3><p>Define the NP language<font color="blue"> <strong>GOOD</strong> </font>with instance $(N,y)$ where </p>
+<ul>
+<li>$N$ is <strong>good</strong>; and</li>
+<li>$y\in QNR_N$ (that is, $y$ has Jacobi symbol $+1$ but is not a square mod $N$)</li>
+</ul>
+<p>The non-interactive protocol is as follows.</p>
+<p>The prover wants to convince the verifier that $(N,y)$ is good.</p>
+<img src="https://s1.ax1x.com/2022/08/24/vgAZEF.png" alt="NIZK for QNR" style="zoom:23%;" />
+
+<p><font color=blue><u><b> NIZK for QNR: </b></u></font> </p>
+<ul>
+<li>$CRS = (r_1,r_2,\dots,r_m)$ where each $r_i$ is sampled from $Jac_N^{+1}$.</li>
+<li>The <strong>proof</strong> is $\forall i: \sqrt{r_i}$ or $\sqrt{yr_i}$</li>
+<li>The <strong>verifier check</strong><ul>
+<li>$N$ is odd</li>
+<li>$N$ is not a prime power</li>
+<li>$N$ is not a perfect square</li>
+<li>(<strong>Fact</strong>: If the preceding three passes, then <u>at most half</u> of $Jac_N^{+1}$ are squares.)</li>
+<li>I received either <u>a mod-$N$ square root</u> of $r_i$ or $yr_i$.</li>
+</ul>
+</li>
+</ul>
+<p><font color=blue><u><b><i>Completeness: </i></b></u></font> </p>
+<p>If $N$ is good and $y\in QNR_N$, the prover can compute either $\sqrt{r_i}$ or $\sqrt{yr_i}$. </p>
+<ul>
+<li>The prover has a knowledge that $y$ is <strong>non-residuosity.</strong> So, maybe <u>she is unbounded or knows the factorization of $N$.</u></li>
+<li>If $r_i\in QR_N$: the prover can compute $\sqrt{r_i}$.</li>
+<li>If $r_i\in QNR_N$: $yr_i$ is <strong>square</strong> by the property above so the prover can compute $\sqrt{yr_i}$.</li>
+</ul>
+<p><font color=blue><u><b><i>Soundness: </i></b></u></font> </p>
+<p>What if $N$ has more than $2$ prime factors ?</p>
+<p>No matter what $y$ is, <font color=blue>for <strong>half</strong> the $r_i$ </font>, both  $r_i$ and $yr_i$ are <strong>not</strong> quadratic residues.</p>
+<p>So the prover <u>cannot compute either $\sqrt{r_i}$ or $\sqrt{yr_i}$ for half the $r_i$.</u></p>
+<ul>
+<li>Suppose $N=pqr$</li>
+<li>The fraction of quadratic residues in $Jac_{+1}$ is $1/4$.</li>
+<li>Besides, the property, “ if $y_1$ and $y_2$ are both in $QNR$, then their product $y_1y_2$ is in $QR$”, is <strong>no longer satisfied.</strong></li>
+</ul>
+ <article class="message message-immersive is-warning"> <div class="message-body"> <i class="fas fa-exclamation-triangle mr-2"></i>The thing to notice is that the proof only proves $N$ is good, not $N=pq$. 
+
+ </div> </article> 
+
+<p><font color=blue><u><b><i>Perfect Zero Knowledge Simulator S: </i></b></u></font> </p>
+<p>First pick the proof $\pi_i$ to be random in $\mathbb{Z}_N^*$.</p>
+<p>Then <strong>reverse-engineer the CRS</strong>, letting $r_i=\pi_i^2$ or $r_i=\pi_i^2/y$ randomly.</p>
+<p>The distribution of simulated view is <strong>identical</strong> to the real view.</p>
+ <article class="message message-immersive is-warning"> <div class="message-body"> <i class="fas fa-exclamation-triangle mr-2"></i> Warning:We define $CRS = (r_1,r_2,\dots,r_m)$ where each $r_i$ is sampled from $Jac_N^{+1}$.
+<p>The CRS <strong>depends on the instance $N$.</strong> Not good.<br><strong>An alternative solution</strong> is</p>
+<ol>
+<li>Let CRS <u>be random numbers.</u></li>
+<li>Interpret them as elements of $\mathbb{Z}_N^*$ and <u>both the prover and the verifier filter out $Jac_N^{-1}$.</u></li>
+</ol>
+ </div> </article> 
+
+<h3 id="NIZK-for-3SAT"><a href="#NIZK-for-3SAT" class="headerlink" title="NIZK for 3SAT"></a>NIZK for 3SAT</h3> <article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i><b>From Wiki: </b> 
+<p><strong>SAT:</strong><br>In logic and computer science, the <strong>Boolean satisfiability problem</strong> (sometimes called propositional satisfiability problem and abbreviated SATISFIABILITY, <strong>SAT</strong> or B-SAT) is the <u>problem of determining if there exists an interpretation that satisfies a given Boolean formula.</u><br>SAT is the <strong>first problem that was proven to be NP-complete.</strong><br>This means that <u>all problems in the complexity class NP</u>, which includes a wide range of natural decision and optimization problems, are <u>at most as difficult to solve as SAT.</u></p>
+<p><strong>3SAT:</strong><br>Like the satisfiability problem for arbitrary formulas, determining the satisfiability of a formula in conjunctive normal form where <strong>each clause is limited to at most three literals</strong> is NP-complete also; this problem is called <strong>3-SAT</strong>, 3CNFSAT, or 3-satisfiability.</p>
+<p><strong>Literal:</strong><br>In mathematical logic, a literal is <u>an atomic formula (atom) or its negation.</u></p>
+ </div> </article> 
+
+<ul>
+<li><strong>Boolean Variables</strong>: $x_i$ can be either true(1) or false(0).</li>
+<li>A <strong>Literal</strong> is either $x_i$ or $\overline{x_i}$</li>
+<li>A <strong>Clause</strong> is a <u>disjunction of literals.</u><ul>
+<li>A Clause is <strong>true</strong> if any one of the literals is true.</li>
+<li>E.g. $x_1\vee x_2\vee \overline{x_5}$ is true as long as $(x_1,x_2,x_5)\ne(0,0,1)$</li>
+</ul>
+</li>
+<li>A <strong>3-SAT formula</strong> is a <u>conjunction of many 3-clauses.</u><ul>
+<li>A 3-SAT formula $\Psi$ is <strong>satisfiable</strong> if there is an assignment of values to the variables $x_i$ that makes all its clauses true.</li>
+<li>$\Psi=\left(x_{1} \vee x_{2} \vee \overline{x_{5}}\right) \wedge\left(x_{1} \vee x_{3} \vee x_{4}\right)\wedge\left(\overline{x_{2}} \vee x_{3} \vee \overline{x_{5}}\right)$</li>
+</ul>
+</li>
+</ul>
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Cook-Levin Theorem:</strong> </p>
+ </div> <div class="message-body"> 
+
+<p>It is <strong>NP-complete</strong> to <u>decide whether a 3-SAT formula $\Psi$ is satisfiable.</u></p>
+ </div> </article> 
+
+<p>Recall NIZK for QNR.</p>
+<p>We saw a way to show that a pair $(N,y)$ is GOOD. That is:</p>
+<ul>
+<li>the following is the picture of $\mathbb{Z}_N^*$ and</li>
+<li>for every $r\in Jac_{+1}$, either $r$ or $ry$ is a quadratic residue.</li>
+</ul>
+<img src="https://s1.ax1x.com/2022/08/24/vgAkuV.png" alt="N is good" style="zoom:23%;" />
+
+<p>The prover wants to <u>convince the verifier that $\Psi$ is satisfiable.</u></p>
+<p>The input $\Psi=\left(x_{1} \vee x_{2} \vee \overline{x_{5}}\right) \wedge\left(x_{1} \vee x_{3} \vee x_{4}\right)\wedge\left(\overline{x_{2}} \vee x_{3} \vee \overline{x_{5}}\right)…$ with $n$ variables and $m$ clauses.</p>
+<p>The non-interactive protocol is as follows.</p>
+<img src="https://s1.ax1x.com/2022/08/24/vgAPcq.png" alt="NIZK for 3SAT" style="zoom:33%;" />
+
+<p><font color=blue><u><b> NIZK for 3SAT: </b></u></font> </p>
+<ul>
+<li>$CRS=(r_1,r_2,…)$ where each $r_i$ is sampled from $Jac_N^{+1}$.<br>Note: Similarly, we can Let CRS be random numbers and interpret them as elements of $\mathbb{Z}_N^*$, and both the prover and the verifier filter out $Jac_N^{-1}$.</li>
+</ul>
+<ol>
+<li>Prover picks an $(N,y)$ and <strong>proves that it is GOOD.</strong> (as defined above)</li>
+<li>Prover <strong>encodes the satisfying assignment</strong> and sends the <strong>encode variables</strong> $(y_1,\dots,y_n)$ to $V$.<br>We should <u>hide the values to achieve zero knowledge</u> so the encoding is indeed a commitment.<ol>
+<li>$y_i\gets QR_N$ if $x_i$ is false (encryption of $0$ is a residue)</li>
+<li>$y_i \gets QNR_N$ if $x_i$ is true (encryption of $1$ a non-residue)</li>
+<li>For the literal $x_i$, <ol>
+<li>$Enc(x_i)=y_i$ </li>
+<li>$Enc(\overline{x_i})=yy_i$ </li>
+</ol>
+</li>
+<li><strong>exactly one</strong> of the $Enc(x_i)$ or $Enc(\overline{x_i})$ is a <strong>non-residue.</strong><ol>
+<li>A <strong>residue</strong> is indeed <u>the encryption of 0(false)</u></li>
+<li>A <strong>non-residue</strong> is indeed <u>the encryption of 1(true)</u></li>
+</ol>
+</li>
+</ol>
+</li>
+<li><strong>Prove</strong> that <u>(encoded) assignment satisfies each clause.</u><ol>
+<li>For each clause, say $x_1\vee x_2\vee \overline{x_5}$, we <strong>WANT to SHOW</strong>: $x_1$ OR $x_2$ OR $\overline{x_5}$ is <strong>true</strong>.</li>
+<li>Let $(a_1=y_1,b_1=y_2,c_1=yy_5)$ denote the <u>encoded variables.</u></li>
+<li>So, each of them is either $y_i$ (if the literal is a var) or $yy_i$ (if the literal is a negated var).</li>
+<li>Now, we <strong>WANT to SHOW</strong>: $a_1$ OR $b_1$ OR $c_1$ is a <strong>non-residue</strong>.</li>
+</ol>
+</li>
+</ol>
+<p>A <strong>terrible way</strong> is to prove $a_1$ is non-residue or $b_1$ is non-residue. </p>
+<p>If the prover convinces the verifier that $a_1$ is non-residue, $P$  indeed tells $V$ that $x_1$ is true(1).</p>
+<p>Hence, we want to <u>prove one of them is a non-residue</u> <font color=blue> <strong>without telling the verifier that which one is non-residue.</strong> </font></p>
+<p> <font color=blue><u><b> WANT to SHOW: </b></u></font> $a_1$ <strong>OR</strong> $b_1$ <strong>OR</strong> $c_1$ is <u>a non-residue</u></p>
+<ul>
+<li><p>Equivalently, the <strong>signature</strong> of $(a_1,b_1,c_1)$ is <strong>NOT</strong> (QR, QR, QR).</p>
+</li>
+<li><p>A <strong>clever idea</strong> is to generate seven additional triples.</p>
+  <img src="https://s1.ax1x.com/2022/08/24/vgAm4J.png" alt="Proof of Coverage" style="zoom:33%;" />
+
+<ul>
+<li>The original triple is $(a_1,b_1,c_1)$.</li>
+<li>This <strong>8 triples</strong> <u>span all possible QR signatures.</u></li>
+<li>There is <strong>one triple is (QR, QR, QR)</strong>, e.g. the second triple, and <u>reveal the square roots of this triple.</u></li>
+<li>Then we can <u>prove the origin triple is NOT (QR, QR, QR).</u></li>
+</ul>
+</li>
+<li><p>Proof consists of two parts</p>
+<ul>
+<li><font color = blue><strong>Proof of Coverage</strong> </font>: show that the <strong>8 triples span all possible QR signatures.</strong><ul>
+<li>For <u>each</u>  of poly. many triples $(r,s,t)$ from CRS, show <u>one of the 8 triples has the same signature.</u></li>
+<li>That is, there is a triple $(a_i,b_i,c_i)$ s.t. $(ra_i,sb_i,tc_i)$ is (QR, QR, QR)</li>
+</ul>
+</li>
+<li>Show <strong>one triple</strong> (except the original triple) is <strong>(QR, QR, QR) and reveal the square roots.</strong></li>
+</ul>
+</li>
+</ul>
+<p>Hence, <strong>the full proof</strong> is as follows.</p>
+<img src="https://s1.ax1x.com/2022/08/24/vgAeN4.png" alt="NIZK for 3SAT(full version)" style="zoom:33%;" />
+
+<ol>
+<li><p>Prover picks an $(N,y)$ and <strong>proves that it is GOOD.</strong></p>
+</li>
+<li><p>Prover <strong>encodes the satisfying assignment</strong> and sends the <strong>encode variables</strong> $(y_1,\dots,y_n)$ to $V$.</p>
+</li>
+<li><p>Prove that (encoded) assignments <strong>satisfy each clause.</strong></p>
+<p> For each clause, construct the proof $\rho$ = <u>(7 additional triples, square root of the second triples, proof of coverage).</u></p>
+</li>
+</ol>
+<p>Completeness and Soundness can be inherited from NIZK for QNR.</p>
+<p><font color=blue><u><b><i>Computational Zero Knowledge Simulator S: </i></b></u></font> </p>
+<p>Simulator picks $(N,y)$ where $y$ is a <strong>quadratic residue.</strong></p>
+<article class="message message-immersive is-warning">  <div class="message-body">  <i class="fas fa-exclamation-triangle mr-2"></i> The following proof is my <strong>own deduction</strong> since the proof is omitted in the lecture.  <br> <strong>Corrections and advice are welcome.</strong>  </div>  </article>
+
+<ul>
+<li>Simulated view of $(N,y, \pi)$<ol>
+<li>Pick the proof $\pi_i$ to be random in $\mathbb{Z}_N^*$.</li>
+<li>Reverse-engineer the CRS, letting $r_i=\pi_i^2$ or $r_i=\pi_i^2/y$ randomly.</li>
+</ol>
+<ul>
+<li>Then  $r_i=\pi_i^2$ and $r_i=\pi_i^2/y$ are both <u>residues</u>.</li>
+<li>The distribution of simulated view is <strong>computationally indistinguishable</strong> to the real view.</li>
+</ul>
+</li>
+<li>Simulated view of encoded assignments $(y_1,\dots, y_n)$<ul>
+<li>$y_i \gets QNR_N$ whether $x_i$ is true or false (encryptions are <strong>both non-residues</strong>)<ul>
+<li>$Enc(x_i)=y_i$ (encryption of $1$ is a non-residue)</li>
+<li>$Enc(\overline{x_i})=yy_i$ (encryption of $0$ is a non-residue)</li>
+</ul>
+</li>
+<li><strong>Encoding of ALL literals can be set to true.</strong></li>
+</ul>
+</li>
+</ul>
+<h1 id="Proofs-vs-Argument"><a href="#Proofs-vs-Argument" class="headerlink" title="Proofs vs. Argument"></a>Proofs vs. Argument</h1><p>Before proceeding to the evolution of proofs, let’s discuss the <strong>difference</strong> between <u>proofs and arguments.</u></p>
+<p>The main difference is the <strong>definition in soundness.</strong></p>
+<p>In <a href="/2022/08/11/mit6875-lec14/" title="Lecture 14">Lecture 14</a>, we gave the <strong>definition of soundness in Proofs</strong> that <u>nobody can convince you a false statement</u>. We mentioned that the soundness holds <strong>agains unbounded provers.</strong></p>
+<p><strong>Arguments</strong> is where the soundness holds <strong>against only computational bounded provers.</strong></p>
+<p>It’s actually weakening the notion of proof.</p>
+<p>Why do we still introduce the the argument ?</p>
+<ol>
+<li>It allows us to get <strong>perfect zero knowledge for all of NP.</strong><br>Recall <u>perfect ZK proofs do not exist for NP-complete languages,</u> unless the polynomial hierarchy collapses. It turns out that if we weaken the notion of proofs, then we can construct the perfect zero knowledge systems.</li>
+<li>It allows us to <strong>get very short proof</strong> = succinct arguments or SNARGs.<br>SNARKs : succinct arguments of knowledge.</li>
+</ol>
+<h1 id="The-Evolution-of-Proofs"><a href="#The-Evolution-of-Proofs" class="headerlink" title="The Evolution of Proofs"></a>The Evolution of Proofs</h1><p>Proofs have been evolving over generations.</p>
+<ul>
+<li><strong>CLASSIC Proofs</strong> (Complexity class: NP) Prover writes down a string (proof); And Verifier checks.</li>
+<li><strong>INTERACTIVE Proofs</strong> (Complexity class: IP = PSPACE &gt;&gt; NP) Prover and verifier talk back and forth. In last blog, we introduced the zk proof for <strong>quadratic non-residue.</strong></li>
+<li><strong>PROBABILISTICALLY CHECKABLE Proofs</strong> (Complexity class: NEXP &gt;&gt; PSPACE) Non-interactive, but verifier only looks at 3 bits of proof.</li>
+<li>MULTIPROVER interactive proofs</li>
+<li>Proofs in the wild: ZCash</li>
+</ul>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Cryptography-MIT6875」: Lecture 16</p><p><a href="https://f7ed.com/2022/08/23/mit6875-lec16/">https://f7ed.com/2022/08/23/mit6875-lec16/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2022-08-23</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2022-09-11</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/ZK/">ZK, </a><a class="link-muted" rel="tag" href="/tags/PoK/">PoK, </a><a class="link-muted" rel="tag" href="/tags/NIZK/">NIZK, </a><a class="link-muted" rel="tag" href="/tags/CRS-Model/">CRS Model, </a><a class="link-muted" rel="tag" href="/tags/QNR/">QNR, </a><a class="link-muted" rel="tag" href="/tags/3SAT/">3SAT </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2022/09/03/mit6875-lec17/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Cryptography-MIT6875」: Lecture 17</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2022/08/16/mit6875-lec15/"><span class="level-item">「Cryptography-MIT6875」: Lecture 15</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "f03becefafc90211d6ad87cd20342cc1",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">70</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">135</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#The-Power-of-Interactive-Proofs"><span class="level-left"><span class="level-item">1</span><span class="level-item">The Power of Interactive Proofs</span></span></a><ul class="menu-list"><ul class="menu-list"><li><a class="level is-mobile" href="#IP-for-QNR"><span class="level-left"><span class="level-item">1.1.1</span><span class="level-item">IP for QNR</span></span></a></li></ul></ul></li><li><a class="level is-mobile" href="#NIZK-The-Common-Random-String-Model"><span class="level-left"><span class="level-item">2</span><span class="level-item">NIZK: The Common Random String Model</span></span></a></li><li><a class="level is-mobile" href="#Construct-NIZK-in-the-CRS-Model"><span class="level-left"><span class="level-item">3</span><span class="level-item">Construct NIZK in the CRS Model</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Blum-Feldman-Micali’88-quadratic-residuosity"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">Blum-Feldman-Micali’88 (quadratic residuosity)</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Quadratic-Residuosity"><span class="level-left"><span class="level-item">3.1.1</span><span class="level-item">Quadratic Residuosity</span></span></a></li><li><a class="level is-mobile" href="#NIZK-for-QNR"><span class="level-left"><span class="level-item">3.1.2</span><span class="level-item">NIZK for QNR</span></span></a></li><li><a class="level is-mobile" href="#NIZK-for-3SAT"><span class="level-left"><span class="level-item">3.1.3</span><span class="level-item">NIZK for 3SAT</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Proofs-vs-Argument"><span class="level-left"><span class="level-item">4</span><span class="level-item">Proofs vs. Argument</span></span></a></li><li><a class="level is-mobile" href="#The-Evolution-of-Proofs"><span class="level-left"><span class="level-item">5</span><span class="level-item">The Evolution of Proofs</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

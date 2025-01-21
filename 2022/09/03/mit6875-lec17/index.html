@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Cryptography-MIT6875」: Lecture 17 - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Topics Covered:    Definition of IND-CCA Secu"><meta property="og:type" content="blog"><meta property="og:title" content="「Cryptography-MIT6875」: Lecture 17"><meta property="og:url" content="https://f7ed.com/2022/09/03/mit6875-lec17/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Topics Covered:    Definition of IND-CCA Secu"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/mit6875-lec17-thumbnial.png"><meta property="article:published_time" content="2022-09-02T16:00:00.000Z"><meta property="article:modified_time" content="2022-09-11T03:57:50.290Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Application of NIZK"><meta property="article:tag" content="IND-CCA Security"><meta property="article:tag" content="CCA-Secure Encryption"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/mit6875-lec17-thumbnial.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2022/09/03/mit6875-lec17/"},"headline":"「Cryptography-MIT6875」: Lecture 17","image":["https://f7ed.com/gallery/thumbnails/mit6875-lec17-thumbnial.png"],"datePublished":"2022-09-02T16:00:00.000Z","dateModified":"2022-09-11T03:57:50.290Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Topics Covered:    Definition of IND-CCA Secu"}</script><link rel="canonical" href="https://f7ed.com/2022/09/03/mit6875-lec17/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Cryptography-MIT6875」: Lecture 17</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2022-09-02T16:00:00.000Z" title="2022-09-02T16:00:00.000Z">2022-09-03</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2022-09-11T03:57:50.290Z" title="2022-09-11T03:57:50.290Z">2022-09-11</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Cryptography-MIT6875/">Cryptography-MIT6875</a></span><span class="level-item"><i class="far fa-clock"></i> 14 minutes read (About 2153 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><article class="message message-immersive is-info">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="message-body">
+<i class="fas fa-info-circle mr-2"></i>
+In this <a href="/categories/Cryptography-MIT6875">series</a>, I will learn MIT 6.875, <strong>Foundations of Cryptography</strong>, lectured by <strong>Vinod Vaikuntanathan</strong>.
+<br>Any corrections and advice are welcome. ^ - ^
+</div>
+</article>
+
+<p><font color=blue><u><b>Topics Covered: </b></u></font> </p>
+<ul>
+<li>Definition of IND-CCA Security</li>
+<li>Application of NIZK: Construction of CCA-secure encryption scheme</li>
+</ul>
+<span id="more"></span>
+
+<p>In last post, we saw a NIZK for 3SAT, and then we can <u>get a NIZK for all of NP in the CRS model.</u></p>
+<p>Moreover, we mentioned that <u>if we weaken the notion of proofs into arguments</u>, then we can <u>construct perfect zk for all of NP.</u></p>
+<p>Today, we will discuss the <strong>application of NIZK</strong>, non-malleable and chosen ciphertext secure encryption scheme.</p>
+<h1 id="Active-Attacks-against-CPA-secure-Encryption"><a href="#Active-Attacks-against-CPA-secure-Encryption" class="headerlink" title="Active Attacks against CPA-secure Encryption"></a>Active Attacks against CPA-secure Encryption</h1><p>Recall the public encryption schemes.</p>
+<img src="https://s1.ax1x.com/2022/09/03/vorxiQ.png" alt="CPA-secure Encryption Scheme" style="zoom:33%;" />
+
+<ol>
+<li>Bob generate a pair of keys, a public key $pk$, and a private (or secret) key $sk$.</li>
+<li>Bob “publishes” $pk$ and keeps $sk$ to himself.</li>
+<li>Alice encrypts $m$ to Bob using $pk$.</li>
+<li>Bob decrypts using $sk$.</li>
+</ol>
+<p>In <a href="/2022/07/23/mit6875-lec8/" title="Lecture 8">Lecture 8</a>, we gave the definition of <strong>IND-CPA security</strong> for public encryption scheme and mentioned the <u>IND-CPA-secure is achievable with randomness.</u></p>
+<p>But there are two active attacks against the public encryption scheme above.</p>
+<h2 id="Malleability"><a href="#Malleability" class="headerlink" title="Malleability"></a>Malleability</h2><p>The first active attack is <strong>malleability</strong>.</p>
+<p>Consider the <strong>scenario for bidding.</strong></p>
+<p>Alice wants to bid  ¥100 and she encrypts her bid with public key.</p>
+<p>There is a malicious attacker that wants to win the bidding and he <u>can modify the encryption of  ¥100​ into an encryption of ¥101 as his bidding.</u></p>
+<p>The attack can always modify the encryption, which is always one more dollar than Alice’s although the attack <u>dose not know what Alice’s bid is.</u></p>
+<img src="https://s1.ax1x.com/2022/09/03/vorTxI.png" alt="Malleability" style="zoom:33%;" />
+
+<p>So the adversary could <strong>modify (“maul”) an encryption</strong> of $m$ <u>into an encryption of a related message</u> $m’$.</p>
+<h2 id="Chosen-Ciphertext-Attack"><a href="#Chosen-Ciphertext-Attack" class="headerlink" title="Chosen-Ciphertext Attack"></a>Chosen-Ciphertext Attack</h2><p>Another active attack is <strong>chosen-ciphertext attack.</strong></p>
+<p>If the first bit of the message is 0, we define it’s the encryption of a valid message.</p>
+<p>If the first bit of the message is 1, we define it’s the encryption of an invalid message.</p>
+<img src="https://s1.ax1x.com/2022/09/03/vorIGd.png" alt="CCA" style="zoom:33%;" />
+
+<p>Then the adversary may <strong>have access to a decryption “oracle”</strong> and can <u>use it to break security of a “target” ciphertext $c^*$ or even extract the secret key!</u></p>
+<p>In fact, <strong>Bleichenbacher</strong> showed <u>how to extract the entire secret key</u> <strong>given only a “ciphertext verification” oracle.</strong></p>
+<article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>  <a target="_blank" rel="noopener" href="http://archiv.infsec.ethz.ch/education/fs08/secsem/bleichenbacher98.pdf">Bleichenbacher</a> </div> </article>
+
+<h1 id="IND-CCA-Security"><a href="#IND-CCA-Security" class="headerlink" title="IND-CCA Security"></a>IND-CCA Security</h1><p>After defining the stronger active attackers, we can define the Indistinguishable Chosen-Ciphertext Attack Security, or <strong>IND-CCA.</strong></p>
+<p>Recall the game in IND-CPA secure definition.</p>
+<p><font color=blue><u><b> Game in IND-CPA (one-message): </b></u></font> </p>
+<img src="https://s1.ax1x.com/2022/09/03/vorHMt.png" alt="Game in IND-CPA" style="zoom:33%;" />
+
+<ol>
+<li>The <strong>Challenger</strong> generates a pair of key $(pk, sk)$ and publishes the $pk$.</li>
+<li><strong>Eve</strong> sends two <strong>single messages</strong>, $m_0$ and $m_1$s.t. $|m_0|=|m_1|$.</li>
+<li>The challenger samples $b$ from ${0,1}$ and encrypts the message $m_b$ using $pk$.<br>And send the ciphertext to Eve.</li>
+<li>Eve <u>guesses which message is encrypted</u> and output $b’$.</li>
+<li>Eve wins if $b’=b$.</li>
+</ol>
+<p>Let’s move to the game in IND-CCA.</p>
+<p>As has been said, the adversary has the <u>power of accessing to a decryption “oracle”.</u></p>
+<p>The adversary can <strong>query for the decryption in polynomial many times.</strong></p>
+<p>It can <u>happen both before and after the challenge.</u></p>
+<p><strong>Note</strong> that the adversary can query for the decryption, <strong>before the challenge</strong>, of any ciphertext.</p>
+<p>But <strong>after the challenge</strong>, he <u>cannot query for the decryption of the challenge.</u></p>
+<p>Otherwise, the challenge is meaningless.</p>
+<p>So there are additional two phases in the game of IND-CCA.</p>
+<p><font color=blue><u><b> Game in IND-CCA: </b></u></font> </p>
+<img src="https://s1.ax1x.com/2022/09/03/voroRA.png" alt="Game in IND-CCA" style="zoom:33%;" />
+
+<ol>
+<li>The <strong>Challenger</strong> generates a pair of key $(pk, sk)$ and publishes the $pk$.</li>
+<li><font color="blue">Eve <strong>asks for the decryption of any ciphertext</strong> in poly. many times.</font> </li>
+<li><strong>Eve</strong> sends two <strong>single messages</strong>, $m_0$ and $m_1$s.t. $|m_0|=|m_1|$.</li>
+<li>The challenger samples $b$ from ${0,1}$ and encrypts the message $m_b$ using $pk$.<br>And send the ciphertext to Eve.</li>
+<li><font color="blue">Eve <strong>asks for the decryption</strong> of any ciphertext (<strong>except the challenge</strong> $c^\star$) in poly. many times.</font> </li>
+<li>Eve guesses <u>which message is encrypted</u> and output $b’$.</li>
+<li>Eve wins if $b’=b$.</li>
+</ol>
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>IND-CCA Security Definition</strong></p>
+ </div> <div class="message-body"> 
+
+<p>The encryption scheme is <strong>IND-CCA</strong> secure if no PPT Eve can win with probability $&gt;1/2+negl(\lambda)$.</p>
+ </div> </article> 
+
+<h1 id="Constructing-CCA-Secure-Encryption"><a href="#Constructing-CCA-Secure-Encryption" class="headerlink" title="Constructing CCA-Secure Encryption"></a>Constructing CCA-Secure Encryption</h1><p> In the light of the CCA-secure definition, we can construct the CCA-secure encryption scheme.</p>
+<p><strong>Our goal</strong> is that the <u>adversary is hard to modify an encryption</u> of $m$ into an encryption of a related message, say $m+1$.</p>
+<p>Intuitionally, the <strong>proof of knowledge</strong> and the <strong>signatures</strong> should help <u>against the malleability for CAP-secure encryption.</u></p>
+<p>With <strong>NIZK proofs of knowledge</strong>, the idea is that the <u>encryption party attaches an NIZK proof of knowledge of the underlying message to the ciphertext.</u></p>
+<p>Therefore, the encryption consists of CPA-encryption and the NIZK proof of knowledge of the message.</p>
+<p>$C:(c=\text{CPAEnc}(m;r),\text{ proof }\pi \text{ that “I know }m\text{ and }r\text{ “})$.</p>
+<p>This idea will turns out to be useful, but <strong>NIZK proofs themselves can be malleable.</strong></p>
+<p>So the <strong>active attack</strong>  turns to create the CPA-encryption of $(m+1,r)$ and the NIZK proof of $(m+1,r)$.</p>
+<h2 id="Start-with-Digital-Signatures"><a href="#Start-with-Digital-Signatures" class="headerlink" title="Start with Digital Signatures"></a>Start with Digital Signatures</h2><p>Let’s start with digital signatures.</p>
+<p>We construct the CCA-secure encryption, which contains the signature of the CPA-secure encryption.</p>
+<article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>  Note that it is malleable. </div> </article>
+
+<p>$C:(c=\text{CPAEnc}(pk,m;r),\text{Sign}_{sgk}(c),vk)$</p>
+<p>where the encryption produces a signing/verification key pair by running $(sgk,vk)\gets \text{Sign.Gen}(1^n)$.</p>
+<p>It is actually <strong>not CCA-secure.</strong> (or it’s malleable)</p>
+<p>If the adversary changes $vk$, all bets are off.</p>
+<p>The picture below explains the reason vividly.</p>
+<img src="https://s1.ax1x.com/2022/09/03/vorbsP.png" alt="NOT CCA-Secure" style="zoom:43%;" />
+
+<p>Consequently, the <strong>lesson</strong> is that <u>we need to “tie” the ciphertext $c$ to $vk$ in a “meaningful” way.</u></p>
+<h2 id="IND-CPA-→-“Different-Key-Non-malleability”"><a href="#IND-CPA-→-“Different-Key-Non-malleability”" class="headerlink" title="IND-CPA → “Different-Key Non-malleability”"></a>IND-CPA → “Different-Key Non-malleability”</h2><p>One observation is we can <strong>reduce IND-CPA to Different-Key Non-malleability(NM).</strong></p>
+<p>The <strong>Different-Key NM</strong> predicates that <u>given (independent) $pk,pk’$ and the encryption $\text{CPAEnc}(pk,m;r)$,</u> the adversary <strong>cannot produce</strong> $\text{CPAEnc}(pk’,m+1;r)$.</p>
+<p>It’s a <strong>reduction</strong> that suppose the adversary could produce the different-key encryption, then she can break the IND-CPA security of $\text{CPAEnc}(pk,m;r)$.</p>
+<p><font color=blue><u><b>Proof:</b></u></font> </p>
+<p>Suppose for contradiction that the <strong>adversary</strong> has the <u>power of producing the different-key encryption</u>, $\text{CPAEnc}(pk’,m+1;r)$.</p>
+<p>The interaction with the Diff-Key NM adversary is as follows.</p>
+<img src="https://s1.ax1x.com/2022/09/03/vorqqf.png" alt="Diff-Key NM Game" style="zoom:43%;" />
+
+<p><font color=blue><u><i> Interaction with Diff-Key NM Adv.</i></u></font> </p>
+<ol>
+<li>Pick a random pair $(pk’, sk’)$ and <u>give the two public keys $pk,pk’$ .</u></li>
+<li>Give the CPA-secure encryption of $m$ using $pk$.</li>
+<li>The Diff-Key NM adv. <u>promises to produce the CPA-secure encryption</u> of $m+1$ using the different key $pk’$. (w.r.t. contradiction)</li>
+</ol>
+<p>Then we can <strong>construct a CPA adversary</strong> by using the Diff-Key NM adversary, as shown below.</p>
+<img src="https://s1.ax1x.com/2022/09/03/vorXdS.png" alt="Reduction = CPA adversary" style="zoom:33%;" />
+
+<p><font color=blue><u><i> Break CPA-secure Encryption </i></u></font> </p>
+<ul>
+<li>The <strong>challenge</strong> is to <u>decrypt the message given CPA-secure encryption.</u><br>(as shown on the left of the picture)</li>
+</ul>
+<ol>
+<li>Given $pk$, then we <u>pick a random pair</u> $(pk’,sk’)$ and send $pk,pk’$ to the adversary.</li>
+<li>Give the CPA-secure encryption from CPA challenge.</li>
+<li>The adversary promises to <u>produce an encryption using the different key</u> $pk’$.</li>
+<li>Then we can decrypt it with $sk’$ and subtract 1 to get $m$.</li>
+</ol>
+<p>Hence, if the adversary can <strong>break the Different-Key NM game</strong>, then she can <strong>break CPA security.</strong></p>
+<h2 id="CCA-Secure-Encryption-Scheme"><a href="#CCA-Secure-Encryption-Scheme" class="headerlink" title="CCA-Secure Encryption Scheme"></a>CCA-Secure Encryption Scheme</h2><p>We can get <strong>non-malleable and CCA-secure encryption</strong> putting <em>CPA-secure encryption</em>, <em>digital signature</em> and <em>NIZK proofs</em> together.</p>
+<p>As has been said, we <u>need to tie the ciphertext $c$ to the verification key $vk$.</u></p>
+<h3 id="NM-Encryption-Scheme"><a href="#NM-Encryption-Scheme" class="headerlink" title="NM Encryption Scheme"></a>NM Encryption Scheme</h3><p><font color=blue><u><b> CCA Encryption (only non-malleable): </b></u></font> </p>
+<ul>
+<li><p>We <u>define $2n$ public keys of the CPA scheme</u> as the <strong>CCA public key.</strong></p>
+</li>
+<li><p><strong>CCA Public Key:</strong></p>
+<p>  $\left[\begin{array}{llll}p k_{1,0} &amp; p k_{2,0} &amp; \dots &amp; p k_{n, 0} \ p k_{1,1} &amp; p k_{2,1} &amp; \dots &amp; p k_{n, 1}\end{array}\right]$ where $n=|vk|$.</p>
+</li>
+</ul>
+<ol>
+<li><p>First, pick a signing/verification key pair $(sgk, vk)$.</p>
+</li>
+<li><p>Then <u>use the CCA public key, based on the bits of</u> $vk$, to produce the ciphertext.</p>
+<p> $CT=[ct_{1,vk_1},ct_{2,vk_2},\dots,ct_{n,vk_n}]$ where $ct_{i,j}\gets \text{CPAEnc}(pk_{i,j},m)$.</p>
+<ul>
+<li><p>This ties the ciphertext $CT$ to the verification key $vk$ in meaningful way that the <u>encryption is under the public key indexed by the bits of $vk$.</u></p>
+<p>For each ciphertext in slot $i$ of $CT$:</p>
+</li>
+<li><p>If the $i$-th bit of $vk$ is 0, then use $pk_{i,0}$ to produce the ciphertext.</p>
+</li>
+<li><p>If the $i$-th bit of $vk$ is 1, then use $pk_{i,1}$ to produce the ciphertext.</p>
+</li>
+</ul>
+</li>
+<li><p>Output $(CT,vk,\sigma=\text{Sign}_{sgk}(CT))$</p>
+</li>
+</ol>
+<p>The encryption scheme above is <strong>non-malleable.</strong></p>
+<p><font color=blue><u><i> Non-malleability rationale: </i></u></font> </p>
+<ul>
+<li>If the adversary <u>keeps the $vk$ the same,</u> she needs to produce $(CT’,vk,\sigma_{sgk}(CT’))$ for the related message $m’$, which <strong>has to break the signature scheme.</strong><ul>
+<li>$CT’$ is encrypted <u>under the same public key</u> as $CT$.</li>
+</ul>
+</li>
+<li>If the adversary <u>changes the $vk$,</u> she has to break the Different-Key Non-malleability game, and therefore <strong>CPA security.</strong><ul>
+<li>The adversary needs the produce $(CT’,vk’,\sigma_{sgk’}(CT’))$ for the related message $m’$.</li>
+<li>$CT’$ is encrypted <u>under the different public key</u>, which is indexed by $vk’$.</li>
+<li>Hence, for <strong>each different bit</strong> of $vk’$:<ul>
+<li>The original  $ct_{i,j}\gets \text{CPAEnc}(pk_{i,j},m)$.</li>
+<li>The adversary needs to produce $ct_{i,j}’\gets \text{CPAEnc}(pk_{i,1\oplus j},m’)$.</li>
+<li>Turns out the Different-Key NM, which can <strong>be reduced to CPA security.</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="CCA-Secure-Encryption-Scheme-1"><a href="#CCA-Secure-Encryption-Scheme-1" class="headerlink" title="CCA-Secure Encryption Scheme"></a>CCA-Secure Encryption Scheme</h3><p>We are not done!!<br>Adversary could <strong>create ill-formed ciphertexts</strong>, e.g. <u>different $ct$s encrypt different messages</u>, and uses it for Bleichenbacher-like attack.</p>
+<p>Hence, it has to <strong>prove that the ciphertext is well-formed.</strong></p>
+<p><font color=blue><u><b> CCA Encryption (non-malleable and CCA-secure): </b></u></font> </p>
+<ul>
+<li><p>We <u>define $2n$ public keys of the CPA scheme</u> as the <strong>CCA public key.</strong></p>
+</li>
+<li><p><strong>CCA Keys:</strong></p>
+<p>  PK = $\left[\begin{array}{llll}p k_{1,0} &amp; p k_{2,0} &amp; \dots &amp; p k_{n, 0} \ p k_{1,1} &amp; p k_{2,1} &amp; \dots &amp; p k_{n, 1}\end{array}\right]$, <font color="blue"> <strong>CRS</strong>  </font> where $n=|vk|$.</p>
+<p>  SK = $\left[\begin{array}{c}sk_{1,0} \ sk_{1,1}\end{array}\right]$</p>
+<ul>
+<li>To achieve NIZK proof, it has to have (public) <strong>CRS</strong>.</li>
+<li>The secret key contains <strong>only one pair</strong> since it needs to be proven well-formed.</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li><p>First, pick a signing/verification key pair $(sgk, vk)$.</p>
+</li>
+<li><p>Then <u>use the CCA public key, based on the bits of</u> $vk$, to produce the ciphertext.</p>
+<p> $CT=[ct_{1,vk_1},ct_{2,vk_2},\dots,ct_{n,vk_n}]$ where $ct_{i,j}\gets \text{CPAEnc}(pk_{i,j},m)$.</p>
+</li>
+<li><p>Generate<font color="blue"> <strong>NIZK proof</strong> $\pi$ = “CT is well-formed”.</font> </p>
+</li>
+<li><p>Output $(CT,{\color{blue}\pi},vk,\sigma=\text{Sign}_{sgk}({\color{blue}{CT,\pi}}))$</p>
+</li>
+</ol>
+<p><font color=blue><u><b> CCA Decryption: </b></u></font> </p>
+<ol>
+<li>Check the signature</li>
+<li>Check the NIZK proof</li>
+<li>Decrypt with $sk_{1,vk_1}$</li>
+</ol>
+<p>Now, this encryption scheme is CCA-secure and non-malleable.</p>
+<p><font color=blue><u><b> Proof of CCA-security: </b></u></font> </p>
+<ul>
+<li><p>Proof Sketch</p>
+<ul>
+<li>Suppose for contradiction that there is an <strong>CCA adversary.</strong></li>
+<li><strong>Play the CCA game with the adversary.</strong><br>Note that we will <u>define several hybrid distributions to argument</u> and <u>play the CCA game in one Hybrid.</u></li>
+<li>Then we can use her to <strong>break either the NIZK soundness/ZK, the signature scheme or the CPA-secure scheme.</strong></li>
+</ul>
+</li>
+<li><p>CCA game is as follows.</p>
+  <article class="message message-immersive is-warning">  <div class="message-body">  <i class="fas fa-exclamation-triangle mr-2"></i> I drew this picture <strong>on my own</strong>. since the proof is omitted in the lecture.  <br> <strong>Corrections and advice are welcome.</strong>  </div>  </article>
+
+  <img src="https://s1.ax1x.com/2022/09/03/vorjIg.png" alt="CCA Game" style="zoom:43%;" />
+</li>
+<li><p><strong>Hybrid 0</strong>: Play the CCA game as prescribed.</p>
+</li>
+<li><p><strong>Hybrid 1</strong>: Observe that $vk_i\ne vk^*$.  <font color="blue"> (<strong>Otherwise break signature.</strong> ) </font> </p>
+<ul>
+<li>Observe that this means <strong>each query ciphertext-tuple</strong> <u>involves a different public-key from the challenge ciphertext.</u></li>
+<li>Then we <u>can use the “different private-key” to decrypt.</u></li>
+<li><font color="blue"><strong>(If the adversary sees a difference, she broke NIZK soundness.)</strong> </font><br>It means that the adversary <u>produces a ill-formed ciphertext</u> and she cheats successfuly.</li>
+</ul>
+</li>
+<li><p>Hybrid 2: Now change the CRS/$\pi$ into <strong>simulated</strong> CRS/$\pi$.  <font color="blue"><strong>(It’s OK by ZK)</strong> </font> </p>
+  <article class="message message-immersive is-warning">  <div class="message-body">  <i class="fas fa-exclamation-triangle mr-2"></i> The following proof is my <strong>own deduction</strong> since the proof is omitted in the lecture.  <br> <strong>Corrections and advice are welcome.</strong>  </div>  </article>
+
+<ul>
+<li><p>If we want to use the adversary to break CPA security, it <u>has to win the CPA game</u> as follows.</p>
+  <img src="https://s1.ax1x.com/2022/09/03/vorOZ8.png" alt="CPA Game" style="zoom:33%;" />
+</li>
+<li><p>We can plop $pk$, given in CPA game, into <u>one slot</u> of $PK$.</p>
+</li>
+<li><p>We plop ciphertext, given in CPA game, into $c^*$  <u>with the corresponding slot.</u></p>
+</li>
+<li><p>For <strong>other slots</strong> in $c^*$, we can <u>generate the ciphertext for random message.</u></p>
+</li>
+<li><p>But we cannot generate NIZK proof $\pi$ since we don’t have the witness.<br>It says that the $c^*$ is ill-formed.</p>
+</li>
+<li><p>But we  <font color="blue"><strong>cannot since we don’t have the witness</strong> </font>, that is $m^*$, the challenge of CPA game.</p>
+</li>
+<li><p>Hence, in Hybrid 2, we change the CRS/$\pi$ into <strong>simulated</strong> CRS/$\pi$.</p>
+</li>
+<li><p>It’s zero-knowledge.</p>
+</li>
+<li><p>But more importantly, we <u>can generate simulated proof.</u></p>
+</li>
+<li><p>Consequently, <u>if the adversary wins in this hybrid</u>, she <strong>breaks IND-CPA</strong> as shown below.</p>
+<article class="message message-immersive is-warning">  <div class="message-body">  <i class="fas fa-exclamation-triangle mr-2"></i> I drew this picture <strong>on my own</strong> since the proof is omitted in the lecture.  <br> <strong>Corrections and advice are welcome.</strong>  </div>  </article>
+
+<img src="https://s1.ax1x.com/2022/09/03/vorzGj.jpg" alt="Reduction = CPA adversary" style="zoom:14%;" /></li>
+</ul>
+</li>
+</ul>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Cryptography-MIT6875」: Lecture 17</p><p><a href="https://f7ed.com/2022/09/03/mit6875-lec17/">https://f7ed.com/2022/09/03/mit6875-lec17/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2022-09-03</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2022-09-11</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Application-of-NIZK/">Application of NIZK, </a><a class="link-muted" rel="tag" href="/tags/IND-CCA-Security/">IND-CCA Security, </a><a class="link-muted" rel="tag" href="/tags/CCA-Secure-Encryption/">CCA-Secure Encryption </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2023/07/18/zkp-lec4/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Cryptography-ZKP」: Lec4-SNARKs via IP</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2022/08/23/mit6875-lec16/"><span class="level-item">「Cryptography-MIT6875」: Lecture 16</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "966728f500ee95831392bf08385e6a80",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">70</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">135</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Active-Attacks-against-CPA-secure-Encryption"><span class="level-left"><span class="level-item">1</span><span class="level-item">Active Attacks against CPA-secure Encryption</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Malleability"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">Malleability</span></span></a></li><li><a class="level is-mobile" href="#Chosen-Ciphertext-Attack"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">Chosen-Ciphertext Attack</span></span></a></li></ul></li><li><a class="level is-mobile" href="#IND-CCA-Security"><span class="level-left"><span class="level-item">2</span><span class="level-item">IND-CCA Security</span></span></a></li><li><a class="level is-mobile" href="#Constructing-CCA-Secure-Encryption"><span class="level-left"><span class="level-item">3</span><span class="level-item">Constructing CCA-Secure Encryption</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Start-with-Digital-Signatures"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">Start with Digital Signatures</span></span></a></li><li><a class="level is-mobile" href="#IND-CPA-→-“Different-Key-Non-malleability”"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">IND-CPA → “Different-Key Non-malleability”</span></span></a></li><li><a class="level is-mobile" href="#CCA-Secure-Encryption-Scheme"><span class="level-left"><span class="level-item">3.3</span><span class="level-item">CCA-Secure Encryption Scheme</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#NM-Encryption-Scheme"><span class="level-left"><span class="level-item">3.3.1</span><span class="level-item">NM Encryption Scheme</span></span></a></li><li><a class="level is-mobile" href="#CCA-Secure-Encryption-Scheme-1"><span class="level-left"><span class="level-item">3.3.2</span><span class="level-item">CCA-Secure Encryption Scheme</span></span></a></li></ul></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Cryptography-ZKP」: Lec4-SNARKs via IP - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="In this series, I will learn Zero Knowledge Proofs (ZKP) on this MOOC, lectured by Dan Boneh, Shafi Goldwasser, Dawn Song, Justin Thaler and Yupeng Zhang.  Any corrections and advice are welcom"><meta property="og:type" content="blog"><meta property="og:title" content="「Cryptography-ZKP」: Lec4-SNARKs via IP"><meta property="og:url" content="https://f7ed.com/2023/07/18/zkp-lec4/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="In this series, I will learn Zero Knowledge Proofs (ZKP) on this MOOC, lectured by Dan Boneh, Shafi Goldwasser, Dawn Song, Justin Thaler and Yupeng Zhang.  Any corrections and advice are welcom"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/covers/zkp-lec4-banner.png"><meta property="article:published_time" content="2023-07-17T16:00:00.000Z"><meta property="article:modified_time" content="2024-01-26T09:07:11.181Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Cryptography"><meta property="article:tag" content="ZKP"><meta property="article:tag" content="IP"><meta property="article:tag" content="SNARKs"><meta property="article:tag" content="Sum-check"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/covers/zkp-lec4-banner.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2023/07/18/zkp-lec4/"},"headline":"「Cryptography-ZKP」: Lec4-SNARKs via IP","image":["https://f7ed.com/gallery/covers/zkp-lec4-banner.png"],"datePublished":"2023-07-17T16:00:00.000Z","dateModified":"2024-01-26T09:07:11.181Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"In this series, I will learn Zero Knowledge Proofs (ZKP) on this MOOC, lectured by Dan Boneh, Shafi Goldwasser, Dawn Song, Justin Thaler and Yupeng Zhang.  Any corrections and advice are welcom"}</script><link rel="canonical" href="https://f7ed.com/2023/07/18/zkp-lec4/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Cryptography-ZKP」: Lec4-SNARKs via IP</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2023-07-17T16:00:00.000Z" title="2023-07-17T16:00:00.000Z">2023-07-18</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2024-01-26T09:07:11.181Z" title="2024-01-26T09:07:11.181Z">2024-01-26</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Cryptography-ZKP/">Cryptography-ZKP</a></span><span class="level-item"><i class="far fa-clock"></i> 40 minutes read (About 6031 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><article class="message message-immersive is-info">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="message-body">
+<i class="fas fa-info-circle mr-2"></i>
+    In this <a href="/categories/Cryptography-ZKP">series</a>, I will learn <strong>Zero Knowledge Proofs (ZKP)</strong> on this <a target="_blank" rel="noopener" href="https://zk-learning.org/">MOOC</a>, lectured by Dan Boneh, Shafi Goldwasser, Dawn Song, <strong>Justin Thaler</strong> and Yupeng Zhang. 
+<br>Any corrections and advice are welcome. ^ - ^
+</div>
+</article>
+
+
+
+<p><strong>Topics:</strong> </p>
+<ul>
+<li>Differences between Interactive Proofs and SNARKs</li>
+<li>Outline of SNARKs from IP</li>
+<li>Brief intro to Functional Commitments</li>
+<li>SZDL Lemma</li>
+<li>Multilinear Extensions</li>
+<li><strong>Sum-check Protocol and its application.</strong><ul>
+<li>Counting Triangles</li>
+<li>SNARK for Circuit-satisfiability</li>
+</ul>
+</li>
+</ul>
+<span id="more"></span>
+
+<p>Before proceeding to today’s topic, let’s briefly recall what is a SNARK?</p>
+<ul>
+<li>SNARK is a <u>succinct proof that a certain statement is true.</u><br>For example, such a statement could be “I know an m such that SHA256(m)=0”.</li>
+<li>SNARK indicates that <u>the proof is “short” and “fast” to verify.</u><br>Note that if m is 1GB then the trivial proof, i.e. the message m, is neither short nor fast to verify.</li>
+</ul>
+<h1 id="Interactive-Proofs-Motivation-and-Model"><a href="#Interactive-Proofs-Motivation-and-Model" class="headerlink" title="Interactive Proofs: Motivation and Model"></a>Interactive Proofs: Motivation and Model</h1><p>In traditional outsourcing, the Cloud Provider stores the user’s data and the user can ask the Cloud Provider to run some program on its data. The user just blindly trusts the answer returned by the Cloud Provider.</p>
+<img src="https://s1.ax1x.com/2023/07/18/pCozkAf.png" alt="Traditional Outsourcing" style="zoom:33%;" />
+
+<p>The <strong>motivation</strong> for <strong>Interactive Proofs (IP)</strong> is that the above procedure can be turned into the following Challenge-Response procedure. The user is allowed to send a challenge to the Cloud Provider and the Cloud Provider is required to respond for such a challenge.</p>
+<p>The user has to accept if the response is valid or reject as invalid.</p>
+<img src="https://s1.ax1x.com/2023/07/18/pCozZ9g.png" alt="Challenge-Response Process" style="zoom:33%;" />
+
+<p>Hence, the Challenge-Response procedure or IP can be <strong>modeled</strong> as follows.</p>
+<ul>
+<li>P solves a problem and tells V the answer.<ul>
+<li>Then they have a <u>conversation</u>.</li>
+<li><strong>P’s goal</strong> is to <u>convince V that the answer is correct.</u></li>
+</ul>
+</li>
+<li>Requirements:<ol>
+<li><strong>Completeness</strong>: an honest P can convince V to accept the answer.</li>
+<li><strong>(Statistical) Soundness</strong>: V will catch a lying P with high probability.</li>
+</ol>
+</li>
+</ul>
+<p>Note that statistical soundness is <strong>information-theoretically soundness</strong> so IPs are <u>not based on cryptographic assumptions.</u></p>
+<p>Hence, the soundness must hold even if P <u>is computationally unbounded</u> and trying to trick V into accepting the incorrect answer.</p>
+<p>If soundness holds <u>only against polynomial-time provers</u>, then the protocol is called an <strong>interactive argument</strong>.</p>
+<p>It is worth noting that <u>SNARKs are arguments so it is not statistically sound.</u></p>
+<h2 id="IPs-v-s-SNARKs"><a href="#IPs-v-s-SNARKs" class="headerlink" title="IPs v.s. SNARKs"></a>IPs v.s. SNARKs</h2><p>There are <strong>three main differences</strong> between Interactive Proofs and SNARKs. We’ll list them first and elaborate in the section.</p>
+<ol>
+<li>SNARKs are <u>not statistically sound.</u></li>
+<li>SNARKs have <u>knowledge soundness.</u></li>
+<li>SNARKs are <u>non-interactive.</u></li>
+</ol>
+<h3 id="Not-Statistically-Sound"><a href="#Not-Statistically-Sound" class="headerlink" title="Not Statistically Sound"></a>Not Statistically Sound</h3><p>The first one is mentioned above that SNARKs are arguments so the soundness is only against polynomial-time provers.</p>
+<h3 id="Knowledge-Soundness-v-s-Soundness"><a href="#Knowledge-Soundness-v-s-Soundness" class="headerlink" title="Knowledge Soundness v.s. Soundness"></a>Knowledge Soundness v.s. Soundness</h3><p>The second one is that <strong>SNARKs has knowledge soundness.</strong></p>
+<p><u>SNARKs that don’t have knowledge soundness</u> are called <strong>SNARGs</strong>, they are studied too.</p>
+<p>Considering a public arithmetic circuit such that $C(x,w)=0$ where $x$ is the <strong>public statement</strong> and $w$ is the <strong>secret witness</strong>.</p>
+<img src="https://s1.ax1x.com/2023/07/18/pCozPBt.png" alt="Arithmetic Circuit" style="zoom:33%;" />
+
+<p><u>Compare soundness to knowledge soundness</u> for such a circuit-satisfiability.</p>
+<ul>
+<li><strong>Sound</strong>: V accepts → There <strong>exist</strong> $w$ s.t. $C(x,w)=0$.</li>
+<li><strong>Knowledge sound</strong>: V accepts → P actually “<strong>knows</strong>” $w$ s.t. $C(x,w)=0$.<br>The prover is establishing that he necessarily knows the witness.</li>
+</ul>
+<p>As for the soundness, the prover is only establishing the existence of such a witness. </p>
+<p>The knowledge soundness is establishing that the prover necessarily knows the witness.</p>
+<p>Hence, <u>knowledge soundness is stronger.</u></p>
+<p>But sometimes standard soundness is meaningful even in contexts where knowledge soundness isn’t, and vice versa.</p>
+<ul>
+<li><strong>Standard soundness</strong> is meaningful.<ul>
+<li>Because there’s <u>no natural “witness”.</u></li>
+<li>E.g., P claims the output of V’s program on $x$ is 42.</li>
+</ul>
+</li>
+<li><strong>Knowledge soundness</strong> is meaningful.<ul>
+<li>E.g., P claims to <u>know the secret key</u> that controls a certain Bitcoin wallet.</li>
+<li>It is actually claimed that the prover knows a pre-image such that the hash is 0.</li>
+<li>The hash function is surjective so a witness for this claim always exists. In fact, there are many and many witnesses for this claim. It turns to a trivial sound protocol.</li>
+<li>Hence, it needs to establish that the prover necessarily knows the witness.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Non-interactive-and-Public-Verifiability"><a href="#Non-interactive-and-Public-Verifiability" class="headerlink" title="Non-interactive and Public Verifiability"></a>Non-interactive and Public Verifiability</h3><p>The final difference is that <strong>SNARKs are non-interactive.</strong></p>
+<p>Interactive proof and arguments <u>only convince the party that is choosing or sending the random challenges.</u></p>
+<p>This is bad if there are <u>many verifiers</u> as in most blockchain applications. P would <u>have to convince each verifier separately.</u></p>
+<p>For <strong>public coin protocols</strong>, we have a solution, <u>Fiat-Shamir, which renders the protocol non-interactive and publicly verifiable.</u></p>
+ <article class="message message-immersive is-warning"> <div class="message-body"> <i class="fas fa-exclamation-triangle mr-2"></i> 
+
+<p>In quiz 4, it is a false statement that non-interactive implies publicly verifiable.</p>
+<p>In my perspective, it only holds for non-interactive protocols rendered from the public coin protocols where the verifier only sample random coins and send the sampled coins to the provers.</p>
+ </div> </article> 
+
+<h1 id="SNARKs-from-Interactive-Proofs-Outline"><a href="#SNARKs-from-Interactive-Proofs-Outline" class="headerlink" title="SNARKs from Interactive Proofs: Outline"></a>SNARKs from Interactive Proofs: Outline</h1><p>We’ll describe the outline to build SNARKs from interactive proofs in this section.</p>
+<h2 id="Trivial-SNARKs"><a href="#Trivial-SNARKs" class="headerlink" title="Trivial SNARKs"></a>Trivial SNARKs</h2><p>The first thing to point out is that the <u>trivial SNARK is not a SNARK.</u></p>
+<p>The <strong>trivial SNARK</strong> is as follows:</p>
+<ol>
+<li>Prover sends $w$ to verifier.</li>
+<li>Verifier checks if $C(x,w)=0$ and accepts if so.<br>The verifier is required to <u>rerun the circuit.</u></li>
+</ol>
+<p>The above trivial SNARK has <strong>two problems:</strong></p>
+<ul>
+<li>The witness $w$ might be long.<ul>
+<li>We want a “short” proof  $\pi$ → $\text{len}(\pi)=\text{sublinear}(|w|)$ </li>
+</ul>
+</li>
+<li>Computing  $C(x,w)$ may be hard.<ul>
+<li>We want a “fast” verifier →  $\text{time}(V)=O_\lambda(|x|, \text{sublinear(|C|)})$. </li>
+</ul>
+</li>
+</ul>
+<p>As described in Lecture 2, <strong>succinctness</strong> means the proof length is sublinear in the length of the witness and the verification time is linear to the length of public statement $x$ and sublinear to the size of the circuit $C$. Note that the verification time linear to $|x|$ means that the verifier at least read the statement $x$.</p>
+<h2 id="Less-Trivial"><a href="#Less-Trivial" class="headerlink" title="Less Trivial"></a>Less Trivial</h2><p>We can make it <strong>less trivial</strong> as follows:</p>
+<ol>
+<li>Prover sends $w$ to verifier.</li>
+<li>Prover <u>uses an IP to prove</u> that $w$ satisfies the claimed property.</li>
+</ol>
+<p>It gives a fast verifier, but the proof is still too long. </p>
+<h2 id="Actual-SNARKs"><a href="#Actual-SNARKs" class="headerlink" title="Actual SNARKs"></a>Actual SNARKs</h2><p>In actual SNARKs, instead of sending $w$, the prover <strong>commits cryptographically to $w$.</strong></p>
+<p>Consequently, the actual SNARKs is described as follows:</p>
+<ol>
+<li>Prover commits cryptographically to $w$.</li>
+<li>Prover uses an IP to prove that $w$ satisfies the claimed property.</li>
+</ol>
+<p>The IP procedure reveals just enough information about the committed witness $w$ to allow the verifier to run its checks.</p>
+<p>Moreover, the IP procedure can be rendered non-interactive via Fiat-Shamir.</p>
+<h1 id="Functional-Commitments"><a href="#Functional-Commitments" class="headerlink" title="Functional Commitments"></a>Functional Commitments</h1><p>There are several important functional families introduced in Lecture 2 we want to build commitment schemes.</p>
+<ul>
+<li><p><strong>Polynomial commitments</strong>: commit to a univariate  $f(X)$ in $\mathbb{F}_p^{(\le d)}[X]$. <br>$f(X)$ is a univariate polynomial in the variable $X$ that has a degree at most $d$.</p>
+<ol>
+<li><p>The <strong>prover</strong> <u>commits to a univariate polynomial</u> of degree $\le d$ .</p>
+</li>
+<li><p>Later the <strong>verifier</strong> <u>requests to know the evaluation of this polynomial at a specific point</u> $r$.</p>
+</li>
+<li><p>The <strong>prover</strong> can <u>reveal $f(r)$ and provide proof</u> that the revealed evaluation is consistent with the committed polynomial.</p>
+<p>Note that the proof size and verifier time should be $O_\lambda(\log d)$ in SNARKs.</p>
+</li>
+</ol>
+</li>
+<li><p><strong>Multilinear commitments</strong>: commit to multilinear  $f$ in $\mathbb{F}_p^{(\le 1)}[X_1,\dots, X_k]$. <br>$f$ is a multilinear polynomial in variables $X_1,\dots, X_k$ where each variable has a degree at most  1. E.g., $f(x_1,\dots, x_k)=x_1x_3 + x_1 x_4 x_5+x_7$.</p>
+</li>
+<li><p><strong>Vector commitments</strong> (e.g. <strong>Merkle trees</strong>): commit to a vector   $\vec{u}=(u_1,\dots, u_d)\in \mathbb{F}_p^d$.   </p>
+<ol>
+<li>The prover commits to a vector of $d$ entries.</li>
+<li>Later the verifier requests the prover to <u>open a specific entry of the vector</u>, e.g. the $i$th entry $f_{\vec{u}}(i)$.</li>
+<li>The prover can open the $i$th entry $f_{\vec{u}}(i)=u_i$ and provide a short proof that the revealed entry is consistent with the committed vector.</li>
+</ol>
+</li>
+<li><p><strong>Inner product commitments</strong> (inner product arguments - IPA): commit to a vector   $\vec{u}=(u_1,\dots, u_d)\in \mathbb{F}_p^d$.  </p>
+<ol>
+<li>The prover commits to a vector $\vec{u}$.</li>
+<li>Later the verifier requests the prover to <u>open an inner product</u> $f_{\vec{u}}(\vec{v})$ that takes a vector $\vec{v}$ as input.</li>
+<li>The prover can open the inner product $f_{\vec{u}}(\vec{v})=(\vec{u},\vec{v})$ and provide a short proof that the revealed inner product is consistent with the committed vector.</li>
+</ol>
+</li>
+</ul>
+<h2 id="Vector-Commitments-Merkle-Trees"><a href="#Vector-Commitments-Merkle-Trees" class="headerlink" title="Vector Commitments: Merkle Trees"></a>Vector Commitments: Merkle Trees</h2><p>In vector commitments, the prover wants to commit a vector.</p>
+<p>We can pair up the values in the vector and hash them to form a binary tree.</p>
+<p>A <strong>Merkle tree</strong> is a binary tree where the <strong>leaf node</strong> stores the <u>values of the vector that we want to commit</u> and the other <strong>internal nodes</strong> calculate the <u>hash value of its two children nodes.</u></p>
+<img src="https://s1.ax1x.com/2023/07/18/pCoziHP.png" alt="Merkle Tree" style="zoom:33%;" />
+
+<p>The <strong>root hash</strong> is the <u>commitment of the vector</u> so the prover just sends the root hash to the verifier as the commitment.</p>
+<p>Then the verifier wants to know the 6th entry in the vector. </p>
+<p>The prover <u>provides the 6th entry (T) and proof</u> that the revealed entry is consistent with the committed vector. The proof is also called the authentication information.</p>
+<p>The <strong>authentication information</strong> is the <u>sibling hashes of all nodes on the root-to-leaf path</u> that includes $C, m_4, h_1$. Hence, the proof size is $O(\log n)$ hash values.</p>
+<p>The verifier can check these hashes are consistent with the root hash.</p>
+<p>Under the assumption that $H$ is a collision-resistant hash family, the vector commitment has the <strong>binding</strong> property that <u>once the root hash is sent, the committer is bound to a fixed vector.</u></p>
+<p>Because opening any leaf to two different values requires finding a hash collision along the root-to-leaf path.</p>
+<h2 id="Poly-Commitments-via-Merkle-Trees"><a href="#Poly-Commitments-via-Merkle-Trees" class="headerlink" title="Poly Commitments via Merkle Trees"></a>Poly Commitments via Merkle Trees</h2><p>A natural way of constructing polynomial commitments is to use the Merkle trees. </p>
+<p>For example, we can commit to a univariate $f(X)$ in $\mathbb{F}_7^{(\le d)}[X]$ with the following Merkle tree.</p>
+<img src="https://s1.ax1x.com/2023/07/18/pCozAN8.png" alt="Root Hash is the Commitment" style="zoom:33%;" />
+
+<p>When the verifier requests to reveal $f(4)$, the prover can provide $f(4)$ and the following sibling hashes as proof.</p>
+<img src="https://s1.ax1x.com/2023/07/18/pCozKun.png" alt="Authentication Information" style="zoom:33%;" />
+
+<p>In summary, if we want to commit a univariate $f(X)$ in $\mathbb{F}^{(\le d)}[X]$, the prover needs to Mekle-commit to all evaluations of the polynomial $f$.</p>
+<p>When the verifier requests $f(r)$, the prover reveals the associated leaf along with opening information.</p>
+<p>However, it has two <strong>problems</strong>.</p>
+<ul>
+<li>The number of leaves is $|\mathbb{F}|$ which means the time to compute the commitment is at least $|\mathbb{F}|$. It is a big problem when working over large fields, e.g., $|\mathbb{F}|\approx 2^{64}$ or $|\mathbb{F}|\approx 2^{128}$.<br>→ We want the time proportional to the degree bound $d$.</li>
+<li>The verifier does not know if $f$ has a degree at most $d$ !.</li>
+</ul>
+<p>In lecture 5, we will introduce <strong>KZG polynomial commitment scheme</strong> using bilinear groups, which addresses both issues.</p>
+<h1 id="Tech-Preliminaries"><a href="#Tech-Preliminaries" class="headerlink" title="Tech Preliminaries"></a>Tech Preliminaries</h1><h2 id="SZDL-Lemma"><a href="#SZDL-Lemma" class="headerlink" title="SZDL Lemma"></a>SZDL Lemma</h2><p>The heart of IP design is based on a simple observation.</p>
+<p>For a non-zero   $f\in \mathbb{F}_p^{(\le d)}[X]$, <u>if we sample a random</u> $r$ from the field $\mathbb{F}_p$, the probability of $f(r)=0$ is at most $d/p$.  </p>
+<p>Suppose $p\approx 2^{256}$ and $d\le 2^{40}$, then $d/p$ is <u>negligible</u>.</p>
+<p>If $f(r)=0$ for a random $r\in \mathbb{F}_p$, then $f$ is identically zero w.h.p.</p>
+<p>It gives us a simple <strong>zero test for a committed polynomial</strong>.</p>
+<p>Moreover, we can achieve a simple equality test for two committed polynomials.</p>
+<p>Let $p,q$ be univariate polynomials of degree at most $d$. Then   $\operatorname{Pr}_{r\overset{\$}\leftarrow \mathbb{F}}[p(r)=q(r)]\le d/p$. </p>
+<p> If   $f(r)=g(r)$ for a random $\overset{\$}\leftarrow \mathbb{F}_p$, then $f=g$ w.h.p. </p>
+<p>The Schwartz-Zippel-Demillo-Lipton lemma is a multivariate generalization of the above facts.</p>
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Schwartz-Zippel-Demillo-Lipton Lemma (SZDL Lemma):</strong></p>
+ </div> <div class="message-body"> 
+
+<p>Let $p,q$ be $\ell$-variate polynomials of total degree at most $d$. Then   $\operatorname{Pr}_{r\in \mathbb{F}^{\ell}}[p(r)=q(r)]\le d/{|\mathbb{F}|}$. </p>
+<p>”Total degree” refers to the maximum sum of degree of all variables in any term. </p>
+ </div> </article> 
+
+<h2 id="Low-Degree-and-Multilinear-Extensions"><a href="#Low-Degree-and-Multilinear-Extensions" class="headerlink" title="Low-Degree and Multilinear Extensions"></a>Low-Degree and Multilinear Extensions</h2><p>Using many variables, we are <u>able to keep the total degree of polynomials quite low</u>, which ensures the proof is short and fast to verify.</p>
+<p><font color=blue><u><b>Definition of Polynomial Extensions:</b></u></font></p>
+<p>Given a function   $f:\{0,1\}^{\ell}\rightarrow \mathbb{F}$, a $\ell$-variate polynomial $g$ over $\mathbb{F}$ is said to extend $f$ if $f(x)=g(x)$ for all $x\in \{0,1\}^{\ell}$. </p>
+<p>Note that the original domain of $f$ is  $\{0,1\}^{\ell}$  and the domain of extension $g$ is much bigger, that’s $\mathbb{F}^{\ell}$.</p>
+<p><font color=blue><u><b>Definition of Multilinear Extensions:</b></u></font></p>
+<p>Any function   $f:\{0,1\}^{\ell}\rightarrow \mathbb{F}$ has a unique multilinear extension (MLE) denoted by $\tilde{f}$. </p>
+<p>The total degree of the multilinear extension can be vastly smaller than the degree of the original univariate polynomial.</p>
+<p>Consider a univariate polynomial   $f:\{0,1\}^2\rightarrow \mathbb{F}$ as follows. It maps $00$ to $1$, maps $01$ to 2, and so on. </p>
+<img src="https://s1.ax1x.com/2023/07/18/pCozE4S.png" alt="A univariate poly" style="zoom:33%;" />
+
+<p>The <strong>multilinear extension</strong>   $\tilde{f}:\mathbb{F}^2\rightarrow \mathbb{F}$ is defined as $\tilde{f}(x_1,x_2)=(1-x_1)(1-x_2)+2(1-x_1)x_2+8x_1(1-x_2)+10x_1x_2$.  </p>
+<p>Its domain is field by field and it’s easy to check that   $\tilde{f}(0,0)=1,\tilde{f}(0,1)=2,\tilde{f}(1,0)=8$ and $\tilde{f}(1,1)=10$. </p>
+<img src="https://s1.ax1x.com/2023/07/18/pCoze3Q.png" alt="The multilinear extension" style="zoom:33%;" />
+
+<p>Another non-multilinear extension of $f$ could be defined as   $g(x_1,x_2)=-x_1^2+x_1x_2+8x_1+x_2+1$. </p>
+<img src="https://s1.ax1x.com/2023/07/18/pCoznjs.png" alt="Non-multilinear extension" style="zoom:33%;" />
+
+<h3 id="Evaluating-multilinear-extensions-quickly"><a href="#Evaluating-multilinear-extensions-quickly" class="headerlink" title="Evaluating multilinear extensions quickly"></a>Evaluating multilinear extensions quickly</h3><p>The sketch of evaluating the multilinear extension is <u>Lagrange interpolation.</u></p>
+<p><font color=blue><u><b>Fact:</b></u></font></p>
+<p>Given as input all $2^{\ell}$ evaluations of a function   $f:\{0,1\}^\ell \rightarrow \mathbb{F}$, for any point $r\in \mathbb{F}^{\ell}$, there is an $O(2^{\ell})$-time algorithm for evaluating $\tilde{f}(r)$. </p>
+<p><font color=blue><u><b>Algorithm:</b></u></font></p>
+<ul>
+<li><p>Define   $\tilde{\delta}_w(r)=\prod_{i=1}^\ell (r_iw_i+(1-r_i)(1-w_i)).$ </p>
+<p>  This is called the multilinear Lagrange basis polynomial corresponding to $w$. </p>
+<p>  For any input   $r$, $\tilde{\delta}_w(r)=1$ if $r=w$, and $0$ otherwise.  </p>
+</li>
+<li><p>Hence, we can evaluate the multilinear extension of any input $r$ as follows.</p>
+    
+    $$
+    \tilde{f}(r)=\sum_{w\in \{0,1\}^\ell}f(w)\cdot \tilde{\delta}_w(r)
+    $$
+    
+</li>
+<li><p><strong>Complexity</strong>: For each   $w\in \{0,1\}^{\ell}$, $\tilde{\delta}_w(r)$ can be computed with $O(\ell)$ field operations, which yields an $O(\ell 2^\ell)$-time algorithm. </p>
+<p>  It can be reduced to time $O(2^\ell)$ via dynamic programming.</p>
+</li>
+</ul>
+  If we feed this algorithm with the description of $f$ whose domain is $\{0,1\}^\ell$ as inputs and the description consists of all $2^\ell$ evaluations of $f$, then it is possible to evaluate the multilinear extension of $f$ at any desired point. 
+
+<p>This fact means that evaluating multilinear extension is essentially as fast as $O(2^\ell)$, <u>which is constantly slower than reading the whole description</u> of $f$.</p>
+<h1 id="The-Sum-Check-Protocol"><a href="#The-Sum-Check-Protocol" class="headerlink" title="The Sum-Check Protocol"></a>The Sum-Check Protocol</h1><p>In this part, we’ll introduce the sum-check protocol [Lund-Fortnow-Karloff-Nissan’90].</p>
+<p>We <u>have a verifier with an oracle access</u> to a $\ell$-variate polynomial $g$ over field $\mathbb{F}$. The <strong>verifier’s goal</strong> is to compute the following quantity:</p>
+  
+$$
+\sum_{b_1\in\{0,1\}}\sum_{b_2\in\{0,1\}}\dots \sum_{b_\ell\in\{0,1\}} g(b_1,\dots, b_\ell)
+$$
+
+
+
+<blockquote>
+<p>As described above (functional commitments), the prover <strong>commit a multilinear polynomial</strong>, later the verifier can request the prover to evaluate at some specific points. Then the prover provide the evaluation and the proof that the revealed evaluation is consistent with the committed polynomial.</p>
+<p>In this part, we consider this process as <strong>a black box or an oracle</strong>. The verifier <u>can go to the oracle and requests the evaluation</u> of $g$ at some points.</p>
+</blockquote>
+<p>Note that this sum is the sum of all $g$’s evaluations over inputs   $\{0,1\}^\ell$ so the verifier can compute it on his own by just asking the oracle for the evaluations. But it costs the verifier $2^\ell$ oracle queries. </p>
+<h2 id="Protocol"><a href="#Protocol" class="headerlink" title="Protocol"></a>Protocol</h2><p>Instead, we can <strong>offload the work of the verifier to the prover</strong> where <u>the prover computes the sum and convince the verifier that the sum is correct.</u></p>
+<p>It turns out that the verifier only have  to run $\ell$-rounds to check the prover’s answer with only $1$ oracle query.</p>
+<p>Denote $P$ as prover and $V$ as verifier.</p>
+<p>Let’s dive into the start phase and the first round.</p>
+<ul>
+<li><p><u><b>Start</b></u>: $P$ sends claimed answer $C_1$. The protocol must check that:</p>
+    
+
+    $C_1=\sum_{b_1\in\{0,1\}}\sum_{b_2\in\{0,1\}}\dots \sum_{b_\ell\in\{0,1\}} g(b_1,\dots, b_\ell)$
+
+     
+</li>
+<li><p><u><b>Round 1:</b></u> $P$ sends a univariate polynomial $s_1(X_1)$ claimed to equal:</p>
+    
+
+    $H_1(X_1):=\sum_{b_2\in\{0,1\}}\dots \sum_{b_\ell\in\{0,1\}} g(X_1,\dots, b_\ell)$
+
+     
+
+<ul>
+<li>$V$ checks that $C_1=s_1(0)+s_1(1)$.<ul>
+<li>If this check passes, it is safe for $V$ to <u>believe that $C_1$ is the correct answer as long as $V$ believes that $s_1=H_1$.</u></li>
+<li>It can be checked that $s_1$ and $H_1$ agree at a random point $r_1\in \mathbb{F}_p$ by SZDL lemma.</li>
+</ul>
+</li>
+<li>$V$ picks $r_1$ at random from $\mathbb{F}$ and sends $r_1$ to $P$.</li>
+</ul>
+</li>
+</ul>
+<p>In round 1, $s_1(X_1)$ is the univariate polynomial that prover actually sends while $H_1(X_1)$ is what the prover claim to send if the prover is honest.</p>
+<p>Note that $H_1(X_1)$ is the true answer except that we cut off the first sum, which leave the first variable free. It reduce $2^\ell$ terms to $2^{\ell-1}$ terms.</p>
+<p>$g$ is supposed to have low degree (2 or 3) in each variable so the univariate polynomial $H_1$ derived from $g$ has low degree.</p>
+<article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>  <b>Note:</b> We can <u>benefit from the low degree of the univariate polynomial.</u> One is that specifying $H_1$ can be done by just sending 2 or 3 coefficients. Moreover, the low degree gives us acceptable or negligible sound error. </div> </article>
+
+<p>After receiving the $s_1$, $V$ can compute $s_1(r_1)$ directly, but not $H_1(r_1)$.</p>
+<p>It turns out that $P$ can compute $H_1(r_1)$ and sends claimed $H_1(r_1)$ where $H_1(r_1)$ is the sum of $2^{\ell-1}$ terms where $r_1$ is <u>fixed</u> so the first variable in $g$ is bound to $r_1\in \mathbb{F}$.</p>
+  
+$$
+H_1(r_1):=\sum_{b_2\in\{0,1\}}\dots \sum_{b_\ell\in\{0,1\}} g(r_1,b_2,\dots, b_\ell)
+$$
+
+ 
+
+<p>Hence, the round 2 is indeed a recursive sub-protocol that checks $s_1(r_1)=H_1(r_1)$ where $s_1(r_1)$ is computed on $V$’s own.</p>
+<ul>
+<li><p><u><b>Round 2:</b></u>  They recursively check that $s_1(r_1)=H_1(r_1)$, i.e. that</p>
+    
+    $$
+    s_1(r_1)=\sum_{b_2\in\{0,1\}}\dots \sum_{b_\ell\in\{0,1\}} g(r_1,b_2,\dots, b_\ell)
+    $$
+
+     
+
+<ul>
+<li><p>$P$ sends univariate polynomial $s_2(X_2)$ claimed to equal:</p>
+    
+        $$
+        H_2(X_1):=\sum_{b_3\in\{0,1\}}\dots \sum_{b_\ell\in\{0,1\}} g(r_1,X_2,\dots, b_\ell)
+        $$
+         
+</li>
+<li><p>$V$ checks that $s_1(r_1)=s_2(0)+s_2(1)$.</p>
+<ul>
+<li>If this check passes, it is safe for $V$ to <u>believe that $s_1(r_1)$ is the correct answer as long as $V$ believes that $s_2=H_2$.</u></li>
+<li>It can be checked that $s_2$ and $H_2$ agree at a random point $r_2\in \mathbb{F}_p$ by SZDL lemma.</li>
+</ul>
+</li>
+<li><p>$V$ picks $r_2$ at random from $\mathbb{F}$ and sends $r_2$ to $P$.</p>
+</li>
+</ul>
+</li>
+<li><p><strong><u><b>Round $i$:</b></u></strong>  They recursively check that</p>
+    
+    $$
+    s_{i-1}(r_{i-1})=\sum_{b_i\in\{0,1\}}\dots \sum_{b_\ell\in\{0,1\}} g(r_1,\dots,r_{i-1},b_i,\dots b_\ell)
+    $$
+
+    
+
+<ul>
+<li><p>$P$ sends univariate polynomial $s_i(X_i)$ claimed to equal:</p>
+    
+        $$
+        H_i(X_i):=\sum_{b_{i+1}\in\{0,1\}}\dots \sum_{b_\ell\in\{0,1\}} g(r_1,\dots,r_{i-1},X_i,\dots b_\ell)
+        $$
+         
+</li>
+<li><p>$V$ checks that $s_{i-1}(r_{i-1})=s_i(0)+s_i(1)$.</p>
+</li>
+<li><p>$V$ picks $r_i$ at random from $\mathbb{F}$ and sends $r_i$ to $P$.</p>
+</li>
+</ul>
+</li>
+<li><p><strong><u><b>Round $\ell$:</b></u></strong> (Final round): They recursively check that</p>
+    
+    $$
+    s_{\ell-1}(r_{\ell-1})= \sum_{b_\ell\in\{0,1\}} g(r_1,\dots,r_{\ell-1},b_\ell)
+    $$
+
+     
+
+<ul>
+<li><p>$P$ sends univariate polynomial $s_{\ell}(X_\ell)$ claimed to equal :</p>
+    
+        $$
+        H_\ell(X_\ell):= g(r_1,\dots,r_{\ell-1},X_\ell)
+        $$
+         
+</li>
+<li><p>$V$ checks that $s_{\ell-1}(r_{\ell-1})=s_\ell(0)+s_\ell(1)$.</p>
+</li>
+<li><p>$V$ picks $r_\ell$ at random, and needs to check that $s_\ell(r_\ell)=g(r_1,\dots,r_\ell)$.</p>
+<ul>
+<li>No need for more rounds. $V$ <u>can perform this check with one oracle query.</u></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>Consequently, the final claim that the verifier is left to check $s_\ell(r_\ell)=g(r_1,\dots,r_\ell)$ <u>where $s_\ell(r_\ell)$ can be computed on its own and $g(r_1,\dots, r_\ell)$ can be computed with just a single query to the oracle.</u></p>
+<p>If the final checks passes, then the verifier is convinced that $s_\ell(r_\ell)=g(r_1,\dots,r_\ell)$ and recursively convinced the claims left in the previous rounds, i.e. $s_i=H_i$. Finally, the verifier accepts the first claim that $C_1$ is the correct sum.</p>
+<h2 id="Analysis"><a href="#Analysis" class="headerlink" title="Analysis"></a>Analysis</h2><p><font color=blue><u><b>Completeness:</b></u></font></p>
+<p>Completeness holds by design. If $P$ sends the prescribed message, then all of $V$’s checks will pass.</p>
+<p><font color=blue><u><b>Soundness:</b></u></font></p>
+<p>If $P$ dose not send the prescribed messages, then $V$ rejects with probability at least   $1-\frac{\ell\cdot d}{|\mathbb{F}|}$, where $d$ is the maximum degree of $g$ in any variable. </p>
+<p><strong><font color=blue><u><b><i>Proof of Soundness (Non-Inductive):</i></b></u></font></strong></p>
+<p>It is conducted by the <strong>union bound</strong>. </p>
+<p>Specifically,   if $C_1\ne \sum_{(b_1,\dots, b_\ell)\in \{0,1\}^{\ell}}g(b_1,\dots, b_\ell)$,   then the only way the prover convince the verifier to accept is <u>if there at least one round</u> $i$ such that the prover sends a univariate polynomial $s_i(X_i)$ that dose not equal the prescribed polynomial </p>
+  
+$$
+H_i(X_i)=\sum_{(b_{i+1},\dots, b_\ell)}g(r_1, r_2,\dots, X_i,b_{i+1},\dots, b_\ell)
+$$
+
+
+
+<p>yet $s_i(r_i)=H_i(r_i)$.</p>
+<p>For every round $i$, $s_i$ and $H_i$ both have degree at most $d$, and hence if $s_i\ne H_i$, then probability that $s_i(r_i)=H_i(r_i)$ is at most $d/|\mathbb{F}|$. <u>By a union bound over all $\ell$ rounds</u>, the probability that there (is a bad event) is any round $i$ such that the prover send a polynomial $s_i\ne H_i$ yet $s_i(r_i)=H_i(r_i)$ is at most $\frac{\ell\cdot d}{|\mathbb{F}|}$</p>
+<p><font color=blue><u><b><i>Proof  of Soundness by Induction:</i></b></u></font></p>
+<ul>
+<li><p>Base case: $\ell=1$.</p>
+<ul>
+<li>In this case, $P$ sends a single message $s_1(X_1)$ claimed to equal $g(X_1)$.</li>
+<li>$V$ picks $r_1$ at random, and checks $s_1(r_1)=g(r_1)$.</li>
+<li>If $s_1\ne g$, then the probability that $s_1(r_1)=g(r_1)$ is at most $d/|\mathbb{F}|$.</li>
+</ul>
+</li>
+<li><p>Inductive case: $\ell &gt;1$.</p>
+<ul>
+<li>Recall that $P$’s first message $s_1(X_1)$ is claimed to equal $H_1(X_1)$.</li>
+<li>Then $V$ picks a random $r_1$ and sends $r_1$ to $P$. They recursively invoke sum-check to confirm $s_1(r_1)=H_1(r_1)$.</li>
+<li>If $s_1\ne H_1$, then then probability that $s_1(r_1)=H_1(r_1)$ is at most $d/|\mathbb{F}|$.</li>
+<li>Conditioned on $s_1(r_1)=H_1(r_1)$, $P$ is <u>left to prove a false claim in the recursive call.</u><ul>
+<li>The recursive call applies sum-check to $g(r_1, X_2, \dots, X_\ell)$, which is $\ell-1$ variate.</li>
+<li>By induction hypothesis, $P$ convinces $V$ in the recursive call with probability at most $\frac{d(\ell-1)}{|\mathbb{F}|}$.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>In summary, if $s_1\ne H_1$, the probability $V$ accepts is at most</p>
+    
+    $$
+    \begin{aligned}
+    \le &\operatorname{Pr}_{r_1\in \mathbb{F}}[s_1(r_1)=H_1(r_1)]+\operatorname{Pr}_{r_2,\dots, r_\ell\in \mathbb{F}}[V \text{ accepts}\mid s_1(r_1)\ne H_1(r_1)] \\  \le & \frac{d}{|\mathbb{F}|}+ \frac{d(\ell-1)}{|\mathbb{F}|}\le \frac{d\ell}{|\mathbb{F}|}\end{aligned}
+    $$
+
+    
+
+</li>
+</ul>
+<h2 id="Costs"><a href="#Costs" class="headerlink" title="Costs"></a>Costs</h2><p>Let $\mathrm{deg}_i(g)$ denote the degree of variable $X_i$ in $g$ and each variable has degree at most $d$.</p>
+<p>$T$ denotes the <u>time required to evaluate $g$ at one point.</u></p>
+<ul>
+<li><p><strong>Total communication</strong> is $O(d\cdot \ell)$ field elements.</p>
+<ul>
+<li>The total prover-to-verifier communication is   $\sum_{i=1}^\ell(\mathrm{deg}_i(g)+1)=\ell+\sum_{i=1}^\ell \mathrm{deg}_i(g)=O(d\cdot \ell)$ field elements. </li>
+<li>The total verifier-to-prover communication is $\ell-1$ field elements.</li>
+</ul>
+</li>
+<li><p><strong>Verifier’s runtime</strong> is $O(d\ell+T)$.</p>
+<ul>
+<li>The running time of the verifier over the entire execution of the protocol is <u>proportional to the total communication</u>, plus the <u>cost of a single oracle query</u> to $g$ to compute $g(r_1,r_2, \dots, r_\ell)$.</li>
+</ul>
+</li>
+<li><p><strong>Prover’s runtime</strong> is $O(d\cdot 2^\ell\cdot T)$.<br>Counting the number of evaluations over $g$ required by the prover is less straightforward.</p>
+<ul>
+<li><p>In round $i$, $P$ is required to send a univariate polynomial $s_i$, which can be <u>specified by $\mathrm{deg}_i(g)+1$ points.</u></p>
+</li>
+<li><p>Hence, $P$ can specify $s_i$ by sending for each $j\in {0, \dots, \mathrm{deg}_i(g)}$ the value:</p>
+    
+        $$
+        s_i(j)=\sum_{(b_{i+1},\dots, b_\ell)}g(r_1,\dots,r_{i-1},j,b_{i+1},\dots, b_\ell)
+        $$
+         
+</li>
+<li><p>An important insight is that <u>the number of the terms defining $s_i(j)$ falls geometrically</u> with $i$: in the $i$th sum, there are only   $(1+\mathrm{deg}_i(g))\cdot 2^{\ell-i}\approx d\cdot 2^{\ell-i}$ terms, with the $2^{\ell-i}$ factor due to the number of vectors in $\{0,1\}^{\ell-i}$.  </p>
+</li>
+<li><p>Thus, the total number of terms that must be evaluated is   $\sum_{i=1}^\ell d\cdot 2^{\ell-i}=O(d\cdot 2^{\ell})$. </p>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="Application-of-Sum-check-Protocol"><a href="#Application-of-Sum-check-Protocol" class="headerlink" title="Application of Sum-check Protocol"></a>Application of Sum-check Protocol</h1><h2 id="An-IP-for-counting-triangles-with-linear-time-verifier"><a href="#An-IP-for-counting-triangles-with-linear-time-verifier" class="headerlink" title="An IP for counting triangles with linear-time verifier"></a>An IP for counting triangles with linear-time verifier</h2><p>The sum-check protocol can be applied to <u>design an IP for counting triangles in a graph with linear-time verifier.</u></p>
+<p>The <strong>input</strong> is an <u>adjacent matrix</u> of a graph   $A\in \{0,1\}^{n\times n}$. </p>
+<p>The <strong>desired output</strong> is   $\sum_{(i,j,k)\in [n]^3}A_{ij}A_{jk}A_{ik}$, which <u>counts the number of triangles in the graph</u>. </p>
+<p>The <strong>fastest known algorithm</strong> runs in matrix-multiplication time, currently about $n^{2.37}$, which is <u>super linear time in the size of the matrix.</u></p>
+<p>Likewise, we can <strong>offload the work to the prover to have a linear-time verifier.</strong></p>
+<p>To design an IP derived from sum-check protocol, we need to <u>view the matrix $A$ to a function</u> mapping   $\{0,1\}^{\log n}\times \{0,1\}^{\log n}$ to $\mathbb{F}$. </p>
+<p>It can be done easily by Lagrange interpolation. As for the following matrix   $A\in \mathbb{F}^{4\times 4}$, we can interpret the entry location $(i,j)\in \{0,1\}^{\log n}\times \{0,1\}^{\log n}$ as input and maps to the corresponding value $A_{i,j}\in \mathbb{F}$. E.g., $A(0,0,0,0)=1,A(0,0,0,1)=3$ and so on.  </p>
+<img src="https://s1.ax1x.com/2023/07/18/pCozmcj.png" alt="View a matrix as a function" style="zoom:33%;" />
+
+<p>Note that the <u>domain of function</u>   $A$ is $\{0,1\}^{2\log n}$, which has $2\log n$ variables as inputs. It make sense to extend function $A$ to its multilinear polynomial $\tilde{A}$ with domain $\mathbb{F}^{2\log n}$, <u>each variable having degree at most 1.</u> </p>
+<p>Hence, we can define a polynomial   $g(X,Y,Z)=\tilde{A}(X,Y)\tilde{A}(Y,Z),\tilde{A}(X,Z)$ that <u>has $3\log n$ variables, each variable having degree at most 2.</u> </p>
+<p>Having defined the function $g$ with domain   $\{0,1\}^{3\log n}$,   the <u>prover and the verifier simply apply the sum-check protocol</u> to $g$ to compute: </p>
+ 
+
+
+$$
+\sum_{(a,b,c)\in \{0,1\}^{3\log n}}g(a,b,c)
+$$
+
+
+
+<p>In summary, the design of the protocol is as follows.</p>
+<p><font color=blue><u><b>Protocol:</b></u></font></p>
+<ul>
+<li>View $A$ as a function mapping   $\{0,1\}^{\log n}\times \{0,1\}^{\log n}$ to $\mathbb{F}$. </li>
+<li>Extend $A$ to obtain its multilinear extension denoted by $\tilde{A}$.</li>
+<li>Define the polynomial $g(X,Y,Z)=\tilde{A}(X,Y)\tilde{A}(Y,Z),\tilde{A}(X,Z)$.</li>
+<li>Apply the sum-check protocol to $g$ to compute   $\sum_{(a,b,c)\in \{0,1\}^{3\log n}}g(a,b,c)$. </li>
+</ul>
+<p><font color=blue><u><b>Costs:</b></u></font></p>
+<p>Note that $g$ has $3\log n$ variables and it <u>has degree at most 2 in each variable.</u></p>
+<ul>
+<li><strong>Total communication</strong> is $O(\log n)$.</li>
+<li><strong>Verifier runtime</strong> is $O(n^2)$.<ul>
+<li>The total communication is logarithmic.</li>
+<li>Hence, the verifier runtime is dominated by <u>evaluating $g$ at one point</u>  $g(r_1,r_2,r_3)=\tilde{A}(r_1,r_2)\tilde{A}(r_2,r_3)\tilde{A}(r_1,r_3)$, which <u>amounts to evaluating $\tilde{A}$ at three points.</u></li>
+<li>The matrix $A$ gives the lists of all $n^2$ evaluations of the multilinear extension   $\tilde{A}:\{0,1\}^{2\log n}\rightarrow \mathbb{F}$. As described above, the **verifier** can <u>in linear time evaluate the multilinear extension function at any desired point </u> in $\mathbb{F}^{2\log n}$. </li>
+<li>Note that the verifier runtime is <u>linear to the size of the input/matrix</u>, that’s $O(n^2)$.</li>
+</ul>
+</li>
+<li><strong>Prover runtime</strong> is $O(n^3)$.<ul>
+<li>The prover’s runtime is clearly at most $O(n^5)$ since there are $3\log n$ rounds and $g$ can be evaluated at any point in $O(n^2)$ time.</li>
+<li>But more sophisticated algorithm insights can bring the prover runtime down to $O(n^3)$. We recommend reader to refer to Chapter 4 and Chapter 5 in <a target="_blank" rel="noopener" href="https://people.cs.georgetown.edu/jthaler/ProofsArgsAndZK.pdf">Thaler</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="A-SNARK-for-circuit-satisfiability"><a href="#A-SNARK-for-circuit-satisfiability" class="headerlink" title="A SNARK for circuit-satisfiability"></a>A SNARK for circuit-satisfiability</h2><p>We can apply the sum-check protocol to design <strong>SNARKs for circuit satisfiability.</strong></p>
+<p>Given an arithmetic circuit $C$ over $\mathbb{F}$ of size $S$ and output $y$. $P$ claims to know a $w$ such that $C(x,w)=y$.</p>
+<p>For simplicity, let’s take $x$ to be the empty input.</p>
+<img src="https://s1.ax1x.com/2023/07/18/pCozMBq.png" alt="An arithmetic circuit with no public input" style="zoom:33%;" />
+
+<p>A <strong>transcript</strong> $T$ for $C$ is <u>an assignment of a value to every gate as follows.</u></p>
+<img src="https://s1.ax1x.com/2023/07/18/pCoz1EV.png" alt="Transcript of circuit" style="zoom:33%;" />
+
+<p>$T$ is a <strong>correct transcript</strong> if it assigns the gate values obtained by evaluating $C$ on a valid witness $w$.</p>
+<p>The <strong>main idea</strong> is to <u>assign each gate in $C$ a $(\log S)$-bit label</u> and <u>view such a transcript as a function</u> with domain   $\{0,1\}^{\log S}$ mapping to $\mathbb{F}$. </p>
+<img src="https://s1.ax1x.com/2023/07/18/pCoz3NT.png" alt="View transcript as a function" style="zoom:33%;" />
+
+<p>Hence, $P$’s first message is <u>a $(\log S)$-variate polynomial $h$ claimed to extend a correct transcript</u> $T$, which means </p>
+  
+$$
+h(x)=T(x) \text{ }\forall x\in \{0,1 \}^{\log S}
+$$
+
+
+
+<p>As usual, $T$ is defined over the hypercube   $\{0,1\}^{\log S}$   and $h$ is multilinear extension of $T$ with domain   $\mathbb{F}^{\log S}$. </p>
+<p>$V$ can check this claim by evaluating all $S$ evaluations on $h$.</p>
+<p>Like the sum-check protocol, suppose the <strong>verifier</strong> is <u>only able to learn a few evaluations of $h$ rather than $S$ points.</u></p>
+<h3 id="Intuition-of-extension-function"><a href="#Intuition-of-extension-function" class="headerlink" title="Intuition of extension function"></a>Intuition of extension function</h3><p>Before describing the design details, let’s dig the <strong>intuition</strong> for <u>why we use the extension polynomial $h$ of the transcript $T$ for $P$ to send.</u></p>
+<p>Intuitively, we think $h$ as a <strong>distance-amplified encoding</strong> of the transcript $T$.</p>
+<p>The domain of $T$ is   $\{0,1\}^{\log S}$. The domain of $h$ is $\mathbb{F}^{\log S}$, <u>which is vastly bigger</u>. </p>
+<img src="https://s1.ax1x.com/2023/07/18/pCozQH0.png" alt="Distance-amplying nature of extension poly" style="zoom:43%;" />
+
+<p>By Schwart-Zippel lemma, if two <strong>transcripts</strong> <u>disagree at even a single gate value</u>, their <strong>extension polynomial</strong> $h,h’$ <u>disagree at almost all points</u> in   $\mathbb{F}^{\log S}$. Specifically, a $1-\log (S)/|\mathbb{F}|$ fraction. </p>
+<p>The distance-amplifying nature of the encoding will enable $V$ to detect even a single “inconsistency” in the entire transcript.</p>
+<p>As a result, it kind of <u>blows up the tiny difference in transcripts</u> by <strong>the extension polynomials</strong> <u>into easily detectable difference</u> so that  it can be detectable even by the verifier that is only allowed to evaluate the extension polynomials at a single point or a handful points.</p>
+<h3 id="Two-step-plan-of-attack"><a href="#Two-step-plan-of-attack" class="headerlink" title="Two-step plan of attack"></a>Two-step plan of attack</h3><p>The <strong>original claim</strong> the prover makes is that <u>the $(\log S)$-variate polynomial $h$ extends the correct transcript.</u> </p>
+<p>In order to offload work of the verifier and apply the sum-check protocol, the prover instead <strong>claims</strong> a <u>related $(3\log S)$-variate polynomial $g_h=0$ at every single boolean input</u>, i.e. $h$ extends a correct transcript $T$ ↔   $g_h(a,b,c)=0$ $\forall (a,b,c)\in \{0,1\}^{3\log S}$. </p>
+<p>Moreover, to evaluate $g_h(r)$ at any input $r$, suffices to evaluate $h$ at only 3 inputs. Specifically, the first step is as follows.</p>
+<p><font color=blue><u><b>Step 1:</b></u></font> Given any $(\log S)$-variate polynomial $h$, identify a related $(3\log S)$-variate polynomial $g_h(a,b,c)$ via</p>
+  
+$$
+\widetilde{add}(a,b,c)\cdot (h(a)-(h(b)+h(c))+\widetilde{mult}(a,b,c)\cdot (h(a)-h(b)\cdot h(c))
+$$
+
+
+
+<ol>
+<li>$\widetilde{add},\widetilde{mult}$ are multilinear extension called <strong>wiring predicates of the circuit</strong>. $\widetilde{add}(a,b,c)$ splits out 1 iff $a$  is assigned to an addition gate and its two input neighbors are $b$ and $c$. Likewise, $\widetilde{mult}(a,b,c)$ splits out 1 iff $a$ is assigned to the product  of values assigned to $b$ and $c$.</li>
+<li>$g_h(a,b,c)=h(a)-(h(b)+h(c))$ if $a$ is the label of a gate that computes the <strong>sum</strong> of gates $b$ and $c$.</li>
+<li>$g_h(a,b,c)=h(a)-(h(b)\cdot h(c))$ if $a$ is the label of a gate that computes the <strong>product</strong> of gates $b$ and $c$.</li>
+<li>$g_h(a,b,c)=0$ otherwise.</li>
+</ol>
+<hr>
+<p>Then we need to <strong>design an interactive proof</strong> to check that   $g_h(a,b,c)=0 \text{ } \forall (a,b,c)\in \{0,1\}^{3\log S}$ in which $V$ <u>only needs to evaluate $g_h(r)$ at one random point</u> $r\in \mathbb{F}^{3\log S}$. </p>
+<p>It is very <strong>different</strong> from the zero test. </p>
+<p>Using zero test, we are able to check   $g_h=0$ for any input in $\mathbb{F}^{3\log S}$ by evaluating a random point $r$, but now we need to check $g_h=0$ over a hypercube $\{0,1\}^{3\log S}$. </p>
+<p><b><font color=red>Imagine</font></b> for a moment that $g_h$ <u>were a univariate polynomial</u> $g_h(X)$.</p>
+  And rather than needing to check that $g_h$ vanishes over input set $\{0,1\}^{3\log S}$, we <u>need to check that $g_h$ vanishes over some set</u> $H\subseteq \mathbb{F}$. 
+
+<p>We can design the polynomial IOP based on following fact. </p>
+<p><font color=blue><u><b>Fact:</b></u></font></p>
+<p> $g_h(x)=0$ for all $x\in H$ ↔ $g_h$ is divisible by $Z_H(x)=\prod_{a\in H}(x-a)$.</p>
+<p>We call $Z_H$ the vanishing polynomial for $H$.</p>
+<p>The polynomial IOP works as follows. More details can be referred to the next Lecture.</p>
+<p><font color=blue><u><b>Polynomial IOP:</b></u></font></p>
+<ol>
+<li>$P$ sends a polynomial $q$ such that $g_h(X)=q(X)\cdot Z_H(X)$.</li>
+<li>$V$ checks this by picking a random $r\in \mathbb{F}$ and checking that $g_h(r)=q(r)\cdot Z_H(r)$.</li>
+</ol>
+<p>However, it <font color=red>dosen’t work</font> when $g_h$ is <u>not a univariate polynomial</u>. Moreover, <u>having $P$ find and send the quotient polynomial is expensive</u> for high-degree polynomial.</p>
+<p>In the final SNARK, this would mean applying polynomial commitment to additional polynomials. This is what Marlin, Plonk and Groth16 do. In the next lecture, we will elaborate on the Plonk. </p>
+<hr>
+<p>Instead, the <strong>solution</strong> is to <u>use the sum-check protocol.</u></p>
+<p>Concretely speaking, the sum-check protocol is <u>able to handle multivariate polynomials</u> and <u>dosen’s require $P$ to send additional large polynomials.</u></p>
+<p>For simplicity, <u>imagine working over the integers</u> instead of $\mathbb{F}$.</p>
+<p>The general idea is as follows.</p>
+<p>(Note that it is not a full version of solution.)</p>
+<p><font color=blue><u><b>Step2: General Idea of IP</b></u></font></p>
+<ul>
+<li><p>$V$ checks this by running <strong>sum-check protocol</strong> with $P$ to compute:</p>
+    
+    $$
+    \sum_{a,b,c\in \{0,1\}^{\log S}}g_h(a,b,c)^2
+    $$
+
+     
+
+<ul>
+<li>If all terms in the sum are 0, the sum is 0.</li>
+<li>If working over the integers, <u>any non-zero term in the sum will cause the sum to be strictly positive.</u></li>
+</ul>
+</li>
+<li><p>At end of sum-check protocol, $V$ needs to evaluate $g_h(r_1, r_2, r_3)$.</p>
+<ul>
+<li>Suffices to evaluate $h(r_1),h(r_2),h(r_3)$.</li>
+<li>Outside of these evaluations, $V$ runs in time $O(\log S)$ with $3\log S$ rounds.</li>
+<li>$P$ performs $O(S)$ field operations given a witness $w$.</li>
+</ul>
+</li>
+</ul>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Cryptography-ZKP」: Lec4-SNARKs via IP</p><p><a href="https://f7ed.com/2023/07/18/zkp-lec4/">https://f7ed.com/2023/07/18/zkp-lec4/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2023-07-18</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2024-01-26</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Cryptography/">Cryptography, </a><a class="link-muted" rel="tag" href="/tags/ZKP/">ZKP, </a><a class="link-muted" rel="tag" href="/tags/IP/">IP, </a><a class="link-muted" rel="tag" href="/tags/SNARKs/">SNARKs, </a><a class="link-muted" rel="tag" href="/tags/Sum-check/">Sum-check </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2023/07/21/zkp-lec5/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Cryptography-ZKP」: Lec5-The Plonk SNARK</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2022/09/03/mit6875-lec17/"><span class="level-item">「Cryptography-MIT6875」: Lecture 17</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "a18ef26e51ffcd6da5a02330cc225e05",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">70</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">135</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Interactive-Proofs-Motivation-and-Model"><span class="level-left"><span class="level-item">1</span><span class="level-item">Interactive Proofs: Motivation and Model</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#IPs-v-s-SNARKs"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">IPs v.s. SNARKs</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Not-Statistically-Sound"><span class="level-left"><span class="level-item">1.1.1</span><span class="level-item">Not Statistically Sound</span></span></a></li><li><a class="level is-mobile" href="#Knowledge-Soundness-v-s-Soundness"><span class="level-left"><span class="level-item">1.1.2</span><span class="level-item">Knowledge Soundness v.s. Soundness</span></span></a></li><li><a class="level is-mobile" href="#Non-interactive-and-Public-Verifiability"><span class="level-left"><span class="level-item">1.1.3</span><span class="level-item">Non-interactive and Public Verifiability</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#SNARKs-from-Interactive-Proofs-Outline"><span class="level-left"><span class="level-item">2</span><span class="level-item">SNARKs from Interactive Proofs: Outline</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Trivial-SNARKs"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">Trivial SNARKs</span></span></a></li><li><a class="level is-mobile" href="#Less-Trivial"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">Less Trivial</span></span></a></li><li><a class="level is-mobile" href="#Actual-SNARKs"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">Actual SNARKs</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Functional-Commitments"><span class="level-left"><span class="level-item">3</span><span class="level-item">Functional Commitments</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Vector-Commitments-Merkle-Trees"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">Vector Commitments: Merkle Trees</span></span></a></li><li><a class="level is-mobile" href="#Poly-Commitments-via-Merkle-Trees"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">Poly Commitments via Merkle Trees</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Tech-Preliminaries"><span class="level-left"><span class="level-item">4</span><span class="level-item">Tech Preliminaries</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#SZDL-Lemma"><span class="level-left"><span class="level-item">4.1</span><span class="level-item">SZDL Lemma</span></span></a></li><li><a class="level is-mobile" href="#Low-Degree-and-Multilinear-Extensions"><span class="level-left"><span class="level-item">4.2</span><span class="level-item">Low-Degree and Multilinear Extensions</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Evaluating-multilinear-extensions-quickly"><span class="level-left"><span class="level-item">4.2.1</span><span class="level-item">Evaluating multilinear extensions quickly</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#The-Sum-Check-Protocol"><span class="level-left"><span class="level-item">5</span><span class="level-item">The Sum-Check Protocol</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Protocol"><span class="level-left"><span class="level-item">5.1</span><span class="level-item">Protocol</span></span></a></li><li><a class="level is-mobile" href="#Analysis"><span class="level-left"><span class="level-item">5.2</span><span class="level-item">Analysis</span></span></a></li><li><a class="level is-mobile" href="#Costs"><span class="level-left"><span class="level-item">5.3</span><span class="level-item">Costs</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Application-of-Sum-check-Protocol"><span class="level-left"><span class="level-item">6</span><span class="level-item">Application of Sum-check Protocol</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#An-IP-for-counting-triangles-with-linear-time-verifier"><span class="level-left"><span class="level-item">6.1</span><span class="level-item">An IP for counting triangles with linear-time verifier</span></span></a></li><li><a class="level is-mobile" href="#A-SNARK-for-circuit-satisfiability"><span class="level-left"><span class="level-item">6.2</span><span class="level-item">A SNARK for circuit-satisfiability</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Intuition-of-extension-function"><span class="level-left"><span class="level-item">6.2.1</span><span class="level-item">Intuition of extension function</span></span></a></li><li><a class="level is-mobile" href="#Two-step-plan-of-attack"><span class="level-left"><span class="level-item">6.2.2</span><span class="level-item">Two-step plan of attack</span></span></a></li></ul></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

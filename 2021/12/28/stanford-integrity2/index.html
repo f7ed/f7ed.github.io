@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Cryptography-Boneh」:Collision Resistance - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="上一节介绍了基于PRFs的MAC构造和基于随机的MAC：   本节我们将介绍抗碰撞的MAC(MACs from collision resistance)。 第一部分介绍了什么是抗碰撞 (Collision Resistance)，以及基于C.R.的MAC的安全性。 第二部分介绍了生日悖论，如何用生日攻击寻找2-way collision 和3-way collision. 第三部分介绍了Merk"><meta property="og:type" content="blog"><meta property="og:title" content="「Cryptography-Boneh」:Collision Resistance"><meta property="og:url" content="https://f7ed.com/2021/12/28/stanford-integrity2/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="上一节介绍了基于PRFs的MAC构造和基于随机的MAC：   本节我们将介绍抗碰撞的MAC(MACs from collision resistance)。 第一部分介绍了什么是抗碰撞 (Collision Resistance)，以及基于C.R.的MAC的安全性。 第二部分介绍了生日悖论，如何用生日攻击寻找2-way collision 和3-way collision. 第三部分介绍了Merk"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/integrity2-cover.png"><meta property="article:published_time" content="2021-12-27T16:00:00.000Z"><meta property="article:modified_time" content="2021-12-28T06:27:11.009Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="公开课"><meta property="article:tag" content="Cryptography"><meta property="article:tag" content="Integrity"><meta property="article:tag" content="MAC"><meta property="article:tag" content="collision-resistance"><meta property="article:tag" content="HMAC"><meta property="article:tag" content="birthday-paradox"><meta property="article:tag" content="MD-paradigm"><meta property="article:tag" content="DM-compression-function"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/integrity2-cover.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2021/12/28/stanford-integrity2/"},"headline":"「Cryptography-Boneh」:Collision Resistance","image":["https://f7ed.com/gallery/thumbnails/integrity2-cover.png"],"datePublished":"2021-12-27T16:00:00.000Z","dateModified":"2021-12-28T06:27:11.009Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"上一节介绍了基于PRFs的MAC构造和基于随机的MAC：   本节我们将介绍抗碰撞的MAC(MACs from collision resistance)。 第一部分介绍了什么是抗碰撞 (Collision Resistance)，以及基于C.R.的MAC的安全性。 第二部分介绍了生日悖论，如何用生日攻击寻找2-way collision 和3-way collision. 第三部分介绍了Merk"}</script><link rel="canonical" href="https://f7ed.com/2021/12/28/stanford-integrity2/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Cryptography-Boneh」:Collision Resistance</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2021-12-27T16:00:00.000Z" title="2021-12-27T16:00:00.000Z">2021-12-28</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2021-12-28T06:27:11.009Z" title="2021-12-28T06:27:11.009Z">2021-12-28</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Cryptography-Boneh/">Cryptography-Boneh</a></span><span class="level-item"><i class="far fa-clock"></i> 19 minutes read (About 2900 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>上一节介绍了基于PRFs的MAC构造和基于随机的MAC：</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><img src="https://s4.ax1x.com/2021/12/28/Tr4G9K.png" alt="previous MAC constructions" style="zoom:40%;" />
+
+<p>本节我们将介绍抗碰撞的MAC(MACs from collision resistance)。</p>
+<p>第一部分介绍了什么是抗碰撞 (Collision Resistance)，以及基于C.R.的MAC的安全性。</p>
+<p>第二部分介绍了生日悖论，如何用生日攻击寻找2-way collision 和3-way collision.</p>
+<p>第三部分介绍了Merkle-Damgarg范式（如果压缩函数h是C.R.，那么构造出的哈希函数H就是C.R.）以及如何构建C.R.的压缩函数（Davies-Meyer压缩函数).</p>
+<p>最后一部分介绍了HMAC (Hash MAC)和一种针对MAC验证的timing attack and defense.</p>
+<span id="more"></span>
+
+<h1 id="Collision-Resistance"><a href="#Collision-Resistance" class="headerlink" title="Collision Resistance"></a>Collision Resistance</h1><p>Let H: M →T be a hash function  (|M|&gt;&gt;|T|)</p>
+<p>【H是一个哈希函数】</p>
+<p>A <strong><u>collision</u></strong> for H is a pair $\mathrm{m_0,m_1\in M}$ such that: </p>
+
+$$
+\mathrm{H(m_0)=H(m_1)\quad and\quad m_0\ne m_1}
+$$
+
+
+<p>【哈希碰撞是指，存在两个不同的消息，其哈希函数的值相等。】</p>
+<p>A function is <strong><u>collision resistant</u></strong>  if for all (explicit) “eff” algs. A:</p>
+
+$$
+\operatorname{Adv}_{\mathrm{CR}}[\mathrm{A}, \mathrm{H}]=\operatorname{Pr}[\text { A outputs collision for } \mathrm{H}] \quad \text{is "neg."}
+$$
+
+
+<p>【如果对于所有多项式时间算法，输出哈希函数H的碰撞的概率是可忽略的，就说明哈希函数H是抗碰撞的（collision resistant），比如SHA-256就是一个抗碰撞的哈希函数。】</p>
+<h2 id="MACs-from-C-R"><a href="#MACs-from-C-R" class="headerlink" title="MACs from C.R."></a>MACs from C.R.</h2><p>如何从抗碰撞的哈希函数构建MACs？</p>
+<p>Let I = (S,V) be a MAC for short messages over (K,M,T)  (e.g. AES)</p>
+<p>Let $\mathrm{H}: \mathrm{M}^{\mathrm{big}} \rightarrow \mathrm{M}$ </p>
+<p><strong>Def</strong>: $\mathrm{I}^{\mathrm{big}}=\left(\mathrm{S}^{\mathrm{big}}, \mathrm{V}^{\mathrm{big}}\right)$ over $\left(\mathrm{K}, \mathrm{M}^{\mathrm{big}}, \mathrm{T}\right)$ as:<br>$$<br>\begin{align}<br>\mathrm{S}^{\mathrm{big}(k, m)}=&amp;\mathrm{S}(k, \mathrm{H}(m)) \ \mathrm{V}^{\mathrm{big}}(k, m, t)=&amp;\mathrm{V}(k, \mathrm{H}(m), t)<br>\end{align}<br>$$<br>【I是一个针对短消息的MAC算法，H是一个哈希函数，能将极大的消息映射到较短的消息空间上。】</p>
+<p><strong><u>Thm</u></strong> :</p>
+<p>If I is a secure MAC and H is collision resistant then $\mathrm{I^{big}}$ is a secure MAC.</p>
+<p>【如果I是一个secure MAC，并且H是抗碰撞的，$\mathrm{I^{big}}$ 就是一个secure MAC】</p>
+<p>其中，Collision resistence 是满足安全的必要条件：</p>
+<p>假设攻击者可以找到一个碰撞：$\mathrm{m_0\ne m_1\quad s.t. H(m_0)=H(m_1)}$ </p>
+<p>那么，$\mathrm{I^{big}}$ 在1-chosen msg 攻击下就是不安全的：</p>
+<ol>
+<li>攻击者请求得到tag: $\mathrm{t} \longleftarrow \mathrm{S}\left(\mathrm{k}, \mathrm{m}_{0}\right)$ </li>
+<li>伪造pair $\mathrm{(m_1,t)}$ 作为输出 </li>
+</ol>
+<h1 id="Generic-birthday-attack"><a href="#Generic-birthday-attack" class="headerlink" title="Generic birthday attack"></a>Generic birthday attack</h1><h2 id="Generic-attack-on-C-R-functions"><a href="#Generic-attack-on-C-R-functions" class="headerlink" title="Generic attack on C.R. functions"></a>Generic attack on C.R. functions</h2><p>$\mathrm{H}: \mathrm{M} \rightarrow{0,1}^{\mathrm{n}}$ 是一个哈希函数.$\left(|M| \gg 2^{n}\right)$ </p>
+<p>一般的攻击算法可以在 $\mathcal{O}(2^{n/2})$ 时间内找到一对哈希碰撞：</p>
+<ol>
+<li>在M中随机选择 $2^{n/2}$ 不同的消息：$\mathrm{m_1,\dots,m_{2^{n/2} } }$ </li>
+<li>for i = 1, …, $2^{n/2}$ ，计算出其对应的哈希值：  $\mathrm{t}_{\mathrm{i}}=\mathrm{H}\left(\mathrm{m}_{\mathrm{i}}\right) \quad \in\{0,1\}^{\mathrm{n}}$  </li>
+<li>查看这其中是否有碰撞（即满足 $\mathrm{t_i=t_j}$ ），如果没有，返回第一步。</li>
+</ol>
+<p>（只需要进行很少迭代，就可以找到碰撞）</p>
+<h2 id="The-birthday-paradox"><a href="#The-birthday-paradox" class="headerlink" title="The birthday paradox"></a>The birthday paradox</h2><p>为什么上述算法有效？</p>
+<p>生日悖论告诉我们，如果  $r_{1}, \ldots, r_{n} \in{1, \ldots, B}$ 是独立同分布的变量（均匀分布是最坏的情况），当 $n=1.2 \times B^{1 / 2}$ 时，存在碰撞 $r_i=r_j(i\ne j)$ 的概率大于等于1/2。</p>
+<blockquote>
+<p>Let $r_{1}, \ldots, r_{n} \in{1, \ldots, B}$ be indep. identically distributed integers.</p>
+<p><strong>Thm</strong> : when $n=1.2 \times B^{1 / 2}$ then  $\operatorname{Pr}\left[\exists \mathrm{i} \neq \mathrm{j}: \mathrm{r}_{\mathrm{i}}=\mathrm{r}_{\mathrm{j}}\right] \geq 1 / 2$ . </p>
+</blockquote>
+<p>Proof: (for <u>uniform</u> indep. $r_{1}, \ldots, r_{n} $) </p>
+<img src="https://s4.ax1x.com/2021/12/28/Tr4J1O.png" alt="Proof" style="zoom:43%;" />
+
+<p>取样数n和碰撞概率的关系如图：</p>
+<img src="https://s4.ax1x.com/2021/12/28/Tr43h6.png" alt="n-C.R" style="zoom:35%;" />
+
+<hr>
+<p>因此上述的攻击算法只需要迭代两次，就能以极大的概率找到碰撞。其时间、空间复杂度都为 $\mathcal{O}(2^{n/2})$ </p>
+<h3 id="Sample-C-R-hash-functions"><a href="#Sample-C-R-hash-functions" class="headerlink" title="Sample C.R. hash functions"></a>Sample C.R. hash functions</h3><p>抗碰撞哈希函数的比较：</p>
+<img src="https://s4.ax1x.com/2021/12/28/Tr41tx.png" alt="comparision" style="zoom:33%;" />
+
+<p>因此SHA-1的digest size太小，可以很容易的找到碰撞，所以不推荐使用。</p>
+<p>不管量子计算机能大幅降低寻找碰撞的时间：</p>
+<img src="https://s4.ax1x.com/2021/12/28/Tr4lA1.png" alt="Quantum Collision Finder" style="zoom:33%;" />
+
+<h3 id="Three-way-collision"><a href="#Three-way-collision" class="headerlink" title="Three way collision"></a>Three way collision</h3><p>简化考虑<strong>two-way collision:</strong></p>
+<p>哈希函数 $\mathrm{H}: \mathrm{M} \rightarrow \mathrm{T\quad(|T|=t)} $ ，应该随机取样$n$个不同的数字，才能以极大的概率找到碰撞满足 $H(y)=H(x)$ .</p>
+<ol>
+<li>n个不同的数字中，有 $n\times(n-1)$ 个pair$(x, y)$ .</li>
+<li>而对于任意值$H(x)$，$y$满足 $H(y)=H(x)$ 的概率为 $1/t$ .</li>
+<li>因此应该满足： $n^2=t$ </li>
+</ol>
+<p>即只需要取样 $\mathcal{O}(|T|^{1/2})$ 个值，即可找到碰撞。</p>
+<hr>
+<p>同理，考虑<strong>three-way collision</strong>:</p>
+<p>哈希函数 $\mathrm{H}: \mathrm{M} \rightarrow \mathrm{T\quad(|T|=t)} $ ，应该随机取样$n$个不同的数字，才能以极大的概率找到碰撞满足 $H(x)=H(y)=H(z)$ .</p>
+<ol>
+<li>n个不同的数字中，有 $\frac{n\times(n-1)\times(n-2)}{3!}$ 个pair $(x,y,z)$ .</li>
+<li>而对于任意值H(x)，y和z满足 $H(y)=H(z)=H(x)$ 的概率为 $1/t^2$ </li>
+<li>因此应该满足：$n^3/6 = t^2$ </li>
+</ol>
+<p>所以只需要取样 $\mathcal{O}(|T|^{2/3})$ 个值，即可找到碰撞。</p>
+<h1 id="The-Merkle-Damgard-Paradigm"><a href="#The-Merkle-Damgard-Paradigm" class="headerlink" title="The Merkle-Damgard Paradigm"></a>The Merkle-Damgard Paradigm</h1><h2 id="The-MD-iterated-construction"><a href="#The-MD-iterated-construction" class="headerlink" title="The MD iterated construction"></a>The MD iterated construction</h2><p>通过压缩函数(compression function) $\mathrm{h: T \times X \rightarrow T}$ ，我们可以得到哈希函数 $\mathrm{H}: X^{\leq L} \longrightarrow T$ .</p>
+<img src="https://s4.ax1x.com/2021/12/28/Tr4mX4.png" alt="MD iterated construction" style="zoom:33%;" />
+
+<p>$\mathrm{H_i}:$ chaining variables</p>
+<p>$\mathrm{PB}:$ padding block （If no space for PB add another block）.</p>
+<img src="https://s4.ax1x.com/2021/12/28/Tr4ecF.png" alt="PB" style="zoom:33%;" />
+
+
+
+<h2 id="MD-collision-resistance"><a href="#MD-collision-resistance" class="headerlink" title="MD collision resistance"></a>MD collision resistance</h2><p>上述构造是抗哈希的。</p>
+<p><strong><u>Thm:</u></strong> If h is collision resistant then so is H.</p>
+<p>【如果压缩函数h是抗哈希的，那么构造出的哈希函数也是抗哈希的】</p>
+<p><strong>Proof:</strong> collision on H $\Rightarrow$ collision on h</p>
+<p>【通过反证法证明，如果能找到H的碰撞，那么也能找到h压缩函数的碰撞】</p>
+<p>假设 $\mathrm{H(M)=H(M’)}$ ，我们可以尝试构造出h的碰撞。</p>
+<ul>
+<li><p>【1】只需要最后一块满足：$\mathrm{h\left(H_{t}, M_{t} | P B\right)=H_{t+1}=H_{r+1}^{\prime}=h\left(H_{r}^{\prime}, M_{r}^{\prime} | P B^{\prime}\right)}$  .</p>
+<img src="https://s4.ax1x.com/2021/12/28/Tr4unJ.png" alt="H(M)=H(M')" style="zoom:33%;" />
+</li>
+<li><p>【1】如果h函数的参数不完全相同，那么就找到了h的碰撞<br>即 $\mathrm{H_t\ne H_r’}$  <strong>or</strong> $ \mathrm{M_t\ne M_r’}$ <strong>or</strong> $\mathrm{PB\ne PB’}$  .</p>
+</li>
+<li><p>【2】否则：如果  $\mathrm{H_t= H_r’}$  <strong>and</strong> $ \mathrm{M_t= M_r’}$ <strong>and</strong> $\mathrm{PB= PB’}$ （可以得出 $t=r$ ）<br>满足式子：$\mathrm{h\left(H_{t-1}, M_{t-1} \right)=H_{t}=H_{t}^{\prime}=h\left(H_{t-1}^{\prime}, M_{t-1}^{\prime} \right)}$ .</p>
+</li>
+<li><p>【2】同样的，如果h函数的参数不完全相同，就找到了一个h的碰撞：</p>
+<p>即 $\mathrm{H_{t-1}\ne H_{t-1}’}$  <strong>or</strong> $ \mathrm{M_{t-1}\ne M_{t-1}’}$ .</p>
+</li>
+<li><p>【*】因此通过迭代的方式，到最后：</p>
+<ul>
+<li>要么找到h压缩函数的碰撞</li>
+<li>要么 $\forall i: M_i=M_i’ \Rightarrow M=M’$ ，但这就不满足是H哈希函数的碰撞了。</li>
+<li>因此，如果能找到H哈希函数的碰撞，就一定能找到h压缩函数的碰撞。</li>
+</ul>
+</li>
+</ul>
+<p>所以，在MD结构中，如果想要构建抗碰撞的哈希函数，就需要先保证压缩函数是抗碰撞的。</p>
+<h1 id="Constructing-Compression-Functions"><a href="#Constructing-Compression-Functions" class="headerlink" title="Constructing Compression Functions"></a>Constructing Compression Functions</h1><p>根据上文MD的定理：如果压缩函数h是抗碰撞的，那么H哈希函数也是抗碰撞的。</p>
+<p>因此，本节的目标就是如何构建压缩函数 $\mathrm{h: T \times X \rightarrow T}$ </p>
+<h2 id="Comp-func-from-a-block-cipher"><a href="#Comp-func-from-a-block-cipher" class="headerlink" title="Comp. func. from a block cipher"></a>Comp. func. from a block cipher</h2><p>我们可以从块密码中构建压缩函数。</p>
+<p>block cipher: $\mathrm{E}: \mathrm{K} \times{0,1}^{\mathrm{n}} \longrightarrow{0,1}^{\mathrm{n}}$ </p>
+<p><u><strong>Davies-Meyer</strong> compression function</u>: $\mathrm{h(H, m)=E(m, H) \oplus H}$  </p>
+<p>【把消息块m作为密钥】</p>
+<img src="https://s4.ax1x.com/2021/12/28/Tr4KB9.png" alt="Davies-Meyer compression function" style="zoom:33%;" />
+
+<p><strong><u>Thm:</u></strong> Suppose E is an ideal cipher (collection of |K| random perms.)<br>Finding a collision $\mathrm{h(H,m)=h(H’,m’)}$ takes $\mathcal{O}(2^{n/2})$ evaluations of (E, D).</p>
+<p>【如果E是一个理想的密码，即每一个密钥都对应一个随机置换，那么通过生日攻击，找到一个碰撞需要 $\mathcal{O}(2^{n/2})$ 次(E, D)的计算。】</p>
+<blockquote>
+<p>如果DM压缩函数是 $\mathrm{h(H, m)=E(m, H)}$ ，函数h就不抗碰撞。</p>
+</blockquote>
+<hr>
+<p>其他通过块密码构建的压缩函数：</p>
+<p>简化 $\mathrm{E}:{0,1}^{\mathrm{n}} \times{0,1}^{\mathrm{n}} \rightarrow{0,1}^{\mathrm{n}}$ </p>
+<p><u>Miyaguchi-Preneel:</u> </p>
+<ul>
+<li>$\mathrm{h(H, m)=E(m, H) \oplus H \oplus m}$ (Whirlpool)</li>
+<li>$\mathrm{h(H, m)=E(H \oplus m, m) \oplus m}$ </li>
+<li>and so on.</li>
+</ul>
+<blockquote>
+<p>同样的，对于这样的变体 $\mathrm{h}(\mathrm{H}, \mathrm{m})=\mathrm{E}(\mathrm{m}, \mathrm{H}) \oplus \mathrm{m}$ 是不安全的。</p>
+</blockquote>
+<h2 id="Case-study-SHA-256"><a href="#Case-study-SHA-256" class="headerlink" title="Case study: SHA-256"></a>Case study: SHA-256</h2><p>SHA-256哈希函数的组成要件：</p>
+<ul>
+<li>Merkle-Damgard function</li>
+<li>Davies-Meyer compression function</li>
+<li>Block cipher: SHACAL-2</li>
+</ul>
+<img src="https://s4.ax1x.com/2021/12/28/Tr4M7R.png" alt="SHA-256" style="zoom:33%;" />
+
+<p>其中512-bit的key是从msg block中截取的，256-bit block是chaining variable.</p>
+<h2 id="Provable-compression-functions"><a href="#Provable-compression-functions" class="headerlink" title="Provable compression functions"></a>Provable compression functions</h2><p>还有一种可证明的压缩函数，即如果你能找到该压缩函数的碰撞，必须解决困难问题。</p>
+<p>对于任意 $\mathrm{m}, \mathrm{h} \in{0, \ldots, \mathrm{p}-1}$ ，定义压缩函数 $\mathrm{h(H, m)=u^{H} \cdot v^{m} \quad(\bmod p)}$ .</p>
+<p><u>Fact:</u> ﬁnding collision for h(.,.) is as hard as solving “discrete‐log” modulo p.</p>
+<p><u>Problem</u>: slow.</p>
+<h1 id="HMAC"><a href="#HMAC" class="headerlink" title="HMAC"></a>HMAC</h1><p>通过上述Merkle-Damgard的构造，如果压缩函数h是抗碰撞的，H哈希函数也是抗碰撞的。</p>
+<img src="https://s4.ax1x.com/2021/12/28/Tr4mX4.png" alt="MD iterated construction" style="zoom:33%;" />
+
+<p>那么，我们能否直接使用该哈希函数H(·)构造MAC?</p>
+<p>$\mathrm{\mathrm{H}: X^{\leq L} \longrightarrow T}$  a C.R. Merkle-Damgard Hash Function</p>
+<p><u>Attempt：</u> $\mathrm{s(k, m)=H(k | m)}$ </p>
+<p>这样是不安全的，类似<a href="/2021/11/22/stanford-integrity1/" title="上篇文章">上篇文章</a>中提到的NMAC，如果没有最后一步加密，就是不安全的。</p>
+<p>通过<strong>Extension Attack</strong> ，对给定哈希值 $\mathrm{H(k| m)}$ ，可以计算出任意 $\mathrm{H(k| m|w)}$ .</p>
+<h2 id="HMAC-Hash-MAC"><a href="#HMAC-Hash-MAC" class="headerlink" title="HMAC: Hash MAC"></a>HMAC: Hash MAC</h2><p>因此，通过哈希函数构造MAC的标准方法是HMAC(Hash MAC)，H是哈希函数，通过不同的哈希函数，该MAC值也有不同的输出长度。比如用SHA-256作为哈希函数，MAC的输出就是256比特。</p>
+<p>HMAC可以将任意哈希函数作为黑盒，因此HMAC广泛应用于互联网中的协议。</p>
+<p>HMAC:<br>$$<br>\mathrm{S}(\mathrm{k}, \mathrm{m})=\mathrm{H}(\mathrm{k} \oplus \mathrm{opad} | \mathrm{H}(\mathrm{k} \oplus \mathrm{ipad} | \mathrm{m}))<br>$$<br>（opad: outer pad, 512-bit)</p>
+<p>（ipad: inner pad, 512-bit）</p>
+<p>HMAC的结构和基于PRF的NMAC结构很像：</p>
+<img src="https://s4.ax1x.com/2021/12/28/TseCzq.png" alt="HMAC" style="zoom:34%;" />
+
+<ul>
+<li>$\mathrm{h(IV,k\oplus ipad)}$ : 是NMAC的 $\mathrm{k_1}$ .</li>
+<li>$\mathrm{h(IV,k\oplus opad)}$ : 是NMAC的 $\mathrm{k_2}$ .</li>
+<li>主要的不同点在于，HMAC中的两个密钥 $\mathrm{k_1,k_2}$ 是相关的。</li>
+</ul>
+<h1 id="Timing-Attacks-on-MAC-Verification"><a href="#Timing-Attacks-on-MAC-Verification" class="headerlink" title="Timing Attacks on MAC Verification"></a>Timing Attacks on MAC Verification</h1><p>有一种针对MAC验证的时间攻击。</p>
+<p>比如在Keyczar crypto library中，验证MAC的函数简化为：</p>
+<img src="https://s4.ax1x.com/2021/12/28/TsVtBD.png" alt="Verify function" style="zoom:33%;" />
+
+<p><u>Problem</u>: ‘==’在python中的实现是按字节对比 (byte-by-byte comparison)。</p>
+<p>因此，如果对比出了第一个不相等的字节，就会返回false.</p>
+<h2 id="Timing-Attack"><a href="#Timing-Attack" class="headerlink" title="Timing Attack"></a>Timing Attack</h2><p><strong>Timing attack:</strong> 对目标消息m计算tag</p>
+<img src="https://s4.ax1x.com/2021/12/28/TsVaAH.png" alt="Timing attack" style="zoom:33%;" />
+
+<ol>
+<li>向服务器随机请求一个随机tag，记录下验证时间。</li>
+<li>遍历随机tag的第一个字节，发送给服务器。当验证时间比第一步中的时间略长时，停止，即找到了第一个字节的值。</li>
+<li>重复tag的所有字节，直到找到最终有效的tag。</li>
+</ol>
+<p>保护方法的核心就是：让所有字符串的比较时间都相同。</p>
+<h2 id="Defense-1"><a href="#Defense-1" class="headerlink" title="Defense 1"></a>Defense 1</h2><p>第一种是要比较完所有字节。</p>
+<img src="https://s4.ax1x.com/2021/12/28/TsVNHe.png" alt="Defense1" style="zoom:33%;" />
+
+<p>但囿于编译器的优化等因素，这很难实现。</p>
+<h2 id="Defense-2"><a href="#Defense-2" class="headerlink" title="Defense 2"></a>Defense 2</h2><p>第二种则是通过再次MAC来比较两个字符是否相同。</p>
+<img src="https://s4.ax1x.com/2021/12/28/TsVYnO.png" alt="Defense2" style="zoom:33%;" />
+
+<p>由此可见，密码算法的实现也会让算法变得不安全。</p>
+<blockquote>
+<p>Boneh: Don’t implement crypto yourself!</p>
+</blockquote>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Cryptography-Boneh」:Collision Resistance</p><p><a href="https://f7ed.com/2021/12/28/stanford-integrity2/">https://f7ed.com/2021/12/28/stanford-integrity2/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2021-12-28</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-12-28</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课, </a><a class="link-muted" rel="tag" href="/tags/Cryptography/">Cryptography, </a><a class="link-muted" rel="tag" href="/tags/Integrity/">Integrity, </a><a class="link-muted" rel="tag" href="/tags/MAC/">MAC, </a><a class="link-muted" rel="tag" href="/tags/collision-resistance/">collision-resistance, </a><a class="link-muted" rel="tag" href="/tags/HMAC/">HMAC, </a><a class="link-muted" rel="tag" href="/tags/birthday-paradox/">birthday-paradox, </a><a class="link-muted" rel="tag" href="/tags/MD-paradigm/">MD-paradigm, </a><a class="link-muted" rel="tag" href="/tags/DM-compression-function/">DM-compression-function </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2022/06/30/mit6875-lec1/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Cryptography-MIT6875」: Lecture 1</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2021/12/23/Mersenne-Prime/"><span class="level-item">「Math」：Mersenne Prime</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "f98a47dc4ad43a876eca7aee8034a823",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">70</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">135</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Collision-Resistance"><span class="level-left"><span class="level-item">1</span><span class="level-item">Collision Resistance</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#MACs-from-C-R"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">MACs from C.R.</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Generic-birthday-attack"><span class="level-left"><span class="level-item">2</span><span class="level-item">Generic birthday attack</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Generic-attack-on-C-R-functions"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">Generic attack on C.R. functions</span></span></a></li><li><a class="level is-mobile" href="#The-birthday-paradox"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">The birthday paradox</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Sample-C-R-hash-functions"><span class="level-left"><span class="level-item">2.2.1</span><span class="level-item">Sample C.R. hash functions</span></span></a></li><li><a class="level is-mobile" href="#Three-way-collision"><span class="level-left"><span class="level-item">2.2.2</span><span class="level-item">Three way collision</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#The-Merkle-Damgard-Paradigm"><span class="level-left"><span class="level-item">3</span><span class="level-item">The Merkle-Damgard Paradigm</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#The-MD-iterated-construction"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">The MD iterated construction</span></span></a></li><li><a class="level is-mobile" href="#MD-collision-resistance"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">MD collision resistance</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Constructing-Compression-Functions"><span class="level-left"><span class="level-item">4</span><span class="level-item">Constructing Compression Functions</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Comp-func-from-a-block-cipher"><span class="level-left"><span class="level-item">4.1</span><span class="level-item">Comp. func. from a block cipher</span></span></a></li><li><a class="level is-mobile" href="#Case-study-SHA-256"><span class="level-left"><span class="level-item">4.2</span><span class="level-item">Case study: SHA-256</span></span></a></li><li><a class="level is-mobile" href="#Provable-compression-functions"><span class="level-left"><span class="level-item">4.3</span><span class="level-item">Provable compression functions</span></span></a></li></ul></li><li><a class="level is-mobile" href="#HMAC"><span class="level-left"><span class="level-item">5</span><span class="level-item">HMAC</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#HMAC-Hash-MAC"><span class="level-left"><span class="level-item">5.1</span><span class="level-item">HMAC: Hash MAC</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Timing-Attacks-on-MAC-Verification"><span class="level-left"><span class="level-item">6</span><span class="level-item">Timing Attacks on MAC Verification</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Timing-Attack"><span class="level-left"><span class="level-item">6.1</span><span class="level-item">Timing Attack</span></span></a></li><li><a class="level is-mobile" href="#Defense-1"><span class="level-left"><span class="level-item">6.2</span><span class="level-item">Defense 1</span></span></a></li><li><a class="level is-mobile" href="#Defense-2"><span class="level-left"><span class="level-item">6.3</span><span class="level-item">Defense 2</span></span></a></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

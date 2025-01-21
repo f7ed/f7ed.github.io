@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「PyTorch」：4-Neural Network Design - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="PyTorch框架学习。 这篇文章主要介绍如何用PyTorch设计实现一个NN。 colab笔记： Neural Network Design 1: The Layers  Neural Network Design 2: Callable Neural Networks  Neural Network Design 3: CNN Forward Method  Neural Network De"><meta property="og:type" content="blog"><meta property="og:title" content="「PyTorch」：4-Neural Network Design"><meta property="og:url" content="https://f7ed.com/2021/02/28/pytorch-nn-design/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="PyTorch框架学习。 这篇文章主要介绍如何用PyTorch设计实现一个NN。 colab笔记： Neural Network Design 1: The Layers  Neural Network Design 2: Callable Neural Networks  Neural Network Design 3: CNN Forward Method  Neural Network De"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/a0b70de959696be3ebc674582469d70d.png"><meta property="article:published_time" content="2021-02-27T16:00:00.000Z"><meta property="article:modified_time" content="2021-02-28T14:16:26.025Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="open-classes"><meta property="article:tag" content="DEEPLIZARD"><meta property="article:tag" content="PyTorch"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/a0b70de959696be3ebc674582469d70d.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2021/02/28/pytorch-nn-design/"},"headline":"「PyTorch」：4-Neural Network Design","image":["https://f7ed.com/gallery/thumbnails/a0b70de959696be3ebc674582469d70d.png"],"datePublished":"2021-02-27T16:00:00.000Z","dateModified":"2021-02-28T14:16:26.025Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"PyTorch框架学习。 这篇文章主要介绍如何用PyTorch设计实现一个NN。 colab笔记： Neural Network Design 1: The Layers  Neural Network Design 2: Callable Neural Networks  Neural Network Design 3: CNN Forward Method  Neural Network De"}</script><link rel="canonical" href="https://f7ed.com/2021/02/28/pytorch-nn-design/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「PyTorch」：4-Neural Network Design</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2021-02-27T16:00:00.000Z" title="2021-02-27T16:00:00.000Z">2021-02-28</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2021-02-28T14:16:26.025Z" title="2021-02-28T14:16:26.025Z">2021-02-28</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/PyTorch/">PyTorch</a></span><span class="level-item"><i class="far fa-clock"></i> 42 minutes read (About 6257 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>PyTorch框架学习。</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><p>这篇文章主要介绍如何用PyTorch设计实现一个NN。</p>
+<p>colab笔记：</p>
+<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Neural%20Network%20Design%201%EF%BC%9AThe%20Layers.ipynb">Neural Network Design 1: The Layers</a> </p>
+<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Neural%20Network%20Design%202%EF%BC%9ACallable%20Neural%20Networks.ipynb">Neural Network Design 2: Callable Neural Networks</a> </p>
+<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Neural%20Network%20Design%203%EF%BC%9ACNN%20Forward%20Method.ipynb">Neural Network Design 3: CNN Forward Method</a> </p>
+<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Neural%20Network%20Design%204%EF%BC%9APass%20A%20Batch%20of%20Images.ipynb">Neural Network Design 4: Pass A Batch of Images</a> </p>
+<span id="more"></span>
+
+
+
+<p>以CNN为例，讲解PyTorch中的layer、weight、</p>
+<p>Overview：</p>
+<ul>
+<li>Build PyTorch CNN - Object Oriented Neural Networks</li>
+<li>CNN Layers - Deep Neural Network Architecture</li>
+<li>CNN Weights - Learnable Parameters in Neural Networks</li>
+<li>Callable Neural Networks - Linear Layers in Depth</li>
+<li>CNN Forward Method - Deep Learning Implementation</li>
+<li>Forward Propagation Explained - Pass Image to PyTorch Neural Network</li>
+<li>Neural Network Batch Processing - Pass Image Batch to PyTorch CNN</li>
+<li>CNN Output Size Formula - Bonus Neural Network Debugging Session</li>
+</ul>
+<h1 id="Building-Neural-Networks-With-PyTorch"><a href="#Building-Neural-Networks-With-PyTorch" class="headerlink" title="Building Neural Networks With PyTorch"></a>Building Neural Networks With PyTorch</h1><p>From a high-level perspective or bird’s eye view of our deep learning project, we prepared our data, and now, we are ready to build our model.</p>
+<p>【从高层次看，这一部分主要讲解如何用PyTorch设计model】</p>
+<ul>
+<li>Prepare the data</li>
+<li><strong>Build the model</strong></li>
+<li>Train the model</li>
+<li>Analyze the model’s results</li>
+</ul>
+<p>We’ll do a quick OOP review in this post to cover the details needed for working with PyTorch neural networks, but if you find that you need more, the Python docs have an overview tutorial <a target="_blank" rel="noopener" href="https://docs.python.org/3/tutorial/classes.html">here</a>.</p>
+<p>【OOP的细节】</p>
+<h3 id="PyTorch’s-torch-nn-Package"><a href="#PyTorch’s-torch-nn-Package" class="headerlink" title="PyTorch’s torch.nn Package"></a>PyTorch’s <code>torch.nn</code> Package</h3><p>To build neural networks in PyTorch, we use the <code>torch.nn</code> package, which is PyTorch’s neural network (nn) library. We typically import the package like so:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br></pre></td></tr></table></figure>
+
+<p>PyTorch’s neural network library contains all of the typical components needed to build neural networks.</p>
+<p>【nn库包含所有构建NN的典型组件】</p>
+<h4 id="PyTorch’s-nn-Module-Class"><a href="#PyTorch’s-nn-Module-Class" class="headerlink" title="PyTorch’s nn.Module Class"></a>PyTorch’s <code>nn.Module</code> Class</h4><p>As we know, deep neural networks are built using multiple layers. This is what makes the network <em>deep</em>. Each layer in a neural network has two primary components:</p>
+<p>【NN中的每一layer都由代码（input tensor到output tensor 的转换）和权重（weights）组成，因此可以用OOP的思想来抽象表示。】</p>
+<ul>
+<li>A transformation (code)</li>
+<li>A collection of weights (data)</li>
+</ul>
+<p>In fact, this is the case with PyTorch. Within the <code>nn</code> package, there is a class called <code>Module</code>, and it is the base class for all of neural network modules which includes layers.</p>
+<p>【nn库的Module类是所有NN模型中Layers的父类，即所有networks都要继承nn.Modules类】</p>
+<h4 id="PyTorch-nn-Modules-Have-A-forward-Method"><a href="#PyTorch-nn-Modules-Have-A-forward-Method" class="headerlink" title="PyTorch nn.Modules Have A forward() Method"></a>PyTorch <code>nn.Module</code>s Have A <code>forward()</code> Method</h4><p>When we pass a tensor to our network as input, the tensor flows forward though each layer transformation until the tensor reaches the output layer. This process of a tensor flowing forward though the network is known as a <em>forward pass</em>.</p>
+<p>【forward pass：tensor向前流，直至输出层】</p>
+<p>Every PyTorch <code>nn.Module</code> has a <code>forward()</code> method, and so when we are building layers and networks, we must provide an implementation of the <code>forward()</code> method. The forward method is the actual transformation.</p>
+<p>【所有layers 和 networks在继承nn.Module时，都要实现forward()接口，这个forward方法就是实际的输入到输出的转换】</p>
+<h4 id="PyTorch’s-nn-functional-Package"><a href="#PyTorch’s-nn-functional-Package" class="headerlink" title="PyTorch’s nn.functional Package"></a>PyTorch’s <code>nn.functional</code> Package</h4><p>When we implement the <code>forward()</code> method of our <code>nn.Module</code> subclass, we will typically use functions from the <code>nn.functional</code> package. This package provides us with many neural network operations that we can use for building layers. In fact, many of the <code>nn.Module</code> layer classes use <code>nn.functional</code> functions to perform their operations.</p>
+<p>【nn.functional包有很多实用的函数操作，可以帮助我们构建layers。事实上，nn.Module的许多子类就使用了nn.functional的方法来完成他们的操作。】</p>
+<h1 id="Building-A-Neural-Network-In-PyTorch"><a href="#Building-A-Neural-Network-In-PyTorch" class="headerlink" title="Building A Neural Network In PyTorch"></a>Building A Neural Network In PyTorch</h1><p>We now have enough information to provide an outline for building neural networks in PyTorch. The steps are as follows:</p>
+<p><em>Short version:</em></p>
+<ol>
+<li>Extend the <code>nn.Module</code> base class.【继承nn.Module类】</li>
+<li>Define layers as class attributes.【定义layers作为该类的属性】</li>
+<li>Implement the <code>forward()</code> method.【实现forward()接口】</li>
+</ol>
+<p><em>More detailed version:</em></p>
+<ol>
+<li>Create a neural network class that extends the <code>nn.Module</code> base class.</li>
+<li>In the class constructor, define the network’s layers as class attributes using pre-built layers from <code>torch.nn</code>.</li>
+<li>Use the network’s layer attributes as well as operations from the <code>nn.functional</code> API to define the network’s forward pass.</li>
+</ol>
+<h4 id="Define-The-Network’s-Layers-As-Class-Attributes"><a href="#Define-The-Network’s-Layers-As-Class-Attributes" class="headerlink" title="Define The Network’s Layers As Class Attributes"></a>Define The Network’s Layers As Class Attributes</h4><p>We’re building a CNN, so the two types of layers we’ll use are linear layers and convolutional layers.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Network</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        <span class="variable language_">self</span>.conv1 = nn.Conv2d(in_channels=<span class="number">1</span>, out_channels=<span class="number">6</span>, kernel_size=<span class="number">5</span>)</span><br><span class="line">        <span class="variable language_">self</span>.conv2 = nn.Conv2d(in_channels=<span class="number">6</span>, out_channels=<span class="number">12</span>, kernel_size=<span class="number">5</span>)</span><br><span class="line"></span><br><span class="line">        <span class="variable language_">self</span>.fc1 = nn.Linear(in_features=<span class="number">12</span> * <span class="number">4</span> * <span class="number">4</span>, out_features=<span class="number">120</span>)</span><br><span class="line">        <span class="variable language_">self</span>.fc2 = nn.Linear(in_features=<span class="number">120</span>, out_features=<span class="number">60</span>)</span><br><span class="line">        <span class="variable language_">self</span>.out = nn.Linear(in_features=<span class="number">60</span>, out_features=<span class="number">10</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, t</span>):</span><br><span class="line">        <span class="comment"># implement the forward pass</span></span><br><span class="line">        <span class="keyword">return</span> t</span><br></pre></td></tr></table></figure>
+
+
+
+<p>Inside of our <code>Network</code> class, we have five layers that are defined as attributes. We have two convolutional layers, <code>self.conv1</code> and <code>self.conv2</code>, and three linear layers, <code>self.fc1</code>, <code>self.fc2</code>, <code>self.out</code>.</p>
+<p>【在Network中，有5个layers作为该类的attributes】</p>
+<p>We used the abbreviation <code>fc</code> in <code>fc1</code> and <code>fc2</code> because linear layers are also called <em>fully connected layers</em>. They also have a third name that we may hear sometimes called <em>dense</em>. So linear, dense, and fully connected are all ways to refer to the same type of layer. PyTorch uses the word <em>linear</em>, hence the <code>nn.Linear</code> class name.</p>
+<p>We used the name <code>out</code> for the last linear layer because the last layer in the network is the output layer.</p>
+<p>【fc是fully connected layers的缩写，全连接层，nn.Linear】</p>
+<p>【out是输出层。】</p>
+<h3 id="Our-CNN-Layers"><a href="#Our-CNN-Layers" class="headerlink" title="Our CNN Layers"></a>Our CNN Layers</h3><p>Each of our layers extends PyTorch’s neural network <code>Module</code> class. For each layer, there are two primary items encapsulated inside, a forward function definition and a weight tensor.</p>
+<p>【每一layer都会继承PyTorch的Module类。对于每一layer，都会封装两个组件：forward函数和权重tensor】</p>
+<p>The weight tensor inside each layer contains the weight values that are updated as the network learns during the training process.</p>
+<p>【每一层的weitght tensor都包含在NN训练中更新的权重参数。】</p>
+<p>PyTorch’s neural network <code>Module</code> class keeps track of the weight tensors inside each layer. The code that does this tracking lives inside the <code>nn.Module</code> class, and since we are extending the neural network module class, we inherit this functionality automatically.</p>
+<p>【其中，权重tensor就是在训练NN中会更新的参数，Module类会自动跟踪其每一层的weight tensor】</p>
+<h3 id="CNN-Layer-Parameters"><a href="#CNN-Layer-Parameters" class="headerlink" title="CNN Layer Parameters"></a>CNN Layer Parameters</h3><h4 id="Parameter-Vs-Argument"><a href="#Parameter-Vs-Argument" class="headerlink" title="Parameter Vs Argument"></a>Parameter Vs Argument</h4><p>We’ll parameters are used in function definitions as place-holders while arguments are the actual values that are passed to the function. The parameters can be thought of as local variables that live inside a function.</p>
+<p>【Parameters作为占位符用于函数定义，而Arguments是传递给函数的实际的值。】</p>
+<h4 id="Two-Types-Of-Parameters"><a href="#Two-Types-Of-Parameters" class="headerlink" title="Two Types Of Parameters"></a>Two Types Of Parameters</h4><p>To better understand the argument values for these parameters, let’s consider two categories or types of parameters that we used when constructing our layers.</p>
+<p>【在构建layers时，有两种参数】</p>
+<ol>
+<li>Hyperparameters【超参数】</li>
+<li>Data dependent hyperparameters【数据依赖超参数】</li>
+</ol>
+<p>When we construct a layer, we pass values for each parameter to the layer’s constructor. With our convolutional layers have three parameters and the linear layers have two parameters.</p>
+<p>【在构建layer时，我们向layer constructor传递参数。】</p>
+<ul>
+<li>Convolutional layers<ul>
+<li><code>in_channels</code></li>
+<li><code>out_channels</code></li>
+<li><code>kernel_size</code></li>
+</ul>
+</li>
+<li>Linear layers<ul>
+<li><code>in_features</code></li>
+<li><code>out_features</code></li>
+</ul>
+</li>
+</ul>
+<h4 id="Hyperparameters"><a href="#Hyperparameters" class="headerlink" title="Hyperparameters"></a>Hyperparameters</h4><p>In general, hyperparameters are parameters whose values are chosen manually and arbitrarily.</p>
+<p>【hyperparameters是手动主观确定的参数。】</p>
+<p>As neural network programmers, we choose hyperparameter values mainly based on trial and error and increasingly by utilizing values that have proven to work well in the past. For building our CNN layers, these are the parameters we choose manually.</p>
+<p>【超参数往往是基于经验trial和误差error确定的.】</p>
+<p>【在CNN中，我们需要确定这些参数。】</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>kernel_size</code></td>
+<td>Sets the filter size. The words <em>kernel</em> and <em>filter</em> are interchangeable.</td>
+</tr>
+<tr>
+<td><code>out_channels</code></td>
+<td>Sets the number of filters. One filter produces one output channel.</td>
+</tr>
+<tr>
+<td><code>out_features</code></td>
+<td>Sets the size of the output tensor.</td>
+</tr>
+</tbody></table>
+<h4 id="Data-Dependent-Hyperparameters"><a href="#Data-Dependent-Hyperparameters" class="headerlink" title="Data Dependent Hyperparameters"></a>Data Dependent Hyperparameters</h4><p>Data dependent hyperparameters are parameters whose values are dependent on data. The first two data dependent hyperparameters that stick out are the <code>in_channels</code> of the first convolutional layer, and the <code>out_features</code> of the output layer.</p>
+<p>【依赖于数据的超参数。比如在第一个卷积层的in_channles和输出层的out_features参数的确定都依赖于数据。】</p>
+<p>In general, the <em>input</em> to one layer is the <em>output</em> from the previous layer, and so all of the <code>in_channels</code> in the conv layers and <code>in_features</code> in the linear layers depend on the data coming from the previous layer.</p>
+<p>【一个layer的输入依赖于前一层的输出。】</p>
+<p>When we switch from a conv layer to a linear layer, we have to flatten our tensor. This is why we have <code>12*4*4</code>.</p>
+<h4 id="Summary-Of-Layer-Parameters"><a href="#Summary-Of-Layer-Parameters" class="headerlink" title="Summary Of Layer Parameters"></a>Summary Of Layer Parameters</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">self</span>.conv1 = nn.Conv2d(in_channels=<span class="number">1</span>, out_channels=<span class="number">6</span>, kernel_size=<span class="number">5</span>)</span><br><span class="line"><span class="variable language_">self</span>.conv2 = nn.Conv2d(in_channels=<span class="number">6</span>, out_channels=<span class="number">12</span>, kernel_size=<span class="number">5</span>)</span><br><span class="line"></span><br><span class="line"><span class="variable language_">self</span>.fc1 = nn.Linear(in_features=<span class="number">12</span> * <span class="number">4</span> * <span class="number">4</span>, out_features=<span class="number">120</span>)</span><br><span class="line"><span class="variable language_">self</span>.fc2 = nn.Linear(in_features=<span class="number">120</span>, out_features=<span class="number">60</span>)</span><br><span class="line"><span class="variable language_">self</span>.out = nn.Linear(in_features=<span class="number">60</span>, out_features=<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Param name</th>
+<th>Param value</th>
+<th>The param value is</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>conv1</td>
+<td>in_channels</td>
+<td>1</td>
+<td>the number of color channels in the input image.</td>
+</tr>
+<tr>
+<td>conv1</td>
+<td>kernel_size</td>
+<td>5</td>
+<td>a hyperparameter.</td>
+</tr>
+<tr>
+<td>conv1</td>
+<td>out_channels</td>
+<td>6</td>
+<td>a hyperparameter.</td>
+</tr>
+<tr>
+<td>conv2</td>
+<td>in_channels</td>
+<td>6</td>
+<td>the number of out_channels in previous layer.</td>
+</tr>
+<tr>
+<td>conv2</td>
+<td>kernel_size</td>
+<td>5</td>
+<td>a hyperparameter.</td>
+</tr>
+<tr>
+<td>conv2</td>
+<td>out_channels</td>
+<td>12</td>
+<td>a hyperparameter (higher than previous conv layer).</td>
+</tr>
+<tr>
+<td>fc1</td>
+<td>in_features</td>
+<td>12 * 4 * 4</td>
+<td>the length of the flattened output from previous layer.</td>
+</tr>
+<tr>
+<td>fc1</td>
+<td>out_features</td>
+<td>120</td>
+<td>a hyperparameter.</td>
+</tr>
+<tr>
+<td>fc2</td>
+<td>in_features</td>
+<td>120</td>
+<td>the number of out_features of previous layer.</td>
+</tr>
+<tr>
+<td>fc2</td>
+<td>out_features</td>
+<td>60</td>
+<td>a hyperparameter (lower than previous linear layer).</td>
+</tr>
+<tr>
+<td>out</td>
+<td>in_features</td>
+<td>60</td>
+<td>the number of out_channels in previous layer.</td>
+</tr>
+<tr>
+<td>out</td>
+<td>out_features</td>
+<td>10</td>
+<td>the number of prediction classes.</td>
+</tr>
+</tbody></table>
+<h1 id="CNN-Weights-Learnable-Parameters-In-Neural-Networks"><a href="#CNN-Weights-Learnable-Parameters-In-Neural-Networks" class="headerlink" title="CNN Weights - Learnable Parameters In Neural Networks"></a>CNN Weights - Learnable Parameters In Neural Networks</h1><p>Colab: <a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Neural%20Network%20Design%201%EF%BC%9AThe%20Layers.ipynb">Neural Network Design: The Layers</a> </p>
+<h3 id="Learnable-Parameters"><a href="#Learnable-Parameters" class="headerlink" title="Learnable Parameters"></a>Learnable Parameters</h3><p><em>Learnable parameters</em> are parameters whose values are learned during the training process.</p>
+<p>【Learnable parameters是在训练中可以学习的参数。】</p>
+<p>With learnable parameters, we typically start out with a set of arbitrary values, and these values then get updated in an iterative fashion as the network learns.</p>
+<p>【从一个主观确定的值开始，在网络学习中迭代更新。】</p>
+<p>Where are the learnable parameters?</p>
+<p>We’ll the learnable parameters are the weights inside our network, and they live inside each layer.</p>
+<p>【Learnable parameters存在在网络中的每一层，是在我们网络中的权重参数。】</p>
+<h3 id="Getting-An-Instance-The-Network"><a href="#Getting-An-Instance-The-Network" class="headerlink" title="Getting An Instance The Network"></a>Getting An Instance The Network</h3><p> Let’s grab an instance of our network class and see this.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">network = Network()                       </span><br></pre></td></tr></table></figure>
+
+<p>After the object is initialized, we can then access our object using the network variable.</p>
+<p>【获得一个网络的实例，即会自动运行<code>__init__</code> 对其初始化。】</p>
+<h4 id="How-Overriding-Works"><a href="#How-Overriding-Works" class="headerlink" title="How Overriding Works"></a>How Overriding Works</h4><p>All Python classes automatically extend the object class. If we want to provide a custom string representation for our object, we can do it, but we need to introduce another object oriented concept called <em>overriding</em>.</p>
+<p>【所有Python的类都会继承oobject class，可以重写该类的字符表达（string representation）。】</p>
+<p>We can override Python’s default string representation using the <code>__repr__</code> function. This name is short for <em>representation</em>.</p>
+<p>【重写<code>__repr__</code> 函数】</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">network = Network()</span><br><span class="line"><span class="built_in">print</span> (network)</span><br><span class="line"></span><br><span class="line">Network(</span><br><span class="line">  (conv1): Conv2d(<span class="number">1</span>, <span class="number">6</span>, kernel_size=(<span class="number">5</span>, <span class="number">5</span>), stride=(<span class="number">1</span>, <span class="number">1</span>))</span><br><span class="line">  (conv2): Conv2d(<span class="number">6</span>, <span class="number">12</span>, kernel_size=(<span class="number">5</span>, <span class="number">5</span>), stride=(<span class="number">1</span>, <span class="number">1</span>))</span><br><span class="line">  (fc1): Linear(in_features=<span class="number">192</span>, out_features=<span class="number">120</span>, bias=<span class="literal">True</span>)</span><br><span class="line">  (fc2): Linear(in_features=<span class="number">120</span>, out_features=<span class="number">60</span>, bias=<span class="literal">True</span>)</span><br><span class="line">  (out): Linear(in_features=<span class="number">60</span>, out_features=<span class="number">10</span>, bias=<span class="literal">True</span>)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="What’s-In-The-String-Representation"><a href="#What’s-In-The-String-Representation" class="headerlink" title="What’s In The String Representation?"></a>What’s In The String Representation?</h3><h4 id="Convolutional-Layers"><a href="#Convolutional-Layers" class="headerlink" title="Convolutional Layers"></a>Convolutional Layers</h4><p>For the convolutional layers, the kernel_size argument is a Python tuple <code>(5,5)</code> even though we only passed the number <code>5</code> in the constructor.</p>
+<p>【kernel_size的值，确定filter的大小。当传递一个值时，默认为square filter。】</p>
+<p>The stride is an additional parameter that we could have set, but we left it out. When the stride is not specified in the layer constructor the layer automatically sets it.</p>
+<p>【kernel移动的stride如果没有设置会自动设置。】</p>
+<h4 id="Linear-Layers"><a href="#Linear-Layers" class="headerlink" title="Linear Layers"></a>Linear Layers</h4><p>For the linear layers, we have an additional parameter called bias which has a default parameter value of true. It is possible to turn this off by setting it to false.</p>
+<p>【linear layers还有一个自动设置为True的bias参数。】</p>
+<h3 id="Accessing-The-Network’s-Layers"><a href="#Accessing-The-Network’s-Layers" class="headerlink" title="Accessing The Network’s Layers"></a>Accessing The Network’s Layers</h3><p>Well, now that we’ve got an instance of our network and we’ve reviewed our layers, let’s see how we can access them in code.</p>
+<p>【如何访问NN中的layers：当一般属性访问，每一层都会返回一个字符表达】</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&gt; network.conv1</span><br><span class="line">Conv2d(<span class="number">1</span>, <span class="number">6</span>, kernel_size=(<span class="number">5</span>, <span class="number">5</span>), stride=(<span class="number">1</span>, <span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">&gt; network.conv2</span><br><span class="line">Conv2d(<span class="number">6</span>, <span class="number">12</span>, kernel_size=(<span class="number">5</span>, <span class="number">5</span>), stride=(<span class="number">1</span>, <span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">&gt; network.fc1</span><br><span class="line">Linear(in_features=<span class="number">192</span>, out_features=<span class="number">120</span>, bias=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">&gt; network.fc2                                    </span><br><span class="line">Linear(in_features=<span class="number">120</span>, out_features=<span class="number">60</span>, bias=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">&gt; network.out</span><br><span class="line">Linear(in_features=<span class="number">60</span>, out_features=<span class="number">10</span>, bias=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Accessing-The-Layer-Weights"><a href="#Accessing-The-Layer-Weights" class="headerlink" title="Accessing The Layer Weights"></a>Accessing The Layer Weights</h3><p>Now that we have access to each of our layers, we can access the weights inside each layer. </p>
+<p>【访问每一层的权重参数。】</p>
+<p>Colab: <a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Neural%20Network%20Design%201%EF%BC%9AThe%20Layers.ipynb">Neural Network Design: The Layers</a> </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; network.conv1.weight</span><br></pre></td></tr></table></figure>
+
+<h4 id="PyTorch-Parameter-Class"><a href="#PyTorch-Parameter-Class" class="headerlink" title="PyTorch Parameter Class"></a>PyTorch Parameter Class</h4><p>PyTorch has a special class called <code>Parameter</code>. The <code>Parameter</code> class extends the tensor class, and so the weight tensor inside every layer is an instance of this <code>Parameter</code> class.</p>
+<p>【PyTorch还有一个特殊的类：Parameter类。这个类继承了tensor类，所以每一层中的weight tensor实则都是Parameter类的实例。】</p>
+<h3 id="Weight-Tensor-Shape"><a href="#Weight-Tensor-Shape" class="headerlink" title="Weight Tensor Shape"></a>Weight Tensor Shape</h3><p>For the convolutional layers, the weight values live inside the filters, and in code, the filters are actually the weight tensors themselves.</p>
+<p>【对卷积层来说，weight是在filter中的，而filter在代码中的体现就是weight tensor。】</p>
+<p>The convolution operation inside a layer is an operation between the input channels to the layer and the filter inside the layer. This means that what we really have is an operation between two tensors.</p>
+<p>【卷积操作实则就是input tensor 和filter 的weight tensor之间的操作。】</p>
+<p>For the first conv layer, we have <code>1</code> color channel that should be convolved by <code>6</code> filters of size <code>5x5</code> to produce <code>6</code> output channels. This is how we interpret the values inside our layer constructor.</p>
+<p>【对于第一个卷积层来说，有6个 5 * 5的filer，会生成6个输出channel。】</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; network.conv1</span><br><span class="line">Conv2d(<span class="number">1</span>, <span class="number">6</span>, kernel_size=(<span class="number">5</span>, <span class="number">5</span>), stride=(<span class="number">1</span>, <span class="number">1</span>))</span><br></pre></td></tr></table></figure>
+
+<p>Inside our layer though, we don’t explicitly have <code>6</code> weight tensors for each of the <code>6</code> filters. We actually represent all <code>6</code> filters using a single weight tensor whose shape reflects or accounts for the <code>6</code> filters.</p>
+<p>【但我们不会使用6个weight tensor来表示该卷积层的6个filters，而是使用一个单独的weight tensor来表示该层的所有filers。】</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; network.conv1.weight.shape</span><br><span class="line">torch.Size([<span class="number">6</span>, <span class="number">1</span>, <span class="number">5</span>, <span class="number">5</span>])</span><br></pre></td></tr></table></figure>
+
+<p>The second axis has a length of <code>1</code> which accounts for the single input channel, and the last two axes account for the height and width of the filter.</p>
+<p>【weight tensor的第一维度表示filters的数量，该tensor把所有filters都打包在一起。第二维度认为是filter的depth，和输入tensor的channel相同，最后两维为height 和width】</p>
+<p>The two main takeaways about these convolutional layers is that our filters are represented using a single tensor and that each filter inside the tensor also has a depth that accounts for the input channels that are being convolved.</p>
+<p>【卷积层的两个要点（takeways）】</p>
+<ol>
+<li>All filters are represented using a single tensor.【用一个tensor表示该层的所有filters】</li>
+<li>Filters have depth that accounts for the input channels.【其中每一个filter有depth，值等于输入的channels】</li>
+</ol>
+<p>卷积层Weight Tensor的shape：<strong>(Number of filters, Depth, Height, Width)</strong></p>
+<h3 id="Weight-Matrix"><a href="#Weight-Matrix" class="headerlink" title="Weight Matrix"></a>Weight Matrix</h3><p>With linear layers or fully connected layers, we have flattened rank-1 tensors as input and as output. The way we transform the in_features to the out_features in a linear layer is by using a rank-2 tensor that is commonly called a weight matrix.</p>
+<p>【对于全连接层，我们需要拉直（flatten）输入/输出为rank-1的tensor】</p>
+<p>【这种在全连接层中in_features到out_features的转换，使用weight matrix来实现，所以该层的参数就是一个rank-2的tensor】</p>
+<h4 id="Linear-Function-Represented-Using-A-Matrix"><a href="#Linear-Function-Represented-Using-A-Matrix" class="headerlink" title="Linear Function Represented Using A Matrix"></a>Linear Function Represented Using A Matrix</h4><p>The important thing about matrix multiplications like this is that they represent linear functions that we can use to build up our neural network.</p>
+<p>Specifically, the weight matrix is a linear function also called a linear map that maps a vector space of <code>4</code> dimensions to a vector space of <code>3</code> dimensions.</p>
+<p>【矩阵乘法实则是线性函数。具体来说，矩阵乘法也称为一个线性映射，将一个4D vector映射为一个3D vector。】</p>
+<h3 id="Accessing-The-Networks-Parameters"><a href="#Accessing-The-Networks-Parameters" class="headerlink" title="Accessing The Networks Parameters"></a>Accessing The Networks Parameters</h3><p>【访问NN的所有参数】</p>
+<p>The first example is the most common way, and we’ll use this to iterate over our weights when we update them during the training process.</p>
+<p>【遍历<code>network.parameters()</code> 】</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> param <span class="keyword">in</span> network.parameters():</span><br><span class="line">    <span class="built_in">print</span>(param.shape)</span><br><span class="line"></span><br><span class="line">torch.Size([<span class="number">6</span>, <span class="number">1</span>, <span class="number">5</span>, <span class="number">5</span>])</span><br><span class="line">torch.Size([<span class="number">6</span>])</span><br><span class="line">torch.Size([<span class="number">12</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">5</span>])</span><br><span class="line">torch.Size([<span class="number">12</span>])</span><br><span class="line">torch.Size([<span class="number">120</span>, <span class="number">192</span>])</span><br><span class="line">torch.Size([<span class="number">120</span>])</span><br><span class="line">torch.Size([<span class="number">60</span>, <span class="number">120</span>])</span><br><span class="line">torch.Size([<span class="number">60</span>])</span><br><span class="line">torch.Size([<span class="number">10</span>, <span class="number">60</span>])</span><br><span class="line">torch.Size([<span class="number">10</span>])</span><br></pre></td></tr></table></figure>
+
+<p>The second way is just to show how we can see the name as well. This reveals something that we won’t cover in detail, the bias is also a learnable parameter. Each layer has a bias by default, so for each layer we have a weight tensor and a bias tensor.</p>
+<p>【每一层中的bias也是一个可学习的参数。】</p>
+<p>【遍历<code>network.named_parameters()</code> 】</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> name, param <span class="keyword">in</span> network.named_parameters():</span><br><span class="line">    <span class="built_in">print</span>(name, <span class="string">&#x27;\t\t&#x27;</span>, param.shape)</span><br><span class="line"></span><br><span class="line">conv1.weight 		 torch.Size([<span class="number">6</span>, <span class="number">1</span>, <span class="number">5</span>, <span class="number">5</span>])</span><br><span class="line">conv1.bias 		 torch.Size([<span class="number">6</span>])</span><br><span class="line">conv2.weight 		 torch.Size([<span class="number">12</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">5</span>])</span><br><span class="line">conv2.bias 		 torch.Size([<span class="number">12</span>])</span><br><span class="line">fc1.weight 		 torch.Size([<span class="number">120</span>, <span class="number">192</span>])</span><br><span class="line">fc1.bias 		 torch.Size([<span class="number">120</span>])</span><br><span class="line">fc2.weight 		 torch.Size([<span class="number">60</span>, <span class="number">120</span>])</span><br><span class="line">fc2.bias 		 torch.Size([<span class="number">60</span>])</span><br><span class="line">out.weight 		 torch.Size([<span class="number">10</span>, <span class="number">60</span>])</span><br><span class="line">out.bias 		 torch.Size([<span class="number">10</span>])</span><br></pre></td></tr></table></figure>
+
+<h1 id="Callable-Neural-Networks-Linear-Layers-In-Depth"><a href="#Callable-Neural-Networks-Linear-Layers-In-Depth" class="headerlink" title="Callable Neural Networks - Linear Layers In Depth"></a>Callable Neural Networks - Linear Layers In Depth</h1><p>Colab: <a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Neural%20Network%20Design%202%EF%BC%9ACallable%20Neural%20Networks.ipynb">Neural Network Design 2: Callable Neural Networks</a> </p>
+<p>In this one, we’ll learn about how PyTorch neural network modules are callable, what this means, and how it informs us about how our network and layer forward methods are called.</p>
+<p>【在这一节中，我们能知道在network和layer中forward方法是如何调用的？】</p>
+<h3 id="How-Linear-Layers-Work"><a href="#How-Linear-Layers-Work" class="headerlink" title="How Linear Layers Work"></a>How Linear Layers Work</h3><h4 id="Transform-Using-A-Matrix"><a href="#Transform-Using-A-Matrix" class="headerlink" title="Transform Using A Matrix"></a>Transform Using A Matrix</h4><p>【使用矩阵乘法来转换】</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">in_features = torch.tensor([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>], dtype=torch.float32)</span><br><span class="line"></span><br><span class="line">weight_matrix = torch.tensor([</span><br><span class="line">    [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>],</span><br><span class="line">    [<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>],</span><br><span class="line">    [<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>]</span><br><span class="line">], dtype=torch.float32)</span><br><span class="line"></span><br><span class="line">&gt; weight_matrix.matmul(in_features)</span><br><span class="line">tensor([<span class="number">30.</span>, <span class="number">40.</span>, <span class="number">50.</span>])</span><br></pre></td></tr></table></figure>
+
+<h4 id="Transform-Using-A-PyTorch-Linear-Layer"><a href="#Transform-Using-A-PyTorch-Linear-Layer" class="headerlink" title="Transform Using A PyTorch Linear Layer"></a>Transform Using A PyTorch Linear Layer</h4><p>【使用PyTorch Linear Layer来转换。】</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fc = nn.Linear(in_features=<span class="number">4</span>, out_features=<span class="number">3</span>, bias=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+
+<p>【根据源码，在LinearLayer中会有一个3 * 4 的weight matrix】</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># torch/nn/modules/linear.py (version 1.0.1)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, in_features, out_features, bias=<span class="literal">True</span></span>):</span><br><span class="line">    <span class="built_in">super</span>(Linear, <span class="variable language_">self</span>).__init__()</span><br><span class="line">    <span class="variable language_">self</span>.in_features = in_features</span><br><span class="line">    <span class="variable language_">self</span>.out_features = out_features</span><br><span class="line">    <span class="variable language_">self</span>.weight = Parameter(torch.Tensor(out_features, in_features))</span><br><span class="line">    <span class="keyword">if</span> bias:</span><br><span class="line">        <span class="variable language_">self</span>.bias = Parameter(torch.Tensor(out_features))</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="variable language_">self</span>.register_parameter(<span class="string">&#x27;bias&#x27;</span>, <span class="literal">None</span>)</span><br><span class="line">    <span class="variable language_">self</span>.reset_parameters()</span><br></pre></td></tr></table></figure>
+
+<p>Let’s see how we can call our layer now by passing the <code>in_features</code> tensor.</p>
+<p>【直接传tensor来调用该layer】</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; fc(in_features)</span><br><span class="line">tensor([-<span class="number">0.8877</span>,  <span class="number">1.4250</span>,  <span class="number">0.8370</span>], grad_fn=&lt;SqueezeBackward3&gt;)</span><br></pre></td></tr></table></figure>
+
+<p>We can call the object instance like this because PyTorch neural network modules are callable Python objects.</p>
+<p>【因为PyTorch中的module是可以调用的类，即类中有<code>__call__</code> 方法。</p>
+<p>Let’s explicitly set the weight matrix of the linear layer to be the same as the one we used in our other example.</p>
+<p>【可以单独设置linear layer中weight matrix的值】</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fc.weight = nn.Parameter(weight_matrix)  </span><br></pre></td></tr></table></figure>
+
+<h3 id="Callable-Layers-And-Neural-Networks"><a href="#Callable-Layers-And-Neural-Networks" class="headerlink" title="Callable Layers And Neural Networks"></a>Callable Layers And Neural Networks</h3><p>【可调用的Layers和NN】</p>
+<p>We pointed out before how it was kind of strange that we called the layer object instance as if it were a function.</p>
+<p>【为什么可以将实例作为函数调用？】</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; fc(in_features)</span><br><span class="line">tensor([<span class="number">30.0261</span>, <span class="number">40.1404</span>, <span class="number">49.7643</span>], grad_fn=&lt;AddBackward0&gt;)</span><br></pre></td></tr></table></figure>
+
+<p>What makes this possible is that PyTorch module classes implement another special Python function called <code>__call__()</code>. If a class implements the <code>__call__()</code> method, the special call method will be invoked anytime the object instance is called.</p>
+<p>【如果该类实现了<code>__call()__</code> 方法，那么该类的实例就可以作为函数调用】</p>
+<p>This fact is an important PyTorch concept because of the way the <code>__call__()</code> method interacts with the <code>forward()</code> method for our layers and networks.</p>
+<p>【而PyTorch中该类的<code>__call__</code> 方法是和<code>forward()</code> 方法交互的】</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">__call__</span>(<span class="params">self, *<span class="built_in">input</span>, **kwargs</span>):</span><br><span class="line">    <span class="keyword">for</span> hook <span class="keyword">in</span> <span class="variable language_">self</span>._forward_pre_hooks.values():</span><br><span class="line">        hook(<span class="variable language_">self</span>, <span class="built_in">input</span>)</span><br><span class="line">    <span class="keyword">if</span> torch._C._get_tracing_state():</span><br><span class="line">        result = <span class="variable language_">self</span>._slow_forward(*<span class="built_in">input</span>, **kwargs)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        result = <span class="variable language_">self</span>.forward(*<span class="built_in">input</span>, **kwargs)</span><br><span class="line">    <span class="keyword">for</span> hook <span class="keyword">in</span> <span class="variable language_">self</span>._forward_hooks.values():</span><br><span class="line">        hook_result = hook(<span class="variable language_">self</span>, <span class="built_in">input</span>, result)</span><br><span class="line">        <span class="keyword">if</span> hook_result <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="keyword">raise</span> RuntimeError(</span><br><span class="line">                <span class="string">&quot;forward hooks should never return any values, but &#x27;&#123;&#125;&#x27;&quot;</span></span><br><span class="line">                <span class="string">&quot;didn&#x27;t return None&quot;</span>.<span class="built_in">format</span>(hook))</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(<span class="variable language_">self</span>._backward_hooks) &gt; <span class="number">0</span>:</span><br><span class="line">        var = result</span><br><span class="line">        <span class="keyword">while</span> <span class="keyword">not</span> <span class="built_in">isinstance</span>(var, torch.Tensor):</span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">isinstance</span>(var, <span class="built_in">dict</span>):</span><br><span class="line">                var = <span class="built_in">next</span>((v <span class="keyword">for</span> v <span class="keyword">in</span> var.values() <span class="keyword">if</span> <span class="built_in">isinstance</span>(v, torch.Tensor)))</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                var = var[<span class="number">0</span>]</span><br><span class="line">        grad_fn = var.grad_fn</span><br><span class="line">        <span class="keyword">if</span> grad_fn <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="keyword">for</span> hook <span class="keyword">in</span> <span class="variable language_">self</span>._backward_hooks.values():</span><br><span class="line">                wrapper = functools.partial(hook, <span class="variable language_">self</span>)</span><br><span class="line">                functools.update_wrapper(wrapper, hook)</span><br><span class="line">                grad_fn.register_hook(wrapper)</span><br><span class="line">    <span class="keyword">return</span> result</span><br></pre></td></tr></table></figure>
+
+<p>The extra code that PyTorch runs inside the <code>__call__()</code> method is why we never invoke the <code>forward()</code> method directly. If we did, the additional PyTorch code would not be executed. As a result, any time we want to invoke our <code>forward()</code> method, we call the object instance. This applies to both layers, and networks because they are both PyTorch neural network modules.</p>
+<p>【因为有<code>__call__()</code> ，所以不需要直接调用<code>forward()</code> 方法。所以，如果任何时候我们想要调用<code>forward()</code> 方法时，我们都调用对象实例。】</p>
+<h2 id="CNN-Forward-Method-PyTorch-Deep-Learning-Implementation"><a href="#CNN-Forward-Method-PyTorch-Deep-Learning-Implementation" class="headerlink" title="CNN Forward Method - PyTorch Deep Learning Implementation"></a>CNN Forward Method - PyTorch Deep Learning Implementation</h2><p>Colab: <a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Neural%20Network%20Design%203%EF%BC%9ACNN%20Forward%20Method.ipynb">CNN Forward Method</a> </p>
+<p>We created our network by extending the <code>nn.Module</code> PyTorch base class, and then, in the class constructor, we defined the network’s layers as class attributes. Now, we need to implement our network’s <code>forward()</code> method, and then, finally, we’ll be ready to train our model.</p>
+<p>【前面通过继承<code>nn.Module</code> 来构建model，在model的构造器中，定义网络的layer作为model的属性。而构建model的最后一步是实现model中的<code>forward()</code> 方法】</p>
+<p>【步骤】</p>
+<ul>
+<li><p>Prepare the data</p>
+</li>
+<li><p>Build the model</p>
+<ol>
+<li><p>Create a neural network class that extends the <code>nn.Module</code> base class.</p>
+</li>
+<li><p>In the class constructor, define the network’s layers as class attributes.</p>
+</li>
+<li><p><strong>Use the network’s layer attributes as well <code>nn.functional</code> API operations to define the network’s forward pass.</strong></p>
+<p>【用网络的layer属性和nn.functional 库的激活函数等来定义网络的前向传播】</p>
+</li>
+</ol>
+</li>
+<li><p>Train the model</p>
+</li>
+<li><p>Analyze the model’s results</p>
+</li>
+</ul>
+<h3 id="Implementing-The-forward-Method"><a href="#Implementing-The-forward-Method" class="headerlink" title="Implementing The forward() Method"></a>Implementing The <code>forward()</code> Method</h3><p>Colab: <a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Neural%20Network%20Design%203%EF%BC%9ACNN%20Forward%20Method.ipynb">Neural Network Design 3: CNN Forward Method</a> </p>
+<p>【实现forward()方法】</p>
+<h4 id="Input-Layer-1"><a href="#Input-Layer-1" class="headerlink" title="Input Layer #1"></a>Input Layer #1</h4><p>The input layer of any neural network is determined by the input data.</p>
+<p>【input layer 依赖于输入的数据】</p>
+<p>For this reason, we can think of the input layer as the identity transformation. Mathematically, this is the function, $f(x)=x$ .</p>
+<p>【可以把input layer看作identification transformation】</p>
+<h4 id="Hidden-Convolutional-Layers-Layers-2-And-3"><a href="#Hidden-Convolutional-Layers-Layers-2-And-3" class="headerlink" title="Hidden Convolutional Layers: Layers #2 And #3"></a>Hidden Convolutional Layers: Layers #2 And #3</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># (2) hidden conv layer</span></span><br><span class="line">t = <span class="variable language_">self</span>.conv1(t)</span><br><span class="line">t = F.relu(t)</span><br><span class="line">t = F.max_pool2d(t, kernel_size=<span class="number">2</span>, stride=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># (3) hidden conv layer</span></span><br><span class="line">t = <span class="variable language_">self</span>.conv2(t)</span><br><span class="line">t = F.relu(t)</span><br><span class="line">t = F.max_pool2d(t, kernel_size=<span class="number">2</span>, stride=<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+
+<p>Each of these layers is comprised of a collection of weights (data) and a collection operations (code). The weights are encapsulated inside the <code>nn.Conv2d()</code> class instance. The <code>relu()</code> and the <code>max_pool2d()</code> calls are just pure operations. </p>
+<p>【每一层都是weights和operations的组合，weights封装在nn.Conv2d实例中，而relu()和max_pool2d()都是单纯的operations】</p>
+<p>For example, we’ll say that the second layer in our network is a convolutional layer that contains a collection of weights, and preforms three operations, a convolution operation, the relu activation operation, and the max pooling operation.</p>
+<p>【只是其中的一种表示：认为卷积层有一组weights（layer中包含的weights），三组操作：卷积操作、relu操作和max pooling 操作。】</p>
+<p>Mathematically, the entire network is just a composition of functions, and a composition of functions is a function itself. So a network is just a function. All the terms like layers, activation functions, and weights, are just used to help describe the different parts.</p>
+<p>【整个网络，其实就是functions的组合。因此，network本身就是一个function。layers, activation functions, weights只是来帮助描述这个function】</p>
+<h4 id="Hidden-Linear-Layers-Layers-4-And-5"><a href="#Hidden-Linear-Layers-Layers-4-And-5" class="headerlink" title="Hidden Linear Layers: Layers #4 And #5"></a>Hidden Linear Layers: Layers #4 And #5</h4><p>Before we pass our input to the first hidden linear layer, we must <code>reshape()</code> or flatten our tensor. This will be the case any time we are passing output from a convolutional layer as input to a linear layer.</p>
+<p>【在将卷积层的输出传递给全连接层之前，需要将他flatten】</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># (4) hidden linear layer</span></span><br><span class="line">t = t.reshape(-<span class="number">1</span>, <span class="number">12</span> * <span class="number">4</span> * <span class="number">4</span>)</span><br><span class="line">t = <span class="variable language_">self</span>.fc1(t)</span><br><span class="line">t = F.relu(t)</span><br><span class="line"></span><br><span class="line"><span class="comment"># (5) hidden linear layer</span></span><br><span class="line">t = <span class="variable language_">self</span>.fc2(t)</span><br><span class="line">t = F.relu(t)</span><br></pre></td></tr></table></figure>
+
+<h4 id="Output-Layer-6"><a href="#Output-Layer-6" class="headerlink" title="Output Layer #6"></a>Output Layer #6</h4><p>The sixth and last layer of our network is a linear layer we call the output layer. When we pass our tensor to the output layer, the result will be the prediction tensor.</p>
+<p>【第六层是输出层，该层的输出是一个有10个元素的tensor】</p>
+<p>Inside the network we usually use <code>relu()</code> as our <a target="_blank" rel="noopener" href="https://deeplizard.com/learn/video/m0pIlLfpXWE">non-linear activation function</a>, but for the output layer, whenever we have a single category that we are trying to predict, we use <code>softmax()</code>. The <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Softmax_function">softmax function</a> returns a positive probability for each of the prediction classes, and the probabilities sum to <code>1</code>.</p>
+<p>【前面的层我们都是用relu()来作为非线性函数，但输出层需要得到每一类的预测值，因此使用softmax()】</p>
+<p>【softmax能返回每一类的预测概率，所有类的概率和为1】</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, t</span>):</span><br><span class="line">    <span class="comment"># (1) input layer</span></span><br><span class="line">    t = t</span><br><span class="line"></span><br><span class="line">    <span class="comment"># (2) hidden conv layer</span></span><br><span class="line">    t = <span class="variable language_">self</span>.conv1(t)</span><br><span class="line">    t = F.relu(t)</span><br><span class="line">    t = F.max_pool2d(t, kernel_size=<span class="number">2</span>, stride=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># (3) hidden conv layer</span></span><br><span class="line">    t = <span class="variable language_">self</span>.conv2(t)</span><br><span class="line">    t = F.relu(t)</span><br><span class="line">    t = F.max_pool2d(t, kernel_size=<span class="number">2</span>, stride=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># (4) hidden linear layer</span></span><br><span class="line">    t = t.reshape(-<span class="number">1</span>, <span class="number">12</span> * <span class="number">4</span> * <span class="number">4</span>)</span><br><span class="line">    t = <span class="variable language_">self</span>.fc1(t)</span><br><span class="line">    t = F.relu(t)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># (5) hidden linear layer</span></span><br><span class="line">    t = <span class="variable language_">self</span>.fc2(t)</span><br><span class="line">    t = F.relu(t)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># (6) output layer</span></span><br><span class="line">    t = <span class="variable language_">self</span>.out(t)</span><br><span class="line">    <span class="comment">#t = F.softmax(t, dim=1)</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> t</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="Forward-Propagation-Explained"><a href="#Forward-Propagation-Explained" class="headerlink" title="Forward Propagation Explained"></a>Forward Propagation Explained</h1><h3 id="Forward-Propagation-Explained-1"><a href="#Forward-Propagation-Explained-1" class="headerlink" title="Forward Propagation Explained"></a>Forward Propagation Explained</h3><p><em>Forward propagation</em> is the process of transforming an input tensor to an output tensor. </p>
+<p>【前馈传播是将输入tensor转换为输出tensor的过程。】</p>
+<h3 id="Predicting-With-The-Network-Forward-Pass"><a href="#Predicting-With-The-Network-Forward-Pass" class="headerlink" title="Predicting With The Network: Forward Pass"></a>Predicting With The Network: Forward Pass</h3><p>Before we being, we are going to turn off PyTorch’s gradient calculation feature. This will stop PyTorch from automatically building a computation graph as our tensor flows through the network.</p>
+<p>【在开始之前，我们需要关闭PyTorch的gradient计算。当tensor流过网络图时，这会阻止PyTorch自动构建计算图。】</p>
+<p>The computation graph keeps track of the network’s mapping by tracking each computation that happens. The graph is used during the training process to calculate the derivative (gradient) of the loss function with respect to the network’s weights.</p>
+<p>【计算图通过跟踪计算来跟踪网络图，该计算图在训练过程中用于计算损失函数对权重参数的梯度。】</p>
+<p>Since we are not training the network yet, we aren’t planning on updating the weights, and so we don’t require gradient calculations. We will turn this back on when training begins.</p>
+<p>【因为我们还没有训练网络，所以我们并不打算更新参数，也就不需要梯度计算。】</p>
+<h4 id="Passing-A-Single-Image-To-The-Network"><a href="#Passing-A-Single-Image-To-The-Network" class="headerlink" title="Passing A Single Image To The Network"></a>Passing A Single Image To The Network</h4><p>Let’s continue by creating an instance of our Network class:</p>
+<p>【创建NN实例】</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; network = Network()</span><br></pre></td></tr></table></figure>
+
+<p>Next, we’ll procure a single sample from our training set, unpack the image and the label, and verify the image’s shape:</p>
+<p>【从training set中生成一个单独的例子。】</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; sample = <span class="built_in">next</span>(<span class="built_in">iter</span>(train_set)) </span><br><span class="line">&gt; image, label = sample </span><br><span class="line">&gt; image.shape </span><br><span class="line">torch.Size([<span class="number">1</span>, <span class="number">28</span>, <span class="number">28</span>])</span><br></pre></td></tr></table></figure>
+
+<p>Now, there’s a second step we must preform before simply passing this tensor to our network. When we pass a tensor to our network, the network is expecting a batch, so even if we want to pass a single image, we still need a batch.</p>
+<p>【第二步，网络期望传递的tensor是一批，因此需要将单独的例子也打包。】</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&gt; pred = network(image.unsqueeze(<span class="number">0</span>)) <span class="comment"># image shape needs to be (batch_size × in_channels × H × W)</span></span><br><span class="line"></span><br><span class="line">&gt; pred</span><br><span class="line">tensor([[<span class="number">0.0991</span>, <span class="number">0.0916</span>, <span class="number">0.0907</span>, <span class="number">0.0949</span>, <span class="number">0.1013</span>, <span class="number">0.0922</span>, <span class="number">0.0990</span>, <span class="number">0.1130</span>, <span class="number">0.1107</span>, <span class="number">0.1074</span>]])</span><br><span class="line"></span><br><span class="line">&gt; pred.shape</span><br><span class="line">torch.Size([<span class="number">1</span>, <span class="number">10</span>])</span><br><span class="line"></span><br><span class="line">&gt; label</span><br><span class="line"><span class="number">9</span></span><br><span class="line"></span><br><span class="line">&gt; pred.argmax(dim=<span class="number">1</span>)</span><br><span class="line">tensor([<span class="number">7</span>])</span><br></pre></td></tr></table></figure>
+
+<p>For each input in the batch, and for each prediction class, we have a prediction value. If we wanted these values to be probabilities, we could just the <code>softmax()</code> function from the <code>nn.functional</code> package.</p>
+<p>【用F.softmax()将预测值转换为概率。】</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt; F.softmax(pred, dim=<span class="number">1</span>)</span><br><span class="line">tensor([[<span class="number">0.1096</span>, <span class="number">0.1018</span>, <span class="number">0.0867</span>, <span class="number">0.0936</span>, <span class="number">0.1102</span>, <span class="number">0.0929</span>, <span class="number">0.1083</span>, <span class="number">0.0998</span>, <span class="number">0.0943</span>, <span class="number">0.1030</span>]])</span><br><span class="line"></span><br><span class="line">&gt; F.softmax(pred, dim=<span class="number">1</span>).<span class="built_in">sum</span>()</span><br><span class="line">tensor(<span class="number">1.</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Neural-Network-Batch-Processing-With-PyTorch"><a href="#Neural-Network-Batch-Processing-With-PyTorch" class="headerlink" title="Neural Network Batch Processing With PyTorch"></a>Neural Network Batch Processing With PyTorch</h3><ul>
+<li>Prepare the data</li>
+<li>Build the model<ul>
+<li><strong>Understand how batches are passed to the network</strong></li>
+</ul>
+</li>
+<li>Train the model</li>
+<li>Analyze the model’s results</li>
+</ul>
+<p>Colab: <a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Neural%20Network%20Design%204%EF%BC%9APass%20A%20Batch%20of%20Images.ipynb">Pass A Batch of Images</a> </p>
+<h3 id="Using-Argmax-Prediction-Vs-Label"><a href="#Using-Argmax-Prediction-Vs-Label" class="headerlink" title="Using Argmax: Prediction Vs Label"></a>Using Argmax: Prediction Vs Label</h3><p>Colab: <a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Neural%20Network%20Design%204%EF%BC%9APass%20A%20Batch%20of%20Images.ipynb">Pass A Batch of Images</a> </p>
+<h2 id="CNN-Output-Size-Formula"><a href="#CNN-Output-Size-Formula" class="headerlink" title="CNN Output Size Formula"></a>CNN Output Size Formula</h2><h3 id="CNN-Output-Size-Formula-1"><a href="#CNN-Output-Size-Formula-1" class="headerlink" title="CNN Output Size Formula"></a>CNN Output Size Formula</h3><h4 id="CNN-Output-Size-Formula-Square"><a href="#CNN-Output-Size-Formula-Square" class="headerlink" title="CNN Output Size Formula (Square)"></a>CNN Output Size Formula (Square)</h4><ul>
+<li>Suppose we have an $n\times n$ input.【输入尺寸】</li>
+<li>Suppose we have an $f\times f$ filter.【filter尺寸】</li>
+<li>Suppose we have a padding of $p$ and a stride of $s$ .【padding和stride】</li>
+</ul>
+<p>The output size $O$ is given by this formula: $O = \frac{n-f+2p}{s}+1$ 【输出】</p>
+<h4 id="CNN-Output-Size-Formula-Non-Square"><a href="#CNN-Output-Size-Formula-Non-Square" class="headerlink" title="CNN Output Size Formula (Non-Square)"></a>CNN Output Size Formula (Non-Square)</h4><ul>
+<li>Suppose we have an $n_h×n_w$ input.</li>
+<li>Suppose we have an $f_h×f_w$ filter.</li>
+<li>Suppose we have a padding of $p$ and a stride of $s$.</li>
+</ul>
+<p>The height of the output size $O_h$ is given by this formula:$O_h = \frac{n_h-f_h+2p}{s}+1$</p>
+<p>The width of the output size $O_w$ is given by this formula: $O_w = \frac{n_w-f_w+2p}{s}+1$ </p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「PyTorch」：4-Neural Network Design</p><p><a href="https://f7ed.com/2021/02/28/pytorch-nn-design/">https://f7ed.com/2021/02/28/pytorch-nn-design/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2021-02-28</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-02-28</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/open-classes/">open-classes, </a><a class="link-muted" rel="tag" href="/tags/DEEPLIZARD/">DEEPLIZARD, </a><a class="link-muted" rel="tag" href="/tags/PyTorch/">PyTorch </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2021/04/09/aflpp/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Paper Reading」：AFL++：Combine Incremental Steps of Fuzzing Research</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2021/02/27/pytorch-data/"><span class="level-item">「PyTorch」：3-Data And Data Processing</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "2f3803aaf2f14d93b3b04b5ef4dc808b",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">70</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">135</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Building-Neural-Networks-With-PyTorch"><span class="level-left"><span class="level-item">1</span><span class="level-item">Building Neural Networks With PyTorch</span></span></a><ul class="menu-list"><ul class="menu-list"><li><a class="level is-mobile" href="#PyTorch’s-torch-nn-Package"><span class="level-left"><span class="level-item">1.1.1</span><span class="level-item">PyTorch’s torch.nn Package</span></span></a></li></ul></ul></li><li><a class="level is-mobile" href="#Building-A-Neural-Network-In-PyTorch"><span class="level-left"><span class="level-item">2</span><span class="level-item">Building A Neural Network In PyTorch</span></span></a><ul class="menu-list"><ul class="menu-list"><li><a class="level is-mobile" href="#Our-CNN-Layers"><span class="level-left"><span class="level-item">2.1.1</span><span class="level-item">Our CNN Layers</span></span></a></li><li><a class="level is-mobile" href="#CNN-Layer-Parameters"><span class="level-left"><span class="level-item">2.1.2</span><span class="level-item">CNN Layer Parameters</span></span></a></li></ul></ul></li><li><a class="level is-mobile" href="#CNN-Weights-Learnable-Parameters-In-Neural-Networks"><span class="level-left"><span class="level-item">3</span><span class="level-item">CNN Weights - Learnable Parameters In Neural Networks</span></span></a><ul class="menu-list"><ul class="menu-list"><li><a class="level is-mobile" href="#Learnable-Parameters"><span class="level-left"><span class="level-item">3.1.1</span><span class="level-item">Learnable Parameters</span></span></a></li><li><a class="level is-mobile" href="#Getting-An-Instance-The-Network"><span class="level-left"><span class="level-item">3.1.2</span><span class="level-item">Getting An Instance The Network</span></span></a></li><li><a class="level is-mobile" href="#What’s-In-The-String-Representation"><span class="level-left"><span class="level-item">3.1.3</span><span class="level-item">What’s In The String Representation?</span></span></a></li><li><a class="level is-mobile" href="#Accessing-The-Network’s-Layers"><span class="level-left"><span class="level-item">3.1.4</span><span class="level-item">Accessing The Network’s Layers</span></span></a></li><li><a class="level is-mobile" href="#Accessing-The-Layer-Weights"><span class="level-left"><span class="level-item">3.1.5</span><span class="level-item">Accessing The Layer Weights</span></span></a></li><li><a class="level is-mobile" href="#Weight-Tensor-Shape"><span class="level-left"><span class="level-item">3.1.6</span><span class="level-item">Weight Tensor Shape</span></span></a></li><li><a class="level is-mobile" href="#Weight-Matrix"><span class="level-left"><span class="level-item">3.1.7</span><span class="level-item">Weight Matrix</span></span></a></li><li><a class="level is-mobile" href="#Accessing-The-Networks-Parameters"><span class="level-left"><span class="level-item">3.1.8</span><span class="level-item">Accessing The Networks Parameters</span></span></a></li></ul></ul></li><li><a class="level is-mobile" href="#Callable-Neural-Networks-Linear-Layers-In-Depth"><span class="level-left"><span class="level-item">4</span><span class="level-item">Callable Neural Networks - Linear Layers In Depth</span></span></a><ul class="menu-list"><ul class="menu-list"><li><a class="level is-mobile" href="#How-Linear-Layers-Work"><span class="level-left"><span class="level-item">4.1.1</span><span class="level-item">How Linear Layers Work</span></span></a></li><li><a class="level is-mobile" href="#Callable-Layers-And-Neural-Networks"><span class="level-left"><span class="level-item">4.1.2</span><span class="level-item">Callable Layers And Neural Networks</span></span></a></li></ul><li><a class="level is-mobile" href="#CNN-Forward-Method-PyTorch-Deep-Learning-Implementation"><span class="level-left"><span class="level-item">4.2</span><span class="level-item">CNN Forward Method - PyTorch Deep Learning Implementation</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Implementing-The-forward-Method"><span class="level-left"><span class="level-item">4.2.1</span><span class="level-item">Implementing The forward() Method</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Forward-Propagation-Explained"><span class="level-left"><span class="level-item">5</span><span class="level-item">Forward Propagation Explained</span></span></a><ul class="menu-list"><ul class="menu-list"><li><a class="level is-mobile" href="#Forward-Propagation-Explained-1"><span class="level-left"><span class="level-item">5.1.1</span><span class="level-item">Forward Propagation Explained</span></span></a></li><li><a class="level is-mobile" href="#Predicting-With-The-Network-Forward-Pass"><span class="level-left"><span class="level-item">5.1.2</span><span class="level-item">Predicting With The Network: Forward Pass</span></span></a></li><li><a class="level is-mobile" href="#Neural-Network-Batch-Processing-With-PyTorch"><span class="level-left"><span class="level-item">5.1.3</span><span class="level-item">Neural Network Batch Processing With PyTorch</span></span></a></li><li><a class="level is-mobile" href="#Using-Argmax-Prediction-Vs-Label"><span class="level-left"><span class="level-item">5.1.4</span><span class="level-item">Using Argmax: Prediction Vs Label</span></span></a></li></ul><li><a class="level is-mobile" href="#CNN-Output-Size-Formula"><span class="level-left"><span class="level-item">5.2</span><span class="level-item">CNN Output Size Formula</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#CNN-Output-Size-Formula-1"><span class="level-left"><span class="level-item">5.2.1</span><span class="level-item">CNN Output Size Formula</span></span></a></li></ul></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

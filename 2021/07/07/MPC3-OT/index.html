@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「MPC-Mike Rosulek 」：Oblivious Transfer and Extension - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="本系列是总结Mike Rosulek教授在上海期智研究院的密码学学术讲座。 这是Mike教授的第三个分享：Oblivious Transfer and Extension Roadmap  Precomputation: can compute OTs even before you know your input! OT extension: 128 OTs suffice for everyt"><meta property="og:type" content="blog"><meta property="og:title" content="「MPC-Mike Rosulek 」：Oblivious Transfer and Extension"><meta property="og:url" content="https://f7ed.com/2021/07/07/MPC3-OT/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="本系列是总结Mike Rosulek教授在上海期智研究院的密码学学术讲座。 这是Mike教授的第三个分享：Oblivious Transfer and Extension Roadmap  Precomputation: can compute OTs even before you know your input! OT extension: 128 OTs suffice for everyt"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/jkhjhjgaghhfuia.png"><meta property="article:published_time" content="2021-07-06T16:00:00.000Z"><meta property="article:modified_time" content="2022-06-28T04:18:10.654Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="MPC"><meta property="article:tag" content="Lectures"><meta property="article:tag" content="Secure Computation"><meta property="article:tag" content="Oblivious Transfer"><meta property="article:tag" content="IKNP"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/jkhjhjgaghhfuia.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2021/07/07/MPC3-OT/"},"headline":"「MPC-Mike Rosulek 」：Oblivious Transfer and Extension","image":["https://f7ed.com/gallery/thumbnails/jkhjhjgaghhfuia.png"],"datePublished":"2021-07-06T16:00:00.000Z","dateModified":"2022-06-28T04:18:10.654Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"本系列是总结Mike Rosulek教授在上海期智研究院的密码学学术讲座。 这是Mike教授的第三个分享：Oblivious Transfer and Extension Roadmap  Precomputation: can compute OTs even before you know your input! OT extension: 128 OTs suffice for everyt"}</script><link rel="canonical" href="https://f7ed.com/2021/07/07/MPC3-OT/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「MPC-Mike Rosulek 」：Oblivious Transfer and Extension</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2021-07-06T16:00:00.000Z" title="2021-07-06T16:00:00.000Z">2021-07-07</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2022-06-28T04:18:10.654Z" title="2022-06-28T04:18:10.654Z">2022-06-28</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/MPC/">MPC</a></span><span class="level-item"><i class="far fa-clock"></i> 25 minutes read (About 3719 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>本系列是总结Mike Rosulek教授在上海期智研究院的密码学学术讲座。</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><p>这是Mike教授的第三个分享：Oblivious Transfer and Extension</p>
+<p>Roadmap</p>
+<ol>
+<li>Precomputation: can compute OTs even before you know your input!</li>
+<li>OT extension: 128 OTs suffice for everything.</li>
+</ol>
+<p>OT在多方安全计算中扮演着重要的角色，但OT的实际开销往往很大，因为他不可能使用廉价的加密方法来实现<font color="green">[ImpagliazzoRudich89]</font>。因此在这篇文章中，会介绍一些前沿的方法来提高OT的效率：离线预计算和OT扩展。</p>
+<span id="more"></span>
+
+<h1 id="Offline-Precomputation"><a href="#Offline-Precomputation" class="headerlink" title="Offline Precomputation"></a>Offline Precomputation</h1><h2 id="Random-OT"><a href="#Random-OT" class="headerlink" title="Random OT"></a>Random OT</h2><p>在提出random OT概念前，我们先回顾一下standard OT: </p>
+<img src="https://z3.ax1x.com/2021/07/08/RXecSH.png" alt="standard OT" style="zoom:50%;" />
+
+<p>在standard OT中，Alice选择两个输入：$m_0, m_1$，Bob选择一个输入：$c$。</p>
+<p>经过一次OT后，Bob可以得到Alice输入中的一个：$m_c$，而不知道另一个输入 $m_{1-c}$ 。而Alice不知道Bob的输入 $c$ ，也就不知道Bob选择的哪一个。</p>
+<p>上述过程中，需要双方选择他们各自的输入，双方的输入确定，Bob得到的结果也是确定的：$m_c$ 。</p>
+<p>相对于standard OT的确定性，random OT不需要双方选择输入，而是直接随机采样许多 $m_0, m_1, c$ 作为random OT instances。</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXesYD.png" alt="random OT" style="zoom:50%;" />
+
+<blockquote>
+<p>Beaver Derandomization Theorem<font color="green">[Beaver91]</font> ：</p>
+<p>There is a cheap protocol that securely evaluates an instance of satandard OT using an instance of random OT.</p>
+<p>【Beaver的去随机化理论提出：存在一些高效的协议能将一个random OT 转化为一个standard OT instance.】</p>
+</blockquote>
+<p>根据Beaver的去随机化理论，在运行OT协议时，可以先离线生成许多random OTs。在online phase：即OT的输入是由Alice和Bob的输入确定的，可以用Beaver的方法高效地将离线生成的random OT去随机化，即变成standard OT。</p>
+<h2 id="Beaver-Derandomization"><a href="#Beaver-Derandomization" class="headerlink" title="Beaver Derandomization"></a>Beaver Derandomization</h2><p>Beaver去随机化过程分为两个阶段：离线阶段和在线阶段（standard OT)</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXegld.png" alt="Beaver Derandomization" style="zoom:50%;" />
+
+<p>在离线阶段，生成大量random OT instances，其中Alice知道 $m_0^\$, m_1^\$ $ ，Bob知道 $c^\$, m_{c^{\$}}^\$$  。</p>
+<p>而Beaver的去随机化的核心思想是：用生成的random OT instance的  $m_0^\$, m_1^\$ $ 作为one-time pad的密钥，分别加密Alice在线时的输入 $m_0, m_1$ 。而Bob只能用唯一知道的密钥 $ m_{c^{\$}}^\$ $ 解密其中一个，而不知道另一个。</p>
+<ul>
+<li><p>Bob在线时的输入： $c=c^\$$ </p>
+<p>Bob可以用 $ m_{c^{\$}}^\$ $直接解密： $x_c \oplus m^\$_{c^\$} = x_c \oplus m^\$_c =  m_c$ ，得到想要的 $m_c$ ，而对 $m_{1-c}$ 一无所知。</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXeyfe.png" alt="c = c$" style="zoom:50%;" />
+</li>
+<li><p>Bob在线时输入： $c\neq c^\$$ </p>
+<p>如果Bob还想用 $ m_{c^{\$}}^\$ $直接解密得到 $m_c$： $x_c \oplus m^\$_{c^\$} =x_c \oplus m^\$_{1\oplus c} =m_c$ ，Alice在加密时 $m_0, m_1$ 时，必须交换其密钥  $m_0^\$, m_1^\$ $ ：</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXerFO.png" alt="c != c$" style="zoom:40%;" />
+
+</li>
+</ul>
+<p>为了Bob能得到正确的 $m_c$ ，Bob应该告诉Alice什么时候要交换密钥，什么时候不用交换密钥。</p>
+<p>方法就是用一个1-bit one-time pad，Bob 计算出  $d = c\oplus c^\$$  ，由此告诉Alice是否需要交换密钥（$d = 0$ 告诉Alice不需要交换密钥，$d = 1$告诉Alice需要交换密钥），而Alice对  $c, c^\$$   都一无所知。</p>
+<p>因此Beaver的去随机化的完整过程：</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXeBTK.png" alt="Beaver Derandomization" style="zoom:50%;"/>
+
+<ol>
+<li><p>Bob计算出  $d = c\oplus c^\$$  ，发送给Alice，以此告诉Alice是否需要交换密钥  $m_0^\$, m_1^\$ $ 。</p>
+</li>
+<li><p>Alice输入 $m_0, m_1$ ，根据 $d$ 的值选择密钥  $m_0^\$, m_1^\$ $  来分别加密$m_0, m_1$ :</p>
+
+   $$
+   \begin{align}
+   x_0 &= m_d^\$ \oplus m_0 \\
+   x_1 &= m_{1\oplus d}^\$ \oplus m_1
+   \end{align}
+   $$
+   
+
+<p>再将其发送给Bob</p>
+</li>
+<li><p>Bob用唯一已知的密钥  $ m_{c^{\$}}^\$ $来解密得到 $m_c$： $x_c \oplus m^\$_{c^\$} =x_c \oplus m^\$_{1\oplus c} =m_c$ ，而对 $m_{1-c}$ 一无所知。</p>
+</li>
+</ol>
+<p>最后分析一下Beaver去随机方法的开销：离线阶段生成一个random OT instance和之前的OT开销相同，但在在线阶段，只需要一些简单的异或运算。</p>
+<h1 id="OT-Extension"><a href="#OT-Extension" class="headerlink" title="OT Extension"></a>OT Extension</h1><h2 id="An-Analogy-from-Encryption"><a href="#An-Analogy-from-Encryption" class="headerlink" title="An Analogy from  Encryption"></a>An Analogy from  Encryption</h2><p>公钥加密（Public-key encryption, PKE）本质上具有不可避免的高昂开销<font color = "green">[ImpagliazzoRudich89]</font> ，但是在现实的加密方案中，可以通过混合公钥加密和对称加密的方式，将实现PKE的开销降到最低。</p>
+<p>即<strong>PKE of λ bits + cheap SKE = PKE of N bits</strong></p>
+<ul>
+<li><p>Use (expensive) PKE to encrypt short s</p>
+<p>【用PKE来加密共享短密钥，比如DH算法】</p>
+</li>
+<li><p>Use (cheap) symmetric-key encryption with key s to encrypt long M</p>
+<p>【再将短密钥通过密钥扩展算法获得长密钥，作为对称加密的密钥】</p>
+</li>
+</ul>
+<p>OT本质上也具有不可避免的高昂开销<font color = "green">[ImpagliazzoRudich89]</font> ，所以如果将OT与公钥加密类比，是否存在一种混合加密方案，也能实现<strong>λ instances of OT + cheap SKE = N instances of OT</strong>？</p>
+<h2 id="Beaver-OT-Extension"><a href="#Beaver-OT-Extension" class="headerlink" title="Beaver OT Extension"></a>Beaver OT Extension</h2><p>Beaver利用Yao的两方安全计算，提出了一种OT的扩展协议<font color = "green">[Beaver96]</font> 实现$\lambda$ instances of OT + cheap SKE = $N$ instances of OT.</p>
+<p>Beaver OT扩展协议其实是一个两方安全计算电路：该电路将Alice和Bob的输入作为伪随机的种子，以此生成$n$ OT instances，包括输出给Alice的random strings和输出给Bob的choice bits+choice strings。</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXefmt.png" alt="Beaver protocol" style="zoom:50%;" />
+
+<p>该电路的输入位是 $\lambda$ bit，因此Alice和Bob需要做 $\lambda$ 次OTs，而该电路可以生成 $n&gt;&gt;\lambda$ OTs，由此实现了$\lambda$ instances of OT + cheap SKE = $N$ instances of OT.</p>
+<p>但是用Yao’s garbled circuits的方法实现Beaver OT扩展协议几乎是不可能的，因为这太复杂了。</p>
+<h2 id="IKNP-Protocol"><a href="#IKNP-Protocol" class="headerlink" title="IKNP Protocol"></a>IKNP Protocol</h2><p>而Yuval Ishai, Joe Kilian, Kobbi Nissim, Erez Petrank在Crypto 2003年发表的论文：Extending Oblivious Transfers Efficiently，提出了一种可实现、更高效的OT扩展协议，以此实现 $\lambda$ instances of OT + cheap SKE = $N$ instances of OT。</p>
+<p>该协议能够用有限的OTs（比如128次OTs）实现足够多次的OTs（比如1 million），下面将详细阐述协议是如何实现的。</p>
+<h3 id="IKNP-Details"><a href="#IKNP-Details" class="headerlink" title="IKNP Details"></a>IKNP Details</h3><ol>
+<li><p>Bob: </p>
+<ol>
+<li><p>has input $r $</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXeh0P.png" alt="Bob has input r" style="zoom:50%;" />
+</li>
+<li><p>$\Rightarrow$  extend to matrix </p>
+<p>【把输入 $r$ 重复多次扩展为矩阵 $R$，矩阵的每行 $R_i$ （ith row of $R$）要么是全1或者全0，而且该矩阵的高是million级别的，宽度可以为128】</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXeIk8.png" alt="Bob has a matrx" style="zoom:50%;" />
+</li>
+<li><p>$\Rightarrow$ secret share as ($T, T’$) </p>
+<p>【然后对该矩阵$R$做秘密分享，即拆分为两个矩阵 $T,T’$ 】</p>
+<p>【秘密分享的策略是随机生成一个矩阵 $T$ ，而 $T’=T\oplus R$ ，观察下图可以看出 $R_i = T_i \oplus T_i’$ ，即两个矩阵的每行要么相同($r=0$)，要么相反($r=1$) 】</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXeotS.png" alt="secret share" style="zoom:50%;" />
+</li>
+</ol>
+</li>
+<li><p>Alice：</p>
+<ol>
+<li><p>chooses random string $s$</p>
+<img src="https://s1.ax1x.com/2022/06/28/jZfslq.png" alt="Alice chooses random string s" style="zoom:50%;" />
+</li>
+<li><p>OT for each column $\Rightarrow$ Alice obtains matrix $Q$ </p>
+<p>【从列的角度做OT，Alice每次根据 $s$ 的值从Bob的($T,T’$)选择一列，如果 $s_i=0$ ，从矩阵$T$选择第i列，如果 $s_i=1$ ，从矩阵$T’$选择第i列，得到矩阵 $Q$】 </p>
+<p>【这里的OT中，Bob是sender，Alice是receiver】</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXeHpQ.png" alt="OT for each column" style="zoom:50%;" />
+
+<p>观察Alice经过128次OT得到的矩阵 $Q$ ，可以发现Alice得到的矩阵 $Q$ 和Bob拥有的矩阵 $T$ 有如下关系：</p>
+<ul>
+<li><p>Whenever $r_i = 0$, Alice row = Bob row</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXeTfg.png" alt="ri=0" style="zoom:50%;" />
+</li>
+<li><p>Whenever$r_i =1$, Alice row=Bob row $\oplus s$ </p>
+<img src="https://z3.ax1x.com/2021/07/08/RXeblj.png" alt="ri=1" style="zoom:50%;" />
+</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p>For every i: Bob knows $t_i$ ; Alice knows $q_i$ and $q_i\oplus s$ .</p>
+<p>【再从行的角度观察Alice和Bob得到的信息，Alice每次收到 $q_i$ 后，都可以通过和random string $s$ 异或得到 $q_i$ 和 $q_i\oplus s$ ，而这其中的一个值与Bob知道的 $t_i$ 相同】</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXeq6s.png" alt="for every i" style="zoom:50%;" />
+
+<p>【Alice：因为不知道Bob的 $r_i$ 值，所以不知道Bob选择的 $t_i$ 到底是和 $q_i$ 相等还是和 $q_i\oplus s$ 相等】</p>
+<p>【Bob：因为不知道Alice的 $s$ 值，所以只知道选择的 $t_i$ 等于$q_i$ 和$q_i\oplus s$ 中的一个，而不知道另一个】</p>
+<p>但是从Bob视角重写Alice得到的信息，我们知道得到：</p>
+<img src="https://s1.ax1x.com/2022/06/28/jZfXAe.png" alt="qi = ti / ti xor s" style="zoom:50%;" />
+
+<ul>
+<li>$r_i=0: q_i=t_i$ </li>
+<li>$r_i=1:q_i=t_i\oplus s$  </li>
+</ul>
+<p>至此，我们几乎已经实现了行角度的OT，Alice有两个值：$q_i$ 和 $q_i\oplus s$ ，Bob根据 $r_i$ 从中选择得到一个，而对另一个一无所知。</p>
+</li>
+<li><p>Break correlations by applying random oracle</p>
+<p>上面我说是“几乎实现了行角度的OT”，为什么是几乎呢？</p>
+<p>因为string s的原因，这些OT instances具有一定的线性相关性。所以为了破坏其中的线性相关性，对这些strings都执行一个任意的密码学函数 $H$ ：</p>
+<img src="https://s1.ax1x.com/2022/06/28/jZhiB8.png" alt="beack correlations" style="zoom:50%;" />
+</li>
+<li><p>$\Rightarrow$ Random OT instance for each row, using base OT for each column</p>
+<p>【由此，通过从列的角度做base OT，得到了足够多的行角度random OT instances】</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXeXmq.png" alt="random OT instance for each row" style="zoom:50%;" />
+
+</li>
+</ol>
+<p>最后，总结一下IKNP如何实现$\lambda$ instances of OT + cheap SKE = $N$ instances of OT。</p>
+<p>Bob有一个tall matrix($\lambda$ 列, $n&gt;&gt;\lambda$ 行)，Alice从列的角度根据秘密字符串 $s$ 做 $\lambda$ 次base OTs。</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXeLXn.png" alt="by column" style="zoom:50%;" />
+
+<p>最后Alice和Bob得到了行角度的 $n$ 个扩展OTs。</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXev7V.png" alt="by row" style="zoom:50%;" />
+
+<h3 id="Malicious-Bob-in-IKNP-Protocol"><a href="#Malicious-Bob-in-IKNP-Protocol" class="headerlink" title="Malicious Bob in IKNP Protocol"></a>Malicious Bob in IKNP Protocol</h3><p><font color="green">[KellerOrsiniScholl15]</font> 介绍了如果有恶意的参与方，IKNP受到的威胁</p>
+<p>假设Bob是恶意的：</p>
+<ol>
+<li><p>Bob：</p>
+<ol>
+<li><p>有一个输入 $r $</p>
+</li>
+<li><p>$\Rightarrow$  对其扩展为矩阵 $R$ ，但是恶意地翻转了 $t_2$ 的第二位bit：</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXmQcd.png" alt="flip one bit" style="zoom:50%;" />
+</li>
+<li><p>$\Rightarrow$再做秘密共享为 ($T, T’$) ，同样的，$T’$ 中也有一位被翻转了：</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXmljA.png" alt="flip one bit" style="zoom:50%;" />
+</li>
+</ol>
+</li>
+<li><p>Alice:</p>
+<ol>
+<li><p>选择一个随机串 $s$ </p>
+</li>
+<li><p>对每列做OT $\Rightarrow$ Alice得到矩阵 $Q$  </p>
+<img src="https://s1.ax1x.com/2022/06/28/jZhjbT.png" alt="Alice & Bob disagree" style="zoom:50%;" />
+
+<p>因为 $r_2=0$ ，本应该有 $q_i = t_i$ 。但因为Bob恶意翻转了一位，所以Alice得到的 $q_i$ 和 $t_i$ 在第二位不同</p>
+</li>
+</ol>
+</li>
+<li><p>…</p>
+</li>
+<li><p>所以在Alice和Bob同时使用 $H(row)$ 破坏线性相关性后，Bob会发现得到的 $H(row#2)$ 值不同，Bob就知道Alice选择的随机串中 $s_2=1$ 。</p>
+<p>如此以来，Bob每次都恶意翻转某一列的一个bit，就可以学到 $s$ 的所有比特信息。</p>
+</li>
+</ol>
+<h3 id="Consistency-Check"><a href="#Consistency-Check" class="headerlink" title="Consistency Check"></a>Consistency Check</h3><p>所以如何保证Bob没有恶意篡改矩阵 $R_i$ ($R$ 矩阵的第i行)?</p>
+<p><font color = "green">[KellerOrsiniScholl15]</font> 提出了一种一致性检验方法来检测Bob是否恶意篡改了矩阵。</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXm8Bt.png" alt="Consistency check" style="zoom:50%;" />
+
+<p>Alice在执行IKNP中通过多次检验上述方程的一致性，来检测Bob是否恶意篡改了扩展矩阵。</p>
+<p>同时，为了保护扩展矩阵的位信息，Bob也使用一个随机矩阵来加密 $R^*$ 。</p>
+<p>IKNP可以通过上述一致性检验来实现malicious security，而引入的额外开销很小。</p>
+<h2 id="Generalizing-IKNP"><a href="#Generalizing-IKNP" class="headerlink" title="Generalizing IKNP"></a>Generalizing IKNP</h2><p>IKNP协议生成了许多二选一的OT instances，这里将介绍如何对IKNP协议一般化，以生成多选一的OT instances。</p>
+<p>再次回顾一下IKNP的做法：</p>
+<ol>
+<li><p>Bob有一个选择串 $r$ </p>
+<img src="https://z3.ax1x.com/2021/07/08/RXej00.png" alt="string r" style="zoom:50%;" />
+</li>
+<li><p>扩展为矩阵 $R$ ，矩阵的每行是全0或全1</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXezkT.png" alt="extend to a matrix" style="zoom:50%;" />
+</li>
+<li><p>再对矩阵R做秘密分享</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXmCp4.png" alt="secret-share" style="zoom:50%;" />
+
+</li>
+</ol>
+<p>从行的角度看矩阵扩展，把<code>0</code> 编码为 <code>000...</code> ，把<code>1</code> 编码为<code>111...</code> 。所以可以把矩阵扩展看作对 $r$ 的bit的一种编码方式（repetition code）。</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXmP1J.png" alt="repetition code" style="zoom:50%;" />
+
+<p>因此，一般化IKNP的核心思想就是：用具有差错校正的编码方式对 $r$ 的bit进行编码。</p>
+<h3 id="Coding-view-of-IKNP"><a href="#Coding-view-of-IKNP" class="headerlink" title="Coding view of IKNP"></a>Coding view of IKNP</h3><p>  现在，我们从编码的方式看IKNP。</p>
+<ol>
+<li><p>Bob:</p>
+<ol>
+<li><p>Bob 有一个输入 $r$ </p>
+<img src="https://z3.ax1x.com/2021/07/08/RXmStU.png" alt="input r" style="zoom:50%;" />
+</li>
+<li><p>对 $r$ 的比特进行编码：</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXmP1J.png" alt="encode under C" style="zoom:50%;" />
+</li>
+<li><p>在这种编码方式下进行秘密分享</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXmic9.png" alt="secret share" style="zoom:50%;" />
+</li>
+</ol>
+</li>
+<li><p>Alice 对每列做OT，得到矩阵$Q$ </p>
+<img src="https://z3.ax1x.com/2021/07/08/RXmAn1.png" alt="OT for each column" style="zoom:50%;" />
+
+<p>Bob得到的 $t_i$ 和Alice得到的 $q_i$ 有如下关系：$t_i = q_i\oplus C(r_i)\wedge s$ </p>
+<img src="https://z3.ax1x.com/2021/07/08/RXmFXR.png" alt="encode under C" style="zoom:50%;" />
+
+<p>如果是在编码$C(0)=000…, C(1)=111…$ 下：</p>
+<ul>
+<li>$r_i=0 \Rightarrow t_i = q_i\oplus (000…)\wedge s=q_i$ </li>
+<li>$r_i=1 \Rightarrow t_i=q_i\oplus (111…)\wedge s=q_i\oplus s$ </li>
+</ul>
+</li>
+<li><p>For every i: Bob knows $t_i$; Alice knows $q_i\oplus C(0)\wedge s$ and $q_i\oplus C(1)\wedge s$ </p>
+<p>【此时Alice知道$q_i\oplus C(0)\wedge s$ 和 $q_i\oplus C(1)\wedge s$ ，Bob知道$t_i$ 】</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXmE0x.png" alt="encode under C" style="zoom:50%;" />
+
+<ul>
+<li><p>从Bob的视角重写Alice得到的 $q_i=t_i\oplus C(r_i)\wedge s$ </p>
+<img src="https://z3.ax1x.com/2021/07/08/RXmV76.png" alt="rewite" style="zoom:50%;" />
+</li>
+<li><p>当$C$是一种线性编码时，即满足:  $[C(a)\wedge s]\oplus [C(b)\wedge s]=C(a\oplus b)\wedge s$ and $C(0)\wedge s = 000…$ </p>
+<p>得到：</p>
+<img src="https://s1.ax1x.com/2022/06/28/jZ4ix1.png" alt="C is a linear code" style="zoom:50%;" />
+
+<p>化简：</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXmeAK.png" alt="C(0) ^ s = 000..." style="zoom:50%;" />
+</li>
+</ul>
+</li>
+<li><p>Use random oracle to destroy correlations</p>
+<p>【再破坏其线性相关性】</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXmmtO.png" alt="destroy correlations" style="zoom:50%;" />
+
+</li>
+</ol>
+<h3 id="Generalizing-IKNP-1"><a href="#Generalizing-IKNP-1" class="headerlink" title="Generalizing IKNP"></a>Generalizing IKNP</h3><p>刚刚我们考虑的是只对 $\{0, 1\}$  编码，即：  $C:\{0, 1\}\rightarrow \{0, 1\}^k$  编码。</p>
+<p>现在考虑编码更多的bits，即 $C:\{0, 1\}^3\rightarrow \{0, 1\}^k$  ，同样地，$C$是线性编码。</p>
+<p>同样的运行IKNP：</p>
+<ol start="3">
+<li><p>For every i: Alice can compute 8 (things)</p>
+<p>【之前Alice是可以计算$q_i\oplus C(0)\wedge s$ 和 $q_i\oplus C(1)\wedge s$ 】</p>
+<p>现在是对 $\{0, 1\}^3$  编码，就可以计算：</p>
+<p>$q_i\oplus C(000)\wedge s, q_i\oplus C(001)\wedge s, \cdots,q_i\oplus C(111)\wedge s$  </p>
+<img src="https://z3.ax1x.com/2021/07/08/RXmnhD.png" alt="compute 8 things" style="zoom:50%;" />
+
+<ul>
+<li><p>同样的，从Bob的角度重写Alice得到的值$q_i=t_i\oplus C(r_i)\wedge s$ </p>
+</li>
+<li><p>并且 $C$ 是线性编码，满足$[C(a)\wedge s]\oplus [C(b)\wedge s]=C(a\oplus b)\wedge s$ and $C(0)\wedge s = 000…$ ，化简后：</p>
+<img src="https://z3.ax1x.com/2021/07/08/RXmM1H.png" alt="from Bob's view" style="zoom:50%;" />
+
+<p>对上述Alice计算出的8个串，Bob只知道其中的一个 $t_i$ ，而这个 $t_i$ 等于Alice知道的第几个串，这取决于Bob的选择的 $r_i$ ，使得 $C(r_i\oplus \cdots)=000…$ 。</p>
+</li>
+</ul>
+</li>
+<li><p>In the random oracle model:  $H(t_1 \oplus c_1 \wedge s),…H(t_n \oplus c_n \wedge s)$ pseudorandom if all $c_i$ have Hamming weight $\ge \lambda$ </p>
+<p>【在破坏线性相关性时，只有当所有 $c_i$ 的汉明重量（Hamming weight）$\ge\lambda$ 时，$H(\cdot)$ 和随机串才具有不可区分性】</p>
+<blockquote>
+<p>汉明重量（Hamming weight）:汉明重量是一串符号中非0符号的个数。</p>
+<p>汉明距离（Hamming distance）：两个字符串对应位置的不同字符的个数。</p>
+</blockquote>
+</li>
+</ol>
+<hr>
+<p>就此，我们介绍了扩展的IKNP协议，<font color="green">[KolesnikovKumaresan13]</font> 提到使用这样的编码： $C:\{0, 1\}^l\rightarrow \{0, 1\}^k$ (编码字符串的汉明距离 $\ge \lambda$) 执行 $k$ 次base OT，就能实现从 $2^l$ 中选一个的OT扩展(1-out-of- $2^l$ OT extension)。 </p>
+<ul>
+<li><p>1-out-of-256 OT<font color="green">[KolesnikovKumaresan13]</font> : </p>
+<p>Walsh-Hadamard code $C:\{0, 1\}^8\rightarrow \{0, 1\}^k$  (min. dist. 128)</p>
+</li>
+<li><p>1-out-of- $2^{76}$ OT<font color="green">[OrruOrsiniScholl16]</font> : </p>
+<p>BCH code $C:\{0, 1\}^{76}\rightarrow \{0, 1\}^{512}$  (min. dist. 171) </p>
+</li>
+<li><p>1-out-of-∞ OT<font color="green">[KolesnikovKumaresanRosulekTrieu16]</font></p>
+<p>这篇文章提出，对于任意的伪随机编码$C:\{0, 1\}^*\rightarrow \{0, 1\}^{～480}$ ，只需要满足最小的hamming dist.，而不用要求编码 $C$ 的线性性质，就可以实现1-out-of-∞ OT。</p>
+</li>
+</ul>
+<p>就此，IKNP协议的介绍到此结束。也正是因为IKNP协议，使得OT的效率大幅提高。</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「MPC-Mike Rosulek 」：Oblivious Transfer and Extension</p><p><a href="https://f7ed.com/2021/07/07/MPC3-OT/">https://f7ed.com/2021/07/07/MPC3-OT/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2021-07-07</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2022-06-28</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/MPC/">MPC, </a><a class="link-muted" rel="tag" href="/tags/Lectures/">Lectures, </a><a class="link-muted" rel="tag" href="/tags/Secure-Computation/">Secure Computation, </a><a class="link-muted" rel="tag" href="/tags/Oblivious-Transfer/">Oblivious Transfer, </a><a class="link-muted" rel="tag" href="/tags/IKNP/">IKNP </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2021/09/09/stanford-crypto-blockcipher1/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Cryptography-Boneh」:Block Cipher 1</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2021/07/05/MPC2-GarbledCircuits/"><span class="level-item">「MPC-Mike Rosulek 」：Advanced Techniques and Optimizations for Garbled Circuits</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "1c1b2ee2f109897fe848628e8eb8732a",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">70</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">135</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Offline-Precomputation"><span class="level-left"><span class="level-item">1</span><span class="level-item">Offline Precomputation</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Random-OT"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">Random OT</span></span></a></li><li><a class="level is-mobile" href="#Beaver-Derandomization"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">Beaver Derandomization</span></span></a></li></ul></li><li><a class="level is-mobile" href="#OT-Extension"><span class="level-left"><span class="level-item">2</span><span class="level-item">OT Extension</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#An-Analogy-from-Encryption"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">An Analogy from  Encryption</span></span></a></li><li><a class="level is-mobile" href="#Beaver-OT-Extension"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">Beaver OT Extension</span></span></a></li><li><a class="level is-mobile" href="#IKNP-Protocol"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">IKNP Protocol</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#IKNP-Details"><span class="level-left"><span class="level-item">2.3.1</span><span class="level-item">IKNP Details</span></span></a></li><li><a class="level is-mobile" href="#Malicious-Bob-in-IKNP-Protocol"><span class="level-left"><span class="level-item">2.3.2</span><span class="level-item">Malicious Bob in IKNP Protocol</span></span></a></li><li><a class="level is-mobile" href="#Consistency-Check"><span class="level-left"><span class="level-item">2.3.3</span><span class="level-item">Consistency Check</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Generalizing-IKNP"><span class="level-left"><span class="level-item">2.4</span><span class="level-item">Generalizing IKNP</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Coding-view-of-IKNP"><span class="level-left"><span class="level-item">2.4.1</span><span class="level-item">Coding view of IKNP</span></span></a></li><li><a class="level is-mobile" href="#Generalizing-IKNP-1"><span class="level-left"><span class="level-item">2.4.2</span><span class="level-item">Generalizing IKNP</span></span></a></li></ul></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

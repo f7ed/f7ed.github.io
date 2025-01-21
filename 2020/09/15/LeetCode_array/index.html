@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「LeetCode」：Array - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="8月某司实训+准备开学期末考，我可太咕了q w q…dbq，（希望）高产博主我.我..又回来了。 LeetCode Array专题，持久更新。（GitHub)"><meta property="og:type" content="blog"><meta property="og:title" content="「LeetCode」：Array"><meta property="og:url" content="https://f7ed.com/2020/09/15/LeetCode_array/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="8月某司实训+准备开学期末考，我可太咕了q w q…dbq，（希望）高产博主我.我..又回来了。 LeetCode Array专题，持久更新。（GitHub)"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/84265167_p0_master1200.jpg"><meta property="article:published_time" content="2020-09-14T16:00:00.000Z"><meta property="article:modified_time" content="2020-10-09T13:24:32.989Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="LeetCode"><meta property="article:tag" content="Algorithms"><meta property="article:tag" content="Data-Structure"><meta property="article:tag" content="Array"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/84265167_p0_master1200.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2020/09/15/LeetCode_array/"},"headline":"「LeetCode」：Array","image":["https://f7ed.com/gallery/thumbnails/84265167_p0_master1200.jpg"],"datePublished":"2020-09-14T16:00:00.000Z","dateModified":"2020-10-09T13:24:32.989Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"8月某司实训+准备开学期末考，我可太咕了q w q…dbq，（希望）高产博主我.我..又回来了。 LeetCode Array专题，持久更新。（GitHub)"}</script><link rel="canonical" href="https://f7ed.com/2020/09/15/LeetCode_array/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「LeetCode」：Array</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2020-09-14T16:00:00.000Z" title="2020-09-14T16:00:00.000Z">2020-09-15</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2020-10-09T13:24:32.989Z" title="2020-10-09T13:24:32.989Z">2020-10-09</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/LeetCode/">LeetCode</a></span><span class="level-item"><i class="far fa-clock"></i> an hour read (About 6985 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>8月某司实训+准备开学期末考，我可太咕了q w q…dbq，（希望）高产博主我.我..又回来了。</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><p>LeetCode Array专题，持久更新。（<a target="_blank" rel="noopener" href="https://github.com/f1ed/LeetCode">GitHub</a>)</p>
+<span id="more"></span>
+
+<h1 id="Array"><a href="#Array" class="headerlink" title="Array"></a>Array</h1><h2 id="27-Remove-Elements"><a href="#27-Remove-Elements" class="headerlink" title="27-Remove Elements"></a>27-Remove Elements</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/remove-element/">27-Remove Elements</a> </p>
+<p>Solution</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">removeElement</span>(<span class="params">self, nums: <span class="type">List</span>[<span class="built_in">int</span>], val: <span class="built_in">int</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line"></span><br><span class="line">        tot = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> element <span class="keyword">in</span> nums:</span><br><span class="line">            <span class="keyword">if</span> element == val:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                nums[tot] = element</span><br><span class="line">                tot = tot + <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> tot</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<ol>
+<li><p>Python的参数传递和函数返回值：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">removeElement</span>(<span class="params">self, nums:<span class="type">List</span>[<span class="built_in">int</span>], val:<span class="built_in">int</span></span>) -&gt; <span class="built_in">int</span>:</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>题目要求：</p>
+<p>“remove all instances of that value <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/In-place_algorithm"><strong>in-place</strong></a> and return the new length.”</p>
+<p>“Do not allocate extra space for another array, you must do this by <strong>modifying the input array <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/In-place_algorithm">in-place</a></strong> with O(1) extra memory.”</p>
+<p>“Confused why the returned value is an integer but your answer is an array?</p>
+<p>Note that the input array is passed in by <strong>reference</strong>, which means modification to the input array will be known to the caller as well.”</p>
+<p>题目要求是在原数组上删除数值，不能额外开新的空间存储数组。</p>
+<p>意思就是说，虽然函数返回的是一个数值，但实际返回答案是一个数组。</p>
+<p>因为数组的传递是指针传递，返回的是数组长度，则相当于返回了这个in-place的新数组。</p>
+</li>
+</ol>
+<h2 id="26-Remove-Duplicates-from-Sorted-Array"><a href="#26-Remove-Duplicates-from-Sorted-Array" class="headerlink" title="26-Remove Duplicates from Sorted Array"></a>26-Remove Duplicates from Sorted Array</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/remove-duplicates-from-sorted-array/">26-Remove Duplicates from Sorted Array</a> </p>
+<p>Solution：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">removeDuplicates</span>(<span class="params">self, nums: <span class="type">List</span>[<span class="built_in">int</span>]</span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line"></span><br><span class="line">        tot = <span class="number">0</span></span><br><span class="line">        before = <span class="literal">None</span></span><br><span class="line">        <span class="keyword">for</span> index <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(nums)):</span><br><span class="line">            <span class="keyword">if</span> nums[index] != before:</span><br><span class="line">                nums[tot] = nums[index]</span><br><span class="line">                before = nums[index]</span><br><span class="line">                tot = tot + <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> tot</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<ol>
+<li><p>第一次提交的时候<code>before = nums[0] - 1</code> 报错了，原因是传入数组长度为0，下标越界。</p>
+<p>注意空数组的下标越界问题。</p>
+</li>
+</ol>
+<h2 id="80-Remove-Duplicates-from-Sorted-Array-II"><a href="#80-Remove-Duplicates-from-Sorted-Array-II" class="headerlink" title="80-Remove Duplicates from Sorted Array II"></a>80-Remove Duplicates from Sorted Array II</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/remove-duplicates-from-sorted-array-ii/">80-Remove Duplicates from Sorted Array II</a> </p>
+<p>Solution:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">removeDuplicates</span>(<span class="params">self, nums: <span class="type">List</span>[<span class="built_in">int</span>]</span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        before = <span class="literal">None</span></span><br><span class="line">        before_cnt = <span class="number">0</span></span><br><span class="line">        length = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> index <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(nums)):</span><br><span class="line">            <span class="keyword">if</span> nums[index] != before:</span><br><span class="line">                nums[length] = nums[index]</span><br><span class="line">                before = nums[index]</span><br><span class="line">                length += <span class="number">1</span></span><br><span class="line">                before_cnt = <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                before_cnt += <span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> before_cnt &lt;= <span class="number">2</span>:</span><br><span class="line">                    nums[length] = nums[index]</span><br><span class="line">                    length += <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> length</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="189-Rotate-Array（S123）"><a href="#189-Rotate-Array（S123）" class="headerlink" title="189-Rotate Array（S123）"></a>189-Rotate Array（S123）</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/rotate-array/">189-Rotate Array</a> </p>
+<p>Problem:</p>
+<p>简述题目大意，给一个列表nums，一个 $k$ 值，要求原址让列表循环右移 $k$ 位。</p>
+<p>Solution:</p>
+<p>其实以下三种做法时间空间复杂度差别不大，主要看个思路吧。</p>
+<table>
+<thead>
+<tr>
+<th>S</th>
+<th>Runtime</th>
+<th>Memory</th>
+<th align="center">Language</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>S1</td>
+<td>64ms</td>
+<td>15.2MB</td>
+<td align="center">pyhon3</td>
+</tr>
+<tr>
+<td>S2</td>
+<td>64ms</td>
+<td>15.1MB</td>
+<td align="center">python3</td>
+</tr>
+<tr>
+<td>S3</td>
+<td>116ms</td>
+<td>15.1MB</td>
+<td align="center">python3</td>
+</tr>
+</tbody></table>
+<h3 id="S1-简单做法：空间换时间"><a href="#S1-简单做法：空间换时间" class="headerlink" title="S1-简单做法：空间换时间"></a>S1-简单做法：空间换时间</h3><p>时间复杂度：$\mathcal{O}(n)$ </p>
+<p>空间复杂度：$\mathcal{O}(n)$ ，循环右移时多开了一个数组。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"><span class="keyword">import</span> queue</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">rotate</span>(<span class="params">self, nums: <span class="type">List</span>[<span class="built_in">int</span>], k: <span class="built_in">int</span></span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        Do not return anything, modify nums in-place instead.</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        length = <span class="built_in">len</span>(nums)</span><br><span class="line">        a = [<span class="number">0</span>] * length</span><br><span class="line">        <span class="keyword">for</span> index <span class="keyword">in</span> <span class="built_in">range</span>(length):</span><br><span class="line">            a[(index + k)%length] = nums[index]</span><br><span class="line">        nums[:] = a</span><br></pre></td></tr></table></figure>
+
+<h3 id="S2-利用数学同余关系"><a href="#S2-利用数学同余关系" class="headerlink" title="S2-利用数学同余关系"></a>S2-利用数学同余关系</h3><p>时间复杂度：$\mathcal{O}(n)$ </p>
+<p>空间复杂度：$\mathcal{O}(n)$ ，循环右移时只多开了一个变量。</p>
+<p>原理：</p>
+<blockquote>
+<p>定理[1]：</p>
+<p>设 $m$ 是正整数，整数 $a$ 满足 $(a,m)=1$ ，$b$ 是任意整数。若 $x$ 遍历模 $m$ 的一个完全剩余系，则 $ax+b$ 也遍历模 $m$ 的一个完全剩余系。</p>
+</blockquote>
+<p>由以上定理可以得知，设 $n$ 为列表长度， $x$ 是列表的下标，遍历 $n$ 的一个完全剩余系。</p>
+<ul>
+<li><p>如果 $(k,n)=1$ ， $kx$ 也遍历 $n$ 的一个完全剩余系。这种情况，列表下标通过 $k$ 的倍数的顺序连成一个环。</p>
+<p>：只需要额外一个变量 $temp$ 存储移动占用的值。</p>
+</li>
+<li><p>如果 $(k,n)\neq 1$ ，那么 $kx$ 不会遍历一个 $n$ 的完全剩余系，会出现下图的情况（如绿色的线的元素的 $idx = kx+0$ ，红色线的元素都是 $idx=kx+1$ ），会在 $k$ 的某个剩余类一直循环。</p>
+<p>：遍历每个 $k$ 的剩余类。 在每次循环移位时，需要记录该次循环的起始位，防止重复。</p>
+<img src="https://s1.ax1x.com/2020/09/14/wrcSVs.png" alt="wrcSVs.png" style="zoom:50%;" />
+
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">rotate</span>(<span class="params">self, nums: <span class="type">List</span>[<span class="built_in">int</span>], k: <span class="built_in">int</span></span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        Do not return anything, modify nums in-place instead.</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        length = <span class="built_in">len</span>(nums)</span><br><span class="line">        k %= length</span><br><span class="line">        start = <span class="number">0</span></span><br><span class="line">        cnt = <span class="number">0</span></span><br><span class="line">        <span class="keyword">while</span> cnt &lt; length:</span><br><span class="line">            current, prev = start, nums[start]</span><br><span class="line">            <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">                current = (current + k) % length</span><br><span class="line">                prev, nums[current] = nums[current], prev</span><br><span class="line">                cnt += <span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> current == start:</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">            start += <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="S3-利用反转列表的思路"><a href="#S3-利用反转列表的思路" class="headerlink" title="S3-利用反转列表的思路"></a>S3-利用反转列表的思路</h3><p>时间复杂度：$\mathcal{O}(n)$ </p>
+<p>空间复杂度：$\mathcal{O}(n)$ </p>
+<p>原理：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Original List                   : 1 2 3 4 5 6 7</span><br><span class="line">After reversing all numbers     : 7 6 5 4 3 2 1</span><br><span class="line">After reversing first k numbers : 5 6 7 4 3 2 1</span><br><span class="line">After revering last n-k numbers : 5 6 7 1 2 3 4 --&gt; Result</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># Solution 3: Reverse</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">reverse</span>(<span class="params">self, nums: <span class="built_in">list</span>, begin: <span class="built_in">int</span>, end: <span class="built_in">int</span></span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">while</span> begin &lt; end:</span><br><span class="line">            nums[begin], nums[end] = nums[end], nums[begin]</span><br><span class="line">            begin += <span class="number">1</span></span><br><span class="line">            end -= <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">rotate</span>(<span class="params">self, nums: <span class="type">List</span>[<span class="built_in">int</span>], k: <span class="built_in">int</span></span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        n = <span class="built_in">len</span>(nums)</span><br><span class="line">        k %= n</span><br><span class="line">        <span class="variable language_">self</span>.reverse(nums, <span class="number">0</span>, n-<span class="number">1</span>)</span><br><span class="line">        <span class="variable language_">self</span>.reverse(nums, <span class="number">0</span>, k-<span class="number">1</span>)</span><br><span class="line">        <span class="variable language_">self</span>.reverse(nums, k, n-<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<ol>
+<li><p>Python用引用管理对象。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a1 = <span class="number">1</span>, *p = &amp;a1;</span><br><span class="line"><span class="type">int</span> a2 = <span class="number">2</span>, &amp;b = a2;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>指针：指针变量是一个新变量，这个变量存储的是（变量a1的）地址，该地址指向一个存储单元。（该存储单元存放的是a1的值）。</li>
+<li>引用：引用的实质是变量的别名，所以a2和b实际是一个东西，在内存中占有同一个存储单元。</li>
+</ul>
+<p>所以python中交换对象可以直接<code>a,b = b,a</code> </p>
+</li>
+<li><p>Python 列表的操作：切片。</p>
+</li>
+</ol>
+<h2 id="41-First-Missing-Positive"><a href="#41-First-Missing-Positive" class="headerlink" title="41-First Missing Positive"></a>41-First Missing Positive</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/first-missing-positive/">41-First Missing Positive</a>  </p>
+<p>Solution:</p>
+<p>排一下序，维护一个expect变量就行了。</p>
+<p>时间复杂度：$\mathcal{O}(n\log{n})$ ，题目没有卡常。</p>
+<p>Runtime: 36 ms, faster than 70.96% of Python3 online submissions for First Missing Positive.</p>
+<p>空间复杂度：$\mathcal{O}(n)$</p>
+<p>Memory Usage: 13.8 MB, less than 69.19% of Python3 online submissions for First Missing Positive. </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">firstMissingPositive</span>(<span class="params">self, nums: <span class="type">List</span>[<span class="built_in">int</span>]</span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        nums.sort()</span><br><span class="line">        expect = <span class="number">1</span></span><br><span class="line">        <span class="keyword">for</span> element <span class="keyword">in</span> nums:</span><br><span class="line">            <span class="keyword">if</span> element == expect:</span><br><span class="line">                expect += <span class="number">1</span></span><br><span class="line">            <span class="keyword">elif</span> element &gt; expect:</span><br><span class="line">                <span class="keyword">return</span> expect</span><br><span class="line">        <span class="keyword">return</span> expect</span><br></pre></td></tr></table></figure>
+
+<h2 id="299-Bulls-and-Cows"><a href="#299-Bulls-and-Cows" class="headerlink" title="299-Bulls and Cows"></a>299-Bulls and Cows</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/bulls-and-cows/">299-Bulls and Cows</a> </p>
+<p>Problem:</p>
+<p>题目大意是：给定两个相同长度的字符串，计算这两个字符串有多少个对应位数字相同，和多少个位置不对应但数字相同的个数。</p>
+<p>Solution:</p>
+<p>应用字符0-9本身数字的性质。</p>
+<p>时间复杂度：$\mathcal{O}(n)$ </p>
+<p>空间复杂度：$\mathcal{O}(n)$ </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">getHint</span>(<span class="params">self, secret: <span class="built_in">str</span>, guess: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="comment"># 0-9 cnt for guess (expect the same digit)</span></span><br><span class="line">        cnt = [<span class="number">0</span>] * <span class="number">10</span></span><br><span class="line">        bulls = cows = <span class="number">0</span></span><br><span class="line">        g = <span class="keyword">lambda</span> a: <span class="built_in">ord</span>(a) - <span class="built_in">ord</span>(<span class="string">&#x27;0&#x27;</span>)</span><br><span class="line">        <span class="keyword">for</span> si, gi <span class="keyword">in</span> <span class="built_in">zip</span>(secret, guess):</span><br><span class="line">            <span class="keyword">if</span> si == gi:</span><br><span class="line">                bulls += <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                cnt[g(gi)] += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> si, gi <span class="keyword">in</span> <span class="built_in">zip</span>(secret, guess):</span><br><span class="line">            <span class="keyword">if</span> si == gi:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">elif</span> cnt[g(si)] &gt; <span class="number">0</span>:</span><br><span class="line">                cows += <span class="number">1</span></span><br><span class="line">                cnt[g(si)] -= <span class="number">1</span></span><br><span class="line">        output = <span class="string">&quot;&#123;&#125;A&#123;&#125;B&quot;</span>.<span class="built_in">format</span>(bulls, cows)</span><br><span class="line">        <span class="keyword">return</span> output</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<ol>
+<li><p>ord()函数和chr()函数</p>
+<p>ord()返回字符的ASCII码，chr函数返回ASCII码对应的字符。</p>
+</li>
+<li><p>浅析lambda表达式，匿名函数，类似于C语言的宏。</p>
+<p>格式：<code>lambda [arg1[, arg2,...]] : expression</code> </p>
+</li>
+<li><p>双变量同时遍历使用zip()函数</p>
+</li>
+</ol>
+<h2 id="134-Gas-Station（S12）"><a href="#134-Gas-Station（S12）" class="headerlink" title="134-Gas Station（S12）"></a>134-Gas Station（S12）</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/gas-station/">134-Gas Station</a> </p>
+<p>Problem：</p>
+<p>题目大意是：有N个环形加油站，每个加油站能加油gas[i]，一个汽车起始油量为0，且从i个站开到第i+1个站需要花费cost[i]的油量。找出这个车能顺时针跑完一圈的起始点（如果有，则唯一），如果不能返回-1。</p>
+<p>Solution：</p>
+<table>
+<thead>
+<tr>
+<th>Solution</th>
+<th>Runtime</th>
+<th>Memory</th>
+<th>Language</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>S1-简单做法</td>
+<td>3244ms</td>
+<td>14.9MB</td>
+<td>python3</td>
+</tr>
+<tr>
+<td>S2-原理优化</td>
+<td>104ms</td>
+<td>14.8MB</td>
+<td>python3</td>
+</tr>
+</tbody></table>
+<h3 id="S1-简单解法"><a href="#S1-简单解法" class="headerlink" title="S1-简单解法"></a>S1-简单解法</h3><p>时间复杂度：$\mathcal{O}(n^2)$ ，实际远达不到 $n^2$ ，算有一点贪心叭。</p>
+<p>空间复杂度：$\mathcal{O}(n)$ </p>
+<p>该汽车从起点i能跑完的必要条件：</p>
+<ul>
+<li><p>起始点 <code>gas[i] - cost[i] &gt;= 0</code> 。并且维护一个数组存放 <code>gas[i] - cost[i]</code> ，即这个站自给自足的油量余量。</p>
+</li>
+<li><p>如果从满足条件1的起点开始跑一圈， 要求路程中的油量必须大于等于0。维护一个汽车当前总油量 $S$ （用前缀和维护），每跑过一段路程，都要求 $S&gt;=0$ 。</p>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">canCompleteCircuit</span>(<span class="params">self, gas: <span class="type">List</span>[<span class="built_in">int</span>], cost: <span class="type">List</span>[<span class="built_in">int</span>]</span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        n = <span class="built_in">len</span>(gas)</span><br><span class="line">        remain = []</span><br><span class="line">        <span class="keyword">for</span> g, c <span class="keyword">in</span> <span class="built_in">zip</span>(gas, cost):</span><br><span class="line">            remain.append(g - c)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">            <span class="keyword">if</span> remain[i] &lt; <span class="number">0</span>:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                S = <span class="number">0</span></span><br><span class="line">                <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">                    S += remain[(i + j) % n]</span><br><span class="line">                    <span class="keyword">if</span> S &lt; <span class="number">0</span>:</span><br><span class="line">                        <span class="keyword">break</span></span><br><span class="line">                <span class="keyword">if</span> S &gt;= <span class="number">0</span>:</span><br><span class="line">                    <span class="keyword">return</span> i</span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="S2-对问题分析进行再简化"><a href="#S2-对问题分析进行再简化" class="headerlink" title="S2-对问题分析进行再简化"></a>S2-对问题分析进行再简化</h3><p>时间复杂度：$\mathcal{O}(n)$ </p>
+<p>空间复杂度：$\mathcal{O}(n)$ </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">  i	: <span class="number">0</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span></span><br><span class="line">g[i]: <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span></span><br><span class="line">c[i]: <span class="number">3</span> <span class="number">4</span> <span class="number">5</span> <span class="number">1</span> <span class="number">2</span></span><br><span class="line">g-c :-<span class="number">2</span>-<span class="number">2</span>-<span class="number">2</span> <span class="number">3</span> <span class="number">3</span></span><br><span class="line"><span class="built_in">sum</span> :-<span class="number">2</span>-<span class="number">4</span>-<span class="number">6</span>-<span class="number">3</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>如果 $S=\sum_{i=0}^{n-1} g[i]-c[i],S&lt;0$  那么一定无解， $S$ 称为总积累油量。</p>
+</li>
+<li><p>如果 $S&gt;=0$，如果有找出最优解的方法，则一定有解。</p>
+<ol>
+<li><p>起点满足 $g[i]-c[i]&gt;=0$ ，把这些点称为正余量点。</p>
+</li>
+<li><p>用 $\mathcal{O}(1)$ 算出从第 $i$ 个点出发到第 $n$ （n就是第0个点） 个点所积累的油量： $res[i] =S-sum[i-1]$ .即用总积累油量减去前 $i-1$ 段路程能积累的油量（一般积累为负）。(sum数组就是 g-c的前缀和)</p>
+</li>
+<li><p>对于满足起点要求 $g[i]-c[i]&gt;=0$ 的所有点，计算从第 $i$ 个点出发到第 $n$ 个点到油量积累。那么有最大油量积累的点即为最优起始点。（题目规定如果存在，则点唯一）</p>
+</li>
+<li><p>因此，因为 $S$ 固定，只需要找到 $sum$ 数组中的最小值的下标，下标+1即是结果。</p>
+</li>
+</ol>
+<ul>
+<li>证明其正确性：<ol>
+<li>如果满足 $g[i]-c[i]&gt;=0$ 的上述点 $i,j（i&lt;j)$  ，如果 $res[i]&gt;=res[j]$ ，说明从 $i$ 到 $j$ 是正油量积累，贪心的思想，那肯定积累的油量越多越好， $i$ 比 $j$ 优。</li>
+<li>如果 $res[i]&lt;=res[j]$ ，说明从 $i$ 到 $j$ 是负油量积累，如果从 $i$ 点出发，到 $j$ 点就负油量了；如果从 $j$ 点出发，该车最后再跑 $i$ 到$j$  段，因为保证了总积累油量是正，所以最后一定有足够的油量能跑完 $i$ 到 $j$ 段。</li>
+<li>再证只要 $S&gt;=0$ 则一定有解。是动态尝试起始点，( $i,j$ 都满足 $g[i]-c[i]&gt;=0$ ）从点 $i$ 开始，跑到点 $j$ 时，如果该途中途有出现油量不够，那就把 $i$ 到 $j$ 的这段路程放到路途的后面来跑，等油量积累够了再跑这段。</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<p>Code:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">canCompleteCircuit</span>(<span class="params">self, gas: <span class="type">List</span>[<span class="built_in">int</span>], cost: <span class="type">List</span>[<span class="built_in">int</span>]</span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        n = <span class="built_in">len</span>(gas)</span><br><span class="line">        <span class="built_in">sum</span> = <span class="number">0</span></span><br><span class="line">        remain = []</span><br><span class="line">        <span class="keyword">for</span> g, c <span class="keyword">in</span> <span class="built_in">zip</span>(gas, cost):</span><br><span class="line">            remain.append(g - c)</span><br><span class="line">            <span class="built_in">sum</span> += g - c</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">sum</span> &lt; <span class="number">0</span>:</span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, n):</span><br><span class="line">            remain[i] += remain[i - <span class="number">1</span>]</span><br><span class="line">        min_idx = remain.index(<span class="built_in">min</span>(remain))</span><br><span class="line">        <span class="keyword">return</span> (min_idx + <span class="number">1</span>) % n</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<ol>
+<li>前缀和</li>
+<li><code>list.index(value)</code> 找出list中值为<code>value</code> 的第一个下标。</li>
+<li><code>min(list)</code> 返回list中的最小值。</li>
+</ol>
+<h2 id="118-Pascal’s-Triangle"><a href="#118-Pascal’s-Triangle" class="headerlink" title="118-Pascal’s Triangle"></a>118-Pascal’s Triangle</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/pascals-triangle/submissions/">118-Pascal’s Triangle</a> </p>
+<p>Problem:</p>
+<p>给定一个数字，输出如下规则的值。</p>
+<img src="https://s1.ax1x.com/2020/09/15/wyWI9s.gif" alt="wyWI9s.gif" style="zoom:50%;" />   
+
+<p>Solution：</p>
+<p>注意边界吧。（不太喜欢这种题qwq</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">generate</span>(<span class="params">self, numRows: <span class="built_in">int</span></span>) -&gt; <span class="type">List</span>[<span class="type">List</span>[<span class="built_in">int</span>]]:</span><br><span class="line">        ans = []</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, numRows):</span><br><span class="line">            temp = [<span class="number">1</span>] * (i+<span class="number">1</span>)</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, i):</span><br><span class="line">                temp[j] = ans[i-<span class="number">1</span>][j-<span class="number">1</span>] + ans[i-<span class="number">1</span>][j]</span><br><span class="line">            ans.append(temp)</span><br><span class="line">        <span class="keyword">return</span> ans</span><br></pre></td></tr></table></figure>
+
+<hr>
+<ol>
+<li><p>Python 中的append会出现值被覆盖的情况：变量在循环外定义，但在循环中对该变量做出一定改变，然后append到列表，最后发现列表中的值都是一样的。</p>
+<p>因为Python中很多时候都是以对象的形式管理对象，因此append给列表的是一个地址。</p>
+</li>
+</ol>
+<h2 id="119-Pascal’s-Triangle-II"><a href="#119-Pascal’s-Triangle-II" class="headerlink" title="119-Pascal’s Triangle II"></a>119-Pascal’s Triangle II</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/pascals-triangle-ii/">119-Pascal’s Triangle II</a> </p>
+<p>Problem：</p>
+<p>给定一个数字，输出某一行。</p>
+<p>Solution：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">getRow</span>(<span class="params">self, rowIndex: <span class="built_in">int</span></span>) -&gt; <span class="type">List</span>[<span class="built_in">int</span>]:</span><br><span class="line">        temp = [<span class="number">1</span>]</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, rowIndex):</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(i, <span class="number">0</span>, -<span class="number">1</span>):</span><br><span class="line">                temp[j] += temp[j-<span class="number">1</span>]</span><br><span class="line">            temp.append(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">return</span> temp</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="169-Majority-Element"><a href="#169-Majority-Element" class="headerlink" title="169-Majority Element"></a>169-Majority Element</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/majority-element/">169-Majority Element</a> </p>
+<p>Problem:</p>
+<p>给一串数字，找到出现次数大于 <code>n/2</code> 的数字。</p>
+<p>Solution：</p>
+<p>用字典计数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">majorityElement</span>(<span class="params">self, nums: <span class="type">List</span>[<span class="built_in">int</span>]</span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        n = <span class="built_in">len</span>(nums)</span><br><span class="line">        cnt = &#123;&#125;</span><br><span class="line">        <span class="keyword">for</span> ele <span class="keyword">in</span> nums:</span><br><span class="line">            <span class="keyword">if</span> ele <span class="keyword">in</span> cnt:</span><br><span class="line">                cnt[ele] += <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                cnt[ele] = <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">max</span>(cnt, key=cnt.get)</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<ol>
+<li>返回值最大/最小的键/索引。<ul>
+<li>列表：<ul>
+<li>最大值的索引：list.index(max(list))</li>
+<li>最小值的索引：list.index(min(list))</li>
+</ul>
+</li>
+<li>字典：<ul>
+<li>最大值的键：max(dict, key=dict.get)</li>
+<li>最小值的键：min(dict, key=dict.get)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="229-Majority-Element-II"><a href="#229-Majority-Element-II" class="headerlink" title="229-Majority Element II"></a>229-Majority Element II</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/majority-element-ii/">229-Majority Element II</a> </p>
+<p>Problem: </p>
+<p>给一串数字，返回出现次数大于 <code>n/3</code> 的数字。</p>
+<p>Solution：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">majorityElement</span>(<span class="params">self, nums: <span class="type">List</span>[<span class="built_in">int</span>]</span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        n = <span class="built_in">len</span>(nums)</span><br><span class="line">        cnt = &#123;&#125;</span><br><span class="line">        ans = []</span><br><span class="line">        <span class="keyword">for</span> ele <span class="keyword">in</span> nums:</span><br><span class="line">            <span class="keyword">if</span> ele <span class="keyword">in</span> cnt:</span><br><span class="line">                cnt[ele] += <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                cnt[ele] = <span class="number">1</span></span><br><span class="line">        <span class="keyword">for</span> (k, v) <span class="keyword">in</span> cnt.items():</span><br><span class="line">            <span class="keyword">if</span> v &gt; n/<span class="number">3</span>:</span><br><span class="line">                ans.append(k)</span><br><span class="line">        <span class="keyword">return</span> ans</span><br></pre></td></tr></table></figure>
+
+<hr>
+<ol>
+<li><p>字典的实用方法：</p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>实现方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>删除字典元素</td>
+<td><code>del dict[&#39;Name&#39;]</code></td>
+</tr>
+<tr>
+<td>清空字典所有条目</td>
+<td><code>dict.clear()</code></td>
+</tr>
+<tr>
+<td>删除字典</td>
+<td><code>del dict</code></td>
+</tr>
+<tr>
+<td>返回指定键的值，如果值不存在返回default的值</td>
+<td><code>dict.get(key, default)</code></td>
+</tr>
+<tr>
+<td>如果键不存在字典中，添加键并将值设为default,于get类似</td>
+<td><code>dict.setdefault(key, default=None)</code></td>
+</tr>
+<tr>
+<td>判读键是否存在</td>
+<td>1. <code>if k in dict</code> 2. <code>dict.has_key(key)</code> 存在返回true</td>
+</tr>
+<tr>
+<td>以列表返回可遍历的（键，值）元祖数组</td>
+<td><code>dict.items()</code></td>
+</tr>
+<tr>
+<td>以列表返回一个字典的所有键</td>
+<td><code>dict.keys()</code></td>
+</tr>
+<tr>
+<td>以列表返回字典中的所有值</td>
+<td><code>dict.values()</code></td>
+</tr>
+<tr>
+<td>返回最大值的键值</td>
+<td><code>max(dict, key=dict.get)</code></td>
+</tr>
+<tr>
+<td>返回最小值的键值</td>
+<td><code>min(dict, key=dict.get)</code></td>
+</tr>
+</tbody></table>
+</li>
+<li><p>遍历字典的方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">dict</span>=&#123;<span class="string">&quot;a&quot;</span>:<span class="string">&quot;Alice&quot;</span>,<span class="string">&quot;b&quot;</span>:<span class="string">&quot;Bruce&quot;</span>,<span class="string">&quot;J&quot;</span>:<span class="string">&quot;Jack&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 实例一：键循环</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">dict</span>:</span><br><span class="line">    <span class="built_in">print</span> <span class="string">&quot;dict[%s]=&quot;</span> % i,<span class="built_in">dict</span>[i]</span><br><span class="line"><span class="comment"># 结果:</span></span><br><span class="line"><span class="comment"># dict[a]= Alice</span></span><br><span class="line"><span class="comment"># dict[J]= Jack</span></span><br><span class="line"><span class="comment"># dict[b]= Bruce</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 实例二：键值元组循环</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span>  <span class="built_in">dict</span>.items():</span><br><span class="line">    <span class="built_in">print</span> i</span><br><span class="line"><span class="comment"># 结果:</span></span><br><span class="line"><span class="comment"># (&#x27;a&#x27;, &#x27;Alice&#x27;)</span></span><br><span class="line"><span class="comment"># (&#x27;J&#x27;, &#x27;Jack&#x27;)</span></span><br><span class="line"><span class="comment"># (&#x27;b&#x27;, &#x27;Bruce&#x27;)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 实例三：键值元组循环</span></span><br><span class="line"><span class="keyword">for</span> (k,v) <span class="keyword">in</span>  <span class="built_in">dict</span>.items():</span><br><span class="line">    <span class="built_in">print</span> <span class="string">&quot;dict[%s]=&quot;</span> % k,v</span><br><span class="line"><span class="comment"># 结果:</span></span><br><span class="line"><span class="comment"># dict[a]= Alice</span></span><br><span class="line"><span class="comment"># dict[J]= Jack</span></span><br><span class="line"><span class="comment"># dict[b]= Bruce</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h2 id="274-H-Index"><a href="#274-H-Index" class="headerlink" title="274-H-Index"></a>274-H-Index</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/h-index/">274-H-Index</a> </p>
+<p>Problem:</p>
+<p>给出研究人员论文的论文引用次数，计算它的H指数（有h篇论文的引用次数至少为h，剩下N-h篇论文的引用次数不超过h）。</p>
+<p>Solution：</p>
+<p>时间复杂度：$\mathcal{O}(n\log{n})$ </p>
+<p>空间复杂度：$\mathcal{O}(n)$ </p>
+<p>排序后，再二分。（感觉自己的二分写的有点丑qwq</p>
+<p>还有一种思路是，排序完，从最大的h开始递减遍历，满足条件就返回。反正排序也要$\mathcal{O}(n\log{n})$ 的复杂度…</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">hIndex</span>(<span class="params">self, citations: <span class="type">List</span>[<span class="built_in">int</span>]</span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        n = <span class="built_in">len</span>(citations)</span><br><span class="line">        citations.sort()</span><br><span class="line">        begin = <span class="number">0</span></span><br><span class="line">        end = n - <span class="number">1</span></span><br><span class="line">        <span class="keyword">while</span> begin &lt;= end:</span><br><span class="line">            mid = (begin + end) &gt;&gt; <span class="number">1</span></span><br><span class="line">            h = n - mid</span><br><span class="line">            <span class="keyword">if</span> citations[mid] &gt;= h:</span><br><span class="line">                end = mid</span><br><span class="line">                <span class="keyword">if</span> begin == end:</span><br><span class="line">                    <span class="keyword">return</span> h</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                begin += <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> n-begin</span><br></pre></td></tr></table></figure>
+
+<hr>
+<ol>
+<li>非递归写二分：<code>while begin &lt;= end</code> </li>
+</ol>
+<h2 id="275-H-Index-II"><a href="#275-H-Index-II" class="headerlink" title="275-H-Index II"></a>275-H-Index II</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/h-index-ii/">275-H-Index II</a> </p>
+<p>Problem:</p>
+<p>和274一样，给了递增的论文引用数，希望能用指数时间返回H指数。</p>
+<p>Solution：</p>
+<p>啊，就二分鸭。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">hIndex</span>(<span class="params">self, citations: <span class="type">List</span>[<span class="built_in">int</span>]</span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        n = <span class="built_in">len</span>(citations)</span><br><span class="line">        begin = <span class="number">0</span></span><br><span class="line">        end = n - <span class="number">1</span></span><br><span class="line">        <span class="keyword">while</span> begin &lt;= end:</span><br><span class="line">            mid = (begin + end) &gt;&gt; <span class="number">1</span></span><br><span class="line">            h = n - mid</span><br><span class="line">            <span class="keyword">if</span> citations[mid] &gt;= h:</span><br><span class="line">                end = mid</span><br><span class="line">                <span class="keyword">if</span> begin == end:</span><br><span class="line">                    <span class="keyword">return</span> h</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                begin += <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> n - begin</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="243-Shortest-Word-Distance"><a href="#243-Shortest-Word-Distance" class="headerlink" title="243-Shortest Word Distance"></a>243-Shortest Word Distance</h2><p>qwq 这道题还收费来着，于是于是就开了个中国区的会员（中国区的会员便宜好多啊！！）</p>
+<p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/shortest-word-distance/">243-Shortest Word Distance</a> </p>
+<p>Problem：</p>
+<p>给定一串单词，单词1和单词2，计算单词1单词2在单词列表中的距离。</p>
+<p>Solution：</p>
+<table>
+<thead>
+<tr>
+<th>Solution</th>
+<th>Runtime</th>
+<th>Memory</th>
+<th>Language</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>S1-二分查找</td>
+<td>44ms</td>
+<td>15.7MB</td>
+<td>python3</td>
+</tr>
+<tr>
+<td>S2-线性维护</td>
+<td>40ms</td>
+<td>15.6MB</td>
+<td>python3</td>
+</tr>
+</tbody></table>
+<h3 id="S1-二分查找"><a href="#S1-二分查找" class="headerlink" title="S1-二分查找"></a>S1-二分查找</h3><p>时间复杂度：$\mathcal{O}(n\log{n})$ </p>
+<p>空间复杂度：$\mathcal{O}(n)$ </p>
+<p>（最开始还很疑惑啥是单词距离…单词1和单词2可能在单词列表中重复出现）</p>
+<p>计算出单词1和单词2在单词列表中出现的索引值列表，是递增有序的。</p>
+<p>对于单词1索引列表中的每个值，在单词2索引列表中查找该值的lower_bound，计算距离。</p>
+<p>同理，对于单词2索引列表中的每个值，也同样计算距离。</p>
+<p>找出最小距离。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">lower_bound</span>(<span class="params">a: <span class="built_in">list</span>, x: <span class="built_in">int</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">    n = <span class="built_in">len</span>(a)</span><br><span class="line">    begin = <span class="number">0</span></span><br><span class="line">    end = n - <span class="number">1</span></span><br><span class="line">    <span class="keyword">while</span> begin &lt;= end:</span><br><span class="line">        mid = (begin + end) &gt;&gt; <span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span> a[mid] &gt;= x:</span><br><span class="line">            end = mid</span><br><span class="line">            <span class="keyword">if</span> begin == end:</span><br><span class="line">                <span class="keyword">return</span> begin</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            begin += <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    ans = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">findShortest</span>(<span class="params">self, li1: <span class="built_in">list</span>, li2: <span class="built_in">list</span></span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">for</span> idx <span class="keyword">in</span> li1:</span><br><span class="line">            min_dis_idx = lower_bound(li2, idx)</span><br><span class="line">            <span class="keyword">if</span> min_dis_idx == -<span class="number">1</span>:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="variable language_">self</span>.ans = <span class="built_in">min</span>(<span class="variable language_">self</span>.ans, li2[min_dis_idx] - idx)</span><br><span class="line">                <span class="keyword">if</span> <span class="variable language_">self</span>.ans == <span class="number">1</span>:</span><br><span class="line">                    <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">shortestDistance</span>(<span class="params">self, words: <span class="type">List</span>[<span class="built_in">str</span>], word1: <span class="built_in">str</span>, word2: <span class="built_in">str</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        n = <span class="built_in">len</span>(words)</span><br><span class="line">        li1 = []</span><br><span class="line">        li2 = []</span><br><span class="line">        <span class="variable language_">self</span>.ans = n</span><br><span class="line">        <span class="keyword">for</span> idx <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">            <span class="comment"># li1 and li2 are ordered</span></span><br><span class="line">            <span class="keyword">if</span> words[idx] == word1:</span><br><span class="line">                li1.append(idx)</span><br><span class="line">            <span class="keyword">if</span> words[idx] == word2:</span><br><span class="line">                li2.append(idx)</span><br><span class="line">        <span class="variable language_">self</span>.findShortest(li1, li2)</span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.ans &gt; <span class="number">1</span>:</span><br><span class="line">            <span class="variable language_">self</span>.findShortest(li2, li1)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.ans</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="S2-线性维护："><a href="#S2-线性维护：" class="headerlink" title="S2-线性维护："></a>S2-线性维护：</h3><p>时间复杂度：$\mathcal{O}(n)$  </p>
+<p>空间复杂度：$\mathcal{O}(n)$ </p>
+<p>问题还能再简化，线性扫描单词列表，维护两个变量，单词1出现的最近索引，单词2出现的最近索引。扫描时计算距离，每当单词1或单词2出现时，就用另一个单词的最近索引计算。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">shortestDistance</span>(<span class="params">self, words: <span class="type">List</span>[<span class="built_in">str</span>], word1: <span class="built_in">str</span>, word2: <span class="built_in">str</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        n = <span class="built_in">len</span>(words)</span><br><span class="line">        lst1 = <span class="literal">None</span></span><br><span class="line">        lst2 = <span class="literal">None</span></span><br><span class="line">        ans = n</span><br><span class="line">        <span class="keyword">for</span> idx <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">            <span class="keyword">if</span> words[idx] == word1:</span><br><span class="line">                lst1 = idx</span><br><span class="line">                <span class="keyword">if</span> lst2 <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                    ans = <span class="built_in">min</span>(ans, lst1-lst2)</span><br><span class="line">            <span class="keyword">if</span> words[idx] == word2:</span><br><span class="line">                lst2 = idx</span><br><span class="line">                <span class="keyword">if</span> lst1 <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                    ans = <span class="built_in">min</span>(ans, lst2-lst1)</span><br><span class="line">        <span class="keyword">return</span> ans</span><br></pre></td></tr></table></figure>
+
+<hr>
+<ol>
+<li><p>C++中：</p>
+<p>lower_bound(begin, end, num)：返回num的下界，即大于等于num的第一个索引位置。</p>
+<p>upper_bound(begin, end, num)：返回num的上界，即大于num的第一个索引位置。</p>
+<p>Python中用二分实现这两个函数。 </p>
+</li>
+</ol>
+<h2 id="244-Shortest-Word-Distance-II"><a href="#244-Shortest-Word-Distance-II" class="headerlink" title="244-Shortest Word Distance II"></a>244-Shortest Word Distance II</h2><p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/shortest-word-distance-ii/">244-Shortest Word Distance II</a></p>
+<p>Problem:</p>
+<p>和上题题干类似，计算单词距离，但是此问是每一个单词列表，可能有多个询问。</p>
+<p>Solution：</p>
+<p>对每一个单词列表，都可能有多个询问。</p>
+<p>因此，之前243的解法每次询问都会遍历一遍单词列表。如果对每个单词列表询问数为 $M$ ，那么时间复杂度为 $\mathcal{O}(NM)$ ，会超时，所以希望能将单词列表的有关信息存下来，再用常数时间处理每一个询问。</p>
+<p>这里的解法是用一个字典把每个单词出现的index列表存下来，键是单词，值是index列表。这个列表相对于单词列表的数目应该是远远小于的，因此用二重循环应该也能过吧（没有尝试二重循环解法）</p>
+<p>这里有两种思路，一种是自己想的归并思路，还有一种是官方解答的思路，官方思路比归并的思路更优雅一些，问题抽象的更好。（代码差距不大，时间差距也不太大）</p>
+<table>
+<thead>
+<tr>
+<th>Solution</th>
+<th>Runtime</th>
+<th>Memory</th>
+<th>Language</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>S1-归并思路查询</td>
+<td>96ms</td>
+<td>20.8MB</td>
+<td>python3</td>
+</tr>
+<tr>
+<td>S2-交叉跳跃查询</td>
+<td>80ms</td>
+<td>20.4MB</td>
+<td>python3</td>
+</tr>
+</tbody></table>
+<p>双指针：$i$ 指向列表1，$j$指向列表2.</p>
+<h3 id="S1-归并思路"><a href="#S1-归并思路" class="headerlink" title="S1-归并思路"></a>S1-归并思路</h3><p>归并思路：列表的值都是有序的，再把两个列表的值按归并的思想再排序，可以想成把点一个一个有序放在数轴上。</p>
+<p>$i$指针前进的情况：（排序时，取列表1的下一个数字）</p>
+<ol>
+<li>$i+1&lt;len1$  and $li1[i+1] &lt; li[j]$</li>
+<li>$i+1&lt;len1$  and $li1[i+1] &lt; li[j+1]$ </li>
+<li>$i+1 &lt; len1$ and $j+1 == len2$  ($j$ 已无法移动)</li>
+</ol>
+<p>其余情况：$j$ 移动。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">WordDistance</span>:</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, words: <span class="type">List</span>[<span class="built_in">str</span>]</span>):</span><br><span class="line">        <span class="variable language_">self</span>.words = words</span><br><span class="line">        <span class="variable language_">self</span>.<span class="built_in">len</span> = <span class="built_in">len</span>(words)</span><br><span class="line">        <span class="variable language_">self</span>.<span class="built_in">dict</span> = &#123;&#125;</span><br><span class="line">        <span class="keyword">for</span> index <span class="keyword">in</span> <span class="built_in">range</span>(<span class="variable language_">self</span>.<span class="built_in">len</span>):</span><br><span class="line">            word = words[index]</span><br><span class="line">            <span class="keyword">if</span> word <span class="keyword">in</span> <span class="variable language_">self</span>.<span class="built_in">dict</span>:</span><br><span class="line">                temp = <span class="variable language_">self</span>.<span class="built_in">dict</span>[word]</span><br><span class="line">                temp.append(index)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                temp = [index]</span><br><span class="line">                <span class="variable language_">self</span>.<span class="built_in">dict</span>[word] = temp</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">shortest</span>(<span class="params">self, word1: <span class="built_in">str</span>, word2: <span class="built_in">str</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        ans = <span class="variable language_">self</span>.<span class="built_in">len</span></span><br><span class="line">        li1 = <span class="variable language_">self</span>.<span class="built_in">dict</span>[word1]</span><br><span class="line">        li2 = <span class="variable language_">self</span>.<span class="built_in">dict</span>[word2]</span><br><span class="line">        len1 = <span class="built_in">len</span>(li1)</span><br><span class="line">        len2 = <span class="built_in">len</span>(li2)</span><br><span class="line">        i = j = <span class="number">0</span></span><br><span class="line">        <span class="keyword">while</span> i &lt; len1 <span class="keyword">and</span> j &lt; len2:</span><br><span class="line">            ans = <span class="built_in">min</span>(ans, <span class="built_in">abs</span>(li1[i] - li2[j]))</span><br><span class="line">            <span class="keyword">if</span> ans == <span class="number">1</span>:</span><br><span class="line">                <span class="keyword">return</span> ans</span><br><span class="line">            <span class="comment"># i goes ahead</span></span><br><span class="line">            <span class="keyword">if</span> i + <span class="number">1</span> &lt; len1 <span class="keyword">and</span> ((li1[i + <span class="number">1</span>] &lt; li2[j]) <span class="keyword">or</span> (j+<span class="number">1</span> == len2) <span class="keyword">or</span> (j + <span class="number">1</span> &lt; len2 <span class="keyword">and</span> li1[i + <span class="number">1</span>] &lt; li2[j + <span class="number">1</span>])):</span><br><span class="line">                i += <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                j += <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> ans</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="S2-交叉比较"><a href="#S2-交叉比较" class="headerlink" title="S2-交叉比较"></a>S2-交叉比较</h3><p>对于当前指向列表1和列表2的两个元素 $li1[i]$ 和 $li2[j]$ ，对 $li1[i]$来说，只需要和旁边的属于列表2的元素比较，对 $li2[j]$ 同理。</p>
+<p>因此，当  $li1[i]&gt;li2[j]$ 时，下一次的比较应该让 $j$ 指针前移一位，继续计算指针 $i$ 所指元素和其旁边的列表2的元素。同理，当 $li1[i]&lt;li2[j]$ 时，下一次的比较应该让 $i$ 指针前移一位，继续计算指针 $j$ 和其旁边的列表1的元素。</p>
+<p>具体移动如下图。</p>
+<img src="https://s1.ax1x.com/2020/09/19/wIuW4K.jpg" alt="wIuW4K.jpg" style="zoom:50%;" />
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">WordDistance</span>:</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, words: <span class="type">List</span>[<span class="built_in">str</span>]</span>):</span><br><span class="line">        <span class="variable language_">self</span>.words = words</span><br><span class="line">        <span class="variable language_">self</span>.<span class="built_in">len</span> = <span class="built_in">len</span>(words)</span><br><span class="line">        <span class="variable language_">self</span>.<span class="built_in">dict</span> = &#123;&#125;</span><br><span class="line">        <span class="keyword">for</span> index <span class="keyword">in</span> <span class="built_in">range</span>(<span class="variable language_">self</span>.<span class="built_in">len</span>):</span><br><span class="line">            word = words[index]</span><br><span class="line">            <span class="keyword">if</span> word <span class="keyword">in</span> <span class="variable language_">self</span>.<span class="built_in">dict</span>:</span><br><span class="line">                temp = <span class="variable language_">self</span>.<span class="built_in">dict</span>[word]</span><br><span class="line">                temp.append(index)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                temp = [index]</span><br><span class="line">                <span class="variable language_">self</span>.<span class="built_in">dict</span>[word] = temp</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">shortest</span>(<span class="params">self, word1: <span class="built_in">str</span>, word2: <span class="built_in">str</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        ans = <span class="variable language_">self</span>.<span class="built_in">len</span></span><br><span class="line">        li1 = <span class="variable language_">self</span>.<span class="built_in">dict</span>[word1]</span><br><span class="line">        li2 = <span class="variable language_">self</span>.<span class="built_in">dict</span>[word2]</span><br><span class="line">        len1 = <span class="built_in">len</span>(li1)</span><br><span class="line">        len2 = <span class="built_in">len</span>(li2)</span><br><span class="line">        i = j = <span class="number">0</span></span><br><span class="line">        <span class="keyword">while</span> i &lt; len1 <span class="keyword">and</span> j &lt; len2:</span><br><span class="line">            ans = <span class="built_in">min</span>(ans, <span class="built_in">abs</span>(li1[i] - li2[j]))</span><br><span class="line">            <span class="keyword">if</span> ans == <span class="number">1</span>:</span><br><span class="line">                <span class="keyword">return</span> ans</span><br><span class="line">            <span class="comment"># i goes ahead</span></span><br><span class="line">            <span class="keyword">if</span> li1[i] &lt; li2[j]:</span><br><span class="line">                i += <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                j += <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> ans</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="277-Find-the-Celebrity"><a href="#277-Find-the-Celebrity" class="headerlink" title="277-Find the Celebrity"></a>277-Find the Celebrity</h2><p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/find-the-celebrity/">277-Find the Celebrity</a> </p>
+<p>Problem: </p>
+<p>已有know(i, j) API，判断i是否知道j，i是名人的充要条件是其他所有人知道i，而i不知道其他所有人。</p>
+<p>Solution：</p>
+<p>两种思路，第一种较为直观，使用二重循环，但剪枝多，远达不到 $\mathcal{O}(n^2)$ ，第二种稍做优化。因此两种解法差距不太大。</p>
+<table>
+<thead>
+<tr>
+<th align="left">提交时间</th>
+<th align="left">运行时间</th>
+<th align="left">内存消耗</th>
+<th>语言</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">S几秒前</td>
+<td align="left">1896ms</td>
+<td align="left">13.6MB</td>
+<td>python3</td>
+</tr>
+<tr>
+<td align="left">5 分钟前</td>
+<td align="left">1772ms</td>
+<td align="left">13.6MB</td>
+<td>python3</td>
+</tr>
+</tbody></table>
+<h3 id="S1-直观思路"><a href="#S1-直观思路" class="headerlink" title="S1-直观思路"></a>S1-直观思路</h3><p>时间复杂度：远不到 $\mathcal{O}(n^2)$ </p>
+<p>用了二重循环，但剪枝很多，所以远达不到 $\mathcal{O}(n^2)$ </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">findCelebrity</span>(<span class="params">self, n: <span class="built_in">int</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">            fg = <span class="literal">True</span></span><br><span class="line">            <span class="comment"># i knows j ?</span></span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">                <span class="keyword">if</span> i == j:</span><br><span class="line">                    <span class="keyword">continue</span></span><br><span class="line">                <span class="keyword">if</span> knows(i, j):</span><br><span class="line">                    fg = <span class="literal">False</span></span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> fg:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="comment"># j knows i ?</span></span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">                <span class="keyword">if</span> i == j:</span><br><span class="line">                    <span class="keyword">continue</span></span><br><span class="line">                <span class="keyword">if</span> <span class="keyword">not</span> knows(j, i):</span><br><span class="line">                    fg = <span class="literal">False</span></span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> fg:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">return</span> i</span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="S2-排除法"><a href="#S2-排除法" class="headerlink" title="S2-排除法"></a>S2-排除法</h3><p>时间复杂度：$\mathcal{O}(n)$ </p>
+<p>排除i：根据<code>know(i, j)=True</code> 可以认为i不是名人，j可能是名人。</p>
+<p>对于n-1个关系，最后从n个人中选出一个可能的人，再根据名人的充要条件去判断他是否是名人。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">findCelebrity</span>(<span class="params">self, n: <span class="built_in">int</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        celebrity = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, n):</span><br><span class="line">            <span class="keyword">if</span> knows(celebrity, i):</span><br><span class="line">                celebrity = i</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">            <span class="keyword">if</span> celebrity == i:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">not</span> knows(celebrity, i)) <span class="keyword">and</span> knows(i, celebrity):</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> celebrity</span><br></pre></td></tr></table></figure>
+
+<h2 id="245-Shortest-Word-Distance-III"><a href="#245-Shortest-Word-Distance-III" class="headerlink" title="245-Shortest Word Distance III"></a>245-Shortest Word Distance III</h2><p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/shortest-word-distance-iii/">245-Shortest Word Distance III</a> </p>
+<p>Problem:</p>
+<p>题意增加了两个单词可能相同，分两种情况就好了。</p>
+<p>Solution：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">shortestWordDistance</span>(<span class="params">self, words: <span class="type">List</span>[<span class="built_in">str</span>], word1: <span class="built_in">str</span>, word2: <span class="built_in">str</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        n = <span class="built_in">len</span>(words)</span><br><span class="line">        ptr1 = <span class="literal">None</span></span><br><span class="line">        ptr2 = <span class="literal">None</span></span><br><span class="line">        ans = n</span><br><span class="line">        <span class="keyword">if</span> word1 == word2:</span><br><span class="line">            <span class="keyword">for</span> idx <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">                <span class="keyword">if</span> words[idx] == word1:</span><br><span class="line">                    ptr1, ptr2 = idx, ptr1</span><br><span class="line">                <span class="keyword">if</span> (ptr1 <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>) <span class="keyword">and</span> (ptr2 <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>):</span><br><span class="line">                    ans = <span class="built_in">min</span>(ans, ptr1-ptr2)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">for</span> idx <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">                <span class="keyword">if</span> words[idx] == word1:</span><br><span class="line">                    ptr1 = idx</span><br><span class="line">                <span class="keyword">if</span> words[idx] == word2:</span><br><span class="line">                    ptr2 = idx</span><br><span class="line">                <span class="keyword">if</span> (ptr1 <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>) <span class="keyword">and</span> (ptr2 <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>):</span><br><span class="line">                    ans = <span class="built_in">min</span>(ans, <span class="built_in">abs</span>(ptr1-ptr2))</span><br><span class="line">        <span class="keyword">return</span> ans</span><br></pre></td></tr></table></figure>
+
+<h2 id="217-Contains-Duplicate-E"><a href="#217-Contains-Duplicate-E" class="headerlink" title="217-Contains Duplicate[E]"></a>217-Contains Duplicate[E]</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/contains-duplicate/">217-Contains Duplicate</a> </p>
+<p>Problem:</p>
+<p>判断数组中有无重复元素出现。</p>
+<p>Solution：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">containsDuplicate</span>(<span class="params">self, nums: <span class="type">List</span>[<span class="built_in">int</span>]</span>) -&gt; <span class="built_in">bool</span>:</span><br><span class="line">        S = <span class="built_in">set</span>()</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> nums:</span><br><span class="line">            <span class="keyword">if</span> i <span class="keyword">in</span> S:</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">            S.add(i)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="219-Contains-Duplicate-II-E"><a href="#219-Contains-Duplicate-II-E" class="headerlink" title="219-Contains Duplicate II[E]"></a>219-Contains Duplicate II[E]</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/contains-duplicate-ii/">219-Contains Duplicate II</a> </p>
+<p>Problem:</p>
+<p>判断数组中是否有两个相同的值，他们的索引之差小于等于k。</p>
+<p>Solution：</p>
+<p>存放出现该值的最近的索引，扫一遍。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">containsNearbyDuplicate</span>(<span class="params">self, nums: <span class="type">List</span>[<span class="built_in">int</span>], k: <span class="built_in">int</span></span>) -&gt; <span class="built_in">bool</span>:</span><br><span class="line">        <span class="built_in">dict</span> = &#123;&#125;</span><br><span class="line">        n = <span class="built_in">len</span>(nums)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">            <span class="keyword">if</span> nums[i] <span class="keyword">not</span> <span class="keyword">in</span> <span class="built_in">dict</span>:</span><br><span class="line">                <span class="built_in">dict</span>.setdefault(nums[i], i)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">if</span> i - <span class="built_in">dict</span>[nums[i]] &lt;= k:</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">                <span class="built_in">dict</span>[nums[i]] = i</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="4-Median-of-Two-Sorted-Arrays-H-（2S）"><a href="#4-Median-of-Two-Sorted-Arrays-H-（2S）" class="headerlink" title="4-Median of Two Sorted Arrays[H] （2S）"></a>4-Median of Two Sorted Arrays[H] （2S）</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/median-of-two-sorted-arrays/">4-Median of Two Sorted Arrays[H]</a> </p>
+<p>Problem:</p>
+<p>给两个排好序的数组，返回一个中位数</p>
+<p>Solution：</p>
+<table>
+<thead>
+<tr>
+<th>S</th>
+<th>运行时间</th>
+<th>内存消耗</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>S1</td>
+<td>$\mathcal{O}(m+n)$ ：92ms</td>
+<td>14.3MB</td>
+</tr>
+<tr>
+<td>S2</td>
+<td>$\mathcal{O}(\log(m+n))$ ：52ms</td>
+<td>13.3MB</td>
+</tr>
+</tbody></table>
+<h3 id="S1"><a href="#S1" class="headerlink" title="S1:"></a>S1:</h3><p>归并排序的做法。</p>
+<p>时间复杂度：$\mathcal{O}(m+n)$ </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">findMedianSortedArrays</span>(<span class="params">self, nums1: <span class="type">List</span>[<span class="built_in">int</span>], nums2: <span class="type">List</span>[<span class="built_in">int</span>]</span>) -&gt; <span class="built_in">float</span>:</span><br><span class="line">        n1 = <span class="built_in">len</span>(nums1)</span><br><span class="line">        n2 = <span class="built_in">len</span>(nums2)</span><br><span class="line">        median1 = median2 = <span class="literal">None</span></span><br><span class="line">        i = j = <span class="number">0</span></span><br><span class="line">        tot = <span class="number">0</span></span><br><span class="line">        <span class="keyword">while</span> i &lt; n1 <span class="keyword">or</span> j &lt; n2:</span><br><span class="line">            <span class="keyword">if</span> (i &lt; n1 <span class="keyword">and</span> j &lt; n2 <span class="keyword">and</span> nums1[i] &lt;= nums2[j]) <span class="keyword">or</span> (i &lt; n1 <span class="keyword">and</span> j &gt;= n2):</span><br><span class="line">                tot += <span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> tot == (n1 + n2)//<span class="number">2</span>:</span><br><span class="line">                    median1 = nums1[i]</span><br><span class="line">                <span class="keyword">if</span> tot == (n1 + n2)//<span class="number">2</span> + <span class="number">1</span>:</span><br><span class="line">                    median2 = nums1[i]</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">                i += <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                tot += <span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> tot == (n1 + n2) // <span class="number">2</span>:</span><br><span class="line">                    median1 = nums2[j]</span><br><span class="line">                <span class="keyword">if</span> tot == (n1 + n2) // <span class="number">2</span> + <span class="number">1</span>:</span><br><span class="line">                    median2 = nums2[j]</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">                j += <span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span> (n1 + n2) % <span class="number">2</span> == <span class="number">1</span>:</span><br><span class="line">            <span class="keyword">return</span> median2</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> (median1 + median2)/<span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="S2"><a href="#S2" class="headerlink" title="S2:"></a>S2:</h3><p>二分的思路</p>
+<p>时间复杂度：$\mathcal{O}(\log(m+n))$ </p>
+<p><strong>一、</strong>首先讨论一个数组的中位数，数组有n个元素，如果n为奇数，则第(n+1)/2个是中位数；如果n为偶数，则第(n+1)/2和第(n+2)/2的平均值为中位数。</p>
+<p>回到本题，因为是两个数组，如果根据奇偶性分类讨论就过于麻烦了，所以将两种情况统一以简化解题思路。</p>
+<p>即无论n是奇数还是偶数，数组的中位数都是第(n+1)/2和第(n+2)/2的平均数。</p>
+<p>回到本题，设数组1有n个元素，数组2有m个元素，则中位数为两个数组的有序序列的第(n+m+1)/2个和第(n+m+2)/2个的平均数。</p>
+<p><strong>二、</strong>因此，题目需要求解的问题改为求这两个有序数组的有序序列的第k个数。</p>
+<p>二分思想：两个数组分别找第k/2个数，（假设都存在），比较，<strong>如果第一个数组的这个数小于第二个数组，说明第k个数肯定不在第一个数组的前k/2个数中，因此就可以直接去掉数组1的前k/2个元素</strong>，查找有序序列的第k-k/2个数；同理，如果大于，则说明第k个数肯定不在第二个数组的前k/2个数中，去掉数组2的前k/2个元素。</p>
+<p>使用一个数组起始指针l1和l2来实现数组的“去掉”前k/2个元素。</p>
+<p>设数组1的元素个数为n，数组2的元素个数为m。</p>
+<p><strong>递归函数Find(l1, l2, k)：查找起始指针为l1, l2的两个有序数组的第k个数。</strong></p>
+<ul>
+<li><p>讨论边界情况，有数组为空的情况。即 <code>l1 == n</code>  或者 <code>l2 == m</code> .</p>
+<p>如果第一个数组已为空，则直接返回第二个数组的第k个数；</p>
+<p>同理，如果第二个数组为空，则直接返回第一个数组的第k个数。</p>
+</li>
+<li><p>两个数组都不为空的情况。即 <code>l1 &lt; n</code>  或者 <code>l2 &lt; m</code> .</p>
+<ul>
+<li><p>递归边界： <code>k == 1</code>  ,即返回 <code>nums1[l1]</code> 和 <code>nums2[l2]</code> 中较小的那一个。</p>
+</li>
+<li><p>数组长度边界：即有数组的剩余元素个数小于 <code>k/2</code> ，那么拿出来比较的就应该是数组的最后一个元素。</p>
+<p>维护两个值 <code>k1</code> 和 <code>k2</code> 来分别表示用两个数组的第 k1和k2个来比较。</p>
+<p>(k1 k2都小于等于k/2)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># to avoid the rest length of nums1/nums2 is shorter than k//2</span></span><br><span class="line">k1 = k//<span class="number">2</span> <span class="keyword">if</span> l1+k//<span class="number">2</span> &lt;= n <span class="keyword">else</span> n-l1</span><br><span class="line">k2 = k//<span class="number">2</span> <span class="keyword">if</span> l2+k//<span class="number">2</span> &lt;= m <span class="keyword">else</span> m-l2</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>比较<code>nums1[l1+k1-1]</code> 和 <code>nums2[l2+k2-1]</code> 的大小，递归：</p>
+<ol>
+<li><p>相等：</p>
+<p>如果 <code>k-k1-k2 == 0</code> 说明nums1的前k1个和nums2的前k2个就是有序序列的前k个，返回 <code>nums1[l1+k1-1]</code> 。</p>
+<p>否则，（即某一个数组的剩余长度小于k/2），分别去掉两个数组的前k1和k2个数，递归调用 <strong>Find(l1+k1, l2+k2, k-k1-k2)</strong> 。</p>
+</li>
+<li><p><code>nums1[l1+k1-1] &gt; nums2[l2+k2-1]</code>  </p>
+<p>说明可以去掉数组2的前k2个数，递归调用 <strong>Find(l1, l2+k2, k-k2)</strong> </p>
+</li>
+<li><p><code>nums1[l1+k1-1] &gt; nums2[l2+k2-1]</code>  </p>
+<p>说明可以去掉数组1的前k1个数，递归调用 <strong>Find(l1+k1, l2, k-k1)</strong> </p>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<p>Code：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>.nums1 = <span class="literal">None</span></span><br><span class="line">        <span class="variable language_">self</span>.nums2 = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">findKthOfTwo</span>(<span class="params">self, l1: <span class="built_in">int</span>, l2: <span class="built_in">int</span>, k: <span class="built_in">int</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        nums1 = <span class="variable language_">self</span>.nums1</span><br><span class="line">        nums2 = <span class="variable language_">self</span>.nums2</span><br><span class="line">        n = <span class="built_in">len</span>(nums1)</span><br><span class="line">        m = <span class="built_in">len</span>(nums2)</span><br><span class="line">        <span class="comment"># nums1 is empty</span></span><br><span class="line">        <span class="keyword">if</span> l1 == n:</span><br><span class="line">            <span class="keyword">return</span> nums2[l2+k-<span class="number">1</span>]</span><br><span class="line">        <span class="comment"># nums2 is empty</span></span><br><span class="line">        <span class="keyword">if</span> l2 == m:</span><br><span class="line">            <span class="keyword">return</span> nums1[l1+k-<span class="number">1</span>]</span><br><span class="line">        <span class="comment"># both not empty</span></span><br><span class="line">        <span class="keyword">if</span> k == <span class="number">1</span>:</span><br><span class="line">            <span class="keyword">return</span> nums1[l1] <span class="keyword">if</span> nums1[l1] &lt;= nums2[l2] <span class="keyword">else</span> nums2[l2]</span><br><span class="line">        <span class="comment"># to avoid the rest length of nums1/nums2 is shorter than k//2</span></span><br><span class="line">        k1 = k//<span class="number">2</span> <span class="keyword">if</span> l1+k//<span class="number">2</span> &lt;= n <span class="keyword">else</span> n-l1</span><br><span class="line">        k2 = k//<span class="number">2</span> <span class="keyword">if</span> l2+k//<span class="number">2</span> &lt;= m <span class="keyword">else</span> m-l2</span><br><span class="line">        <span class="keyword">if</span> nums1[l1+k1-<span class="number">1</span>] == nums2[l2+k2-<span class="number">1</span>]:</span><br><span class="line">            <span class="keyword">return</span> nums1[l1+k1-<span class="number">1</span>] <span class="keyword">if</span> k-k1-k2 == <span class="number">0</span> <span class="keyword">else</span> <span class="variable language_">self</span>.findKthOfTwo(l1+k1, l2+k2, k-k1-k2)</span><br><span class="line">        <span class="keyword">elif</span> nums1[l1+k1-<span class="number">1</span>] &gt; nums2[l2+k2-<span class="number">1</span>]:</span><br><span class="line">            <span class="keyword">return</span> <span class="variable language_">self</span>.findKthOfTwo(l1, l2+k2, k-k2)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="variable language_">self</span>.findKthOfTwo(l1+k1, l2, k-k1)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">findMedianSortedArrays</span>(<span class="params">self, nums1: <span class="type">List</span>[<span class="built_in">int</span>], nums2: <span class="type">List</span>[<span class="built_in">int</span>]</span>) -&gt; <span class="built_in">float</span>:</span><br><span class="line">        n = <span class="built_in">len</span>(nums1)</span><br><span class="line">        m = <span class="built_in">len</span>(nums2)</span><br><span class="line">        <span class="variable language_">self</span>.nums1 = nums1</span><br><span class="line">        <span class="variable language_">self</span>.nums2 = nums2</span><br><span class="line">        <span class="comment"># median: the average of (n+m+1)//2 th  and  (n+m+2)//2 th</span></span><br><span class="line">        <span class="keyword">return</span> (<span class="variable language_">self</span>.findKthOfTwo(<span class="number">0</span>, <span class="number">0</span>, (n+m+<span class="number">1</span>)//<span class="number">2</span>) + <span class="variable language_">self</span>.findKthOfTwo(<span class="number">0</span>, <span class="number">0</span>, (n+m+<span class="number">2</span>)//<span class="number">2</span>)) / <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h1 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h1><ol>
+<li>《信息安全数学基础》 2.2同余类和剩余系。</li>
+</ol>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「LeetCode」：Array</p><p><a href="https://f7ed.com/2020/09/15/LeetCode_array/">https://f7ed.com/2020/09/15/LeetCode_array/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2020-09-15</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2020-10-09</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/LeetCode/">LeetCode, </a><a class="link-muted" rel="tag" href="/tags/Algorithms/">Algorithms, </a><a class="link-muted" rel="tag" href="/tags/Data-Structure/">Data-Structure, </a><a class="link-muted" rel="tag" href="/tags/Array/">Array </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/09/29/LeetCode_String/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「LeetCode」：String</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2020/07/22/html-css/"><span class="level-item">「Web」:HTML and CSS</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "69f783e3e60d072b15c84d7a3ceee20c",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">70</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">135</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Array"><span class="level-left"><span class="level-item">1</span><span class="level-item">Array</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#27-Remove-Elements"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">27-Remove Elements</span></span></a></li><li><a class="level is-mobile" href="#26-Remove-Duplicates-from-Sorted-Array"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">26-Remove Duplicates from Sorted Array</span></span></a></li><li><a class="level is-mobile" href="#80-Remove-Duplicates-from-Sorted-Array-II"><span class="level-left"><span class="level-item">1.3</span><span class="level-item">80-Remove Duplicates from Sorted Array II</span></span></a></li><li><a class="level is-mobile" href="#189-Rotate-Array（S123）"><span class="level-left"><span class="level-item">1.4</span><span class="level-item">189-Rotate Array（S123）</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#S1-简单做法：空间换时间"><span class="level-left"><span class="level-item">1.4.1</span><span class="level-item">S1-简单做法：空间换时间</span></span></a></li><li><a class="level is-mobile" href="#S2-利用数学同余关系"><span class="level-left"><span class="level-item">1.4.2</span><span class="level-item">S2-利用数学同余关系</span></span></a></li><li><a class="level is-mobile" href="#S3-利用反转列表的思路"><span class="level-left"><span class="level-item">1.4.3</span><span class="level-item">S3-利用反转列表的思路</span></span></a></li></ul></li><li><a class="level is-mobile" href="#41-First-Missing-Positive"><span class="level-left"><span class="level-item">1.5</span><span class="level-item">41-First Missing Positive</span></span></a></li><li><a class="level is-mobile" href="#299-Bulls-and-Cows"><span class="level-left"><span class="level-item">1.6</span><span class="level-item">299-Bulls and Cows</span></span></a></li><li><a class="level is-mobile" href="#134-Gas-Station（S12）"><span class="level-left"><span class="level-item">1.7</span><span class="level-item">134-Gas Station（S12）</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#S1-简单解法"><span class="level-left"><span class="level-item">1.7.1</span><span class="level-item">S1-简单解法</span></span></a></li><li><a class="level is-mobile" href="#S2-对问题分析进行再简化"><span class="level-left"><span class="level-item">1.7.2</span><span class="level-item">S2-对问题分析进行再简化</span></span></a></li></ul></li><li><a class="level is-mobile" href="#118-Pascal’s-Triangle"><span class="level-left"><span class="level-item">1.8</span><span class="level-item">118-Pascal’s Triangle</span></span></a></li><li><a class="level is-mobile" href="#119-Pascal’s-Triangle-II"><span class="level-left"><span class="level-item">1.9</span><span class="level-item">119-Pascal’s Triangle II</span></span></a></li><li><a class="level is-mobile" href="#169-Majority-Element"><span class="level-left"><span class="level-item">1.10</span><span class="level-item">169-Majority Element</span></span></a></li><li><a class="level is-mobile" href="#229-Majority-Element-II"><span class="level-left"><span class="level-item">1.11</span><span class="level-item">229-Majority Element II</span></span></a></li><li><a class="level is-mobile" href="#274-H-Index"><span class="level-left"><span class="level-item">1.12</span><span class="level-item">274-H-Index</span></span></a></li><li><a class="level is-mobile" href="#275-H-Index-II"><span class="level-left"><span class="level-item">1.13</span><span class="level-item">275-H-Index II</span></span></a></li><li><a class="level is-mobile" href="#243-Shortest-Word-Distance"><span class="level-left"><span class="level-item">1.14</span><span class="level-item">243-Shortest Word Distance</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#S1-二分查找"><span class="level-left"><span class="level-item">1.14.1</span><span class="level-item">S1-二分查找</span></span></a></li><li><a class="level is-mobile" href="#S2-线性维护："><span class="level-left"><span class="level-item">1.14.2</span><span class="level-item">S2-线性维护：</span></span></a></li></ul></li><li><a class="level is-mobile" href="#244-Shortest-Word-Distance-II"><span class="level-left"><span class="level-item">1.15</span><span class="level-item">244-Shortest Word Distance II</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#S1-归并思路"><span class="level-left"><span class="level-item">1.15.1</span><span class="level-item">S1-归并思路</span></span></a></li><li><a class="level is-mobile" href="#S2-交叉比较"><span class="level-left"><span class="level-item">1.15.2</span><span class="level-item">S2-交叉比较</span></span></a></li></ul></li><li><a class="level is-mobile" href="#277-Find-the-Celebrity"><span class="level-left"><span class="level-item">1.16</span><span class="level-item">277-Find the Celebrity</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#S1-直观思路"><span class="level-left"><span class="level-item">1.16.1</span><span class="level-item">S1-直观思路</span></span></a></li><li><a class="level is-mobile" href="#S2-排除法"><span class="level-left"><span class="level-item">1.16.2</span><span class="level-item">S2-排除法</span></span></a></li></ul></li><li><a class="level is-mobile" href="#245-Shortest-Word-Distance-III"><span class="level-left"><span class="level-item">1.17</span><span class="level-item">245-Shortest Word Distance III</span></span></a></li><li><a class="level is-mobile" href="#217-Contains-Duplicate-E"><span class="level-left"><span class="level-item">1.18</span><span class="level-item">217-Contains Duplicate[E]</span></span></a></li><li><a class="level is-mobile" href="#219-Contains-Duplicate-II-E"><span class="level-left"><span class="level-item">1.19</span><span class="level-item">219-Contains Duplicate II[E]</span></span></a></li><li><a class="level is-mobile" href="#4-Median-of-Two-Sorted-Arrays-H-（2S）"><span class="level-left"><span class="level-item">1.20</span><span class="level-item">4-Median of Two Sorted Arrays[H] （2S）</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#S1"><span class="level-left"><span class="level-item">1.20.1</span><span class="level-item">S1:</span></span></a></li><li><a class="level is-mobile" href="#S2"><span class="level-left"><span class="level-item">1.20.2</span><span class="level-item">S2:</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#reference"><span class="level-left"><span class="level-item">2</span><span class="level-item">reference</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

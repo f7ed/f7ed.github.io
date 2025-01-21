@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「机器学习-李宏毅」：Backpropagation - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="这篇文章中，讲解了Deep Learning中使用的一种高效Gradient Descent的算法：BackPropagation。BackPropagation通过正向传播和反向传播两个阶段，最后能一起算出损失函数对每一个参数的gradient。"><meta property="og:type" content="blog"><meta property="og:title" content="「机器学习-李宏毅」：Backpropagation"><meta property="og:url" content="https://f7ed.com/2020/04/18/Backpropagation/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="这篇文章中，讲解了Deep Learning中使用的一种高效Gradient Descent的算法：BackPropagation。BackPropagation通过正向传播和反向传播两个阶段，最后能一起算出损失函数对每一个参数的gradient。"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/84019673_p0_master1200.jpg"><meta property="article:published_time" content="2020-04-17T16:00:00.000Z"><meta property="article:modified_time" content="2021-01-25T08:35:43.736Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="机器学习"><meta property="article:tag" content="DeepLearning"><meta property="article:tag" content="Backpropagation"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/84019673_p0_master1200.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2020/04/18/Backpropagation/"},"headline":"「机器学习-李宏毅」：Backpropagation","image":["https://f7ed.com/gallery/thumbnails/84019673_p0_master1200.jpg"],"datePublished":"2020-04-17T16:00:00.000Z","dateModified":"2021-01-25T08:35:43.736Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"这篇文章中，讲解了Deep Learning中使用的一种高效Gradient Descent的算法：BackPropagation。BackPropagation通过正向传播和反向传播两个阶段，最后能一起算出损失函数对每一个参数的gradient。"}</script><link rel="canonical" href="https://f7ed.com/2020/04/18/Backpropagation/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「机器学习-李宏毅」：Backpropagation</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2020-04-17T16:00:00.000Z" title="2020-04-17T16:00:00.000Z">2020-04-18</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2021-01-25T08:35:43.736Z" title="2021-01-25T08:35:43.736Z">2021-01-25</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E6%9D%8E%E5%AE%8F%E6%AF%85/">机器学习-李宏毅</a></span><span class="level-item"><i class="far fa-clock"></i> 11 minutes read (About 1600 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>这篇文章中，讲解了Deep Learning中使用的一种高效Gradient Descent的算法：BackPropagation。<br>BackPropagation通过正向传播和反向传播两个阶段，最后能一起算出损失函数对每一个参数的gradient。</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><span id="more"></span>
+
+<h1 id="Gradient-Descent"><a href="#Gradient-Descent" class="headerlink" title="Gradient Descent"></a>Gradient Descent</h1><p>在Neural Network中，参数的更新也是通过Gradient Descent。</p>
+<p>但是当Neural Network层数很深，结构很复杂的时候，会有millions of parapmeters。</p>
+<p>Backpropagation：To compute the gradient efficiently.</p>
+<h2 id="Chain-Rule"><a href="#Chain-Rule" class="headerlink" title="Chain Rule"></a>Chain Rule</h2><p>BP中需要用到的数学知识：微积分中的链式法则。</p>
+<img src="https://s1.ax1x.com/2020/04/18/Jmc7z4.md.png" alt="Jmc7z4.md.png" style="zoom:50%;" /> 
+
+<h1 id="Backpropagation"><a href="#Backpropagation" class="headerlink" title="Backpropagation"></a>Backpropagation</h1><img src="https://s1.ax1x.com/2020/04/18/JmcTWF.md.png" alt="JmcTWF.md.png" style="zoom:43%;" />
+
+<p>在NN中，定义损失函数 $L(\theta)=\sum_{n=1}^{N} C^{n}(\theta)$ </p>
+<p>（$\theta$ 代指NN中所有的weight 和bias，$C$ 为Cross-entropy） </p>
+<p>对某一参数的gradient为  $\frac{\partial L(\theta)}{\partial w}=\sum_{n=1}^{N} \frac{\partial C^{n}(\theta)}{\partial w}$ </p>
+<img src="https://s1.ax1x.com/2020/04/18/JmcoJU.md.png" alt="JmcoJU.md.png" style="zoom:50%;" />
+
+<p>在上图NN中，我们先只研究红框部分，即是以下结构：</p>
+<img src="https://s1.ax1x.com/2020/04/18/JmcIiT.md.png" alt="JmcIiT.md.png" style="zoom:60%;" />
+
+<p>z：每个activation function的输入。</p>
+<p>根据链式法则， $\frac{\partial C}{\partial w}= \frac{\partial z}{\partial w} \frac{\partial C}{\partial z}$  .</p>
+<p>要计算每个参数的  $\frac{\partial C}{\partial w}$  ，分为两部分。</p>
+<ol>
+<li><u>Forward pass:</u>  compute $\frac{\partial z}{\partial w} $ for all parameters.</li>
+<li><u>Backward pass:</u>  compute $\frac{\partial C}{\partial z} $ for all activation function inputs z.</li>
+</ol>
+<h2 id="BP：Forward-pass"><a href="#BP：Forward-pass" class="headerlink" title="BP：Forward pass"></a>BP：Forward pass</h2><p><strong>Compute $\frac{\partial z}{\partial w} $ for all parameters.</strong></p>
+<img src="https://s1.ax1x.com/2020/04/18/Jmchd0.md.png" alt="Jmchd0.md.png" style="zoom:60%;" />
+
+<p>还是只看上图这一部分，可以轻易得出： $\partial{z}/\partial{w_1}=x_1\qquad \partial{z}/\partial{w_2}=x_2$  </p>
+<p>得到结论： $\frac{\partial z}{\partial w} $  等于 the value of the input connected by the weight. </p>
+<p>【$\frac{\partial z}{\partial w} $ 等于 连接w的输入的值】</p>
+<hr>
+<p>那么，如何计算出NN中全部的 $\frac{\partial z}{\partial w} $ ？</p>
+<img src="https://s1.ax1x.com/2020/04/18/Jmc4oV.md.png" alt="Jmc4oV.md.png" style="zoom:67%;" />
+
+<p>：Forward pass.</p>
+<p>用当前参数（w,b)</p>
+<p>从hidden layer的第一层开始，计算出第一层的输出，即第二层的输入。</p>
+<p>依次相前计算，计算出每一层的输出，即下一层的输入，即输入所连接权重的 $\frac{\partial z}{\partial w}$ 。</p>
+<h2 id="BP：Backward-pass"><a href="#BP：Backward-pass" class="headerlink" title="BP：Backward pass"></a>BP：Backward pass</h2><p><strong>Compute $\frac{\partial C}{\partial z} $ for all activation function inputs z.</strong> </p>
+<img src="https://s1.ax1x.com/2020/04/18/JmcfZq.md.png" alt="JmcfZq.md.png" style="zoom:67%;" />
+
+<p>z：activation function的 input</p>
+<p>a：activation function的 output</p>
+<p>这里的activation function 是 sigmod函数  $a=\sigma(z)=\frac{1}{1+e^{-z}}$ </p>
+<p>要求  $\frac{\partial C}{\partial z}$  ， 再根据链式法则： $\frac{\partial C}{\partial z}=\frac{\partial a}{\partial z}\frac{\partial C}{\partial a}$ </p>
+<ol>
+<li><p>求  $\frac{\partial{a}}{\partial{z}}$  :   $\frac{\partial{a}}{\partial{z}}=\sigma'(z)=\sigma(z)(1-\sigma(z))$  （是其他activation function 也能轻易求出）</p>
+</li>
+<li><p>求 $\frac{\partial C}{\partial a}$ ：根据链式法则： $\frac{\partial C}{\partial a}=\frac{\partial z^{\prime}}{\partial a} \frac{\partial C}{\partial z^{\prime}}+\frac{\partial z^{\prime \prime}}{\partial a} \frac{\partial C}{\partial z^{\prime \prime}}$  </p>
+<img src="https://s1.ax1x.com/2020/04/18/JmcfZq.md.png" alt="JmcfZq.md.png" style="zoom:67%;" />
+
+<ul>
+<li> $\frac{\partial z^{\prime}}{\partial a} =w_3$  ， $\frac{\partial z^{\prime\prime}}{\partial a} =w_4$ 
+</li>
+<li> $\frac{\partial C}{\partial z^{\prime}}$  和 $\frac{\partial C}{\partial z^{\prime\prime}}$ ？假设，已经通过某种方法算出这个值。
+</li>
+</ul>
+</li>
+<li> $\frac{\partial C}{\partial z}=\sigma^{\prime}(z)\left[w_{3} \frac{\partial C}{\partial z^{\prime}}+w_{4} \frac{\partial C}{\partial z^{\prime \prime}}\right]$  
+
+<p>这个式子，可以画成一个反向传播的NN，见下图。</p>
+<img src="https://s1.ax1x.com/2020/04/18/JmcRLn.md.png" alt="JmcRLn.md.png" style="zoom:67%;" />
+
+ $\frac{\partial C}{\partial z^{\prime}},\frac{\partial C}{\partial z^{\prime\prime}}$  是这个neuron的输入， $w_3,w_4$ 仍然是 neuron的 weight（无bias）。
+
+<p>$\sigma’(z)$ 是一个常数，因为在forward pass中每一个activation的输入已经被算出来了。</p>
+<p>和forward pass中的NN的区别是，forward 中是一个activation function，输入z作用于这个函数；</p>
+<p>而在 backward pass中，这更像一个放缩器，将他的输入变小，即乘上一个 $\sigma’(z)$ 。</p>
+</li>
+</ol>
+<hr>
+<p>问题还是如何计算  $\frac{\partial C}{\partial z}=\sigma^{\prime}(z)\left[w_{3} \frac{\partial C}{\partial z^{\prime}}+w_{4} \frac{\partial C}{\partial z^{\prime \prime}}\right]$  ？</p>
+<p>分为两种情况讨论， $z’,z’’$ 是否为输出层的输入？</p>
+<ul>
+<li><p>Output Layer：</p>
+<img src="https://s1.ax1x.com/2020/04/18/Jmc2ss.md.png" alt="Jmc2ss.md.png" style="zoom:67%;" />
+
+<p>z’,z’’：activation function的输入。</p>
+<p>y1,y2：actiavtion function（也是NN）的输出。</p>
+<p>C：NN输出和target的cross entropy。</p>
+<p>根据链式法则： $\frac{\partial C}{\partial z^{\prime}}=\frac{\partial y_{1}}{\partial z^{\prime}} \frac{\partial C}{\partial y_{1}} \quad \frac{\partial C}{\partial z^{\prime \prime}}=\frac{\partial y_{2}}{\partial z^{\prime \prime}} \frac{\partial C}{\partial y_{2}}$  </p>
+<p>所以，已知activation function（simod或者其他），可以轻易求出  $\frac{\partial y_{1}}{\partial z^{\prime}}(=\sigma'(z'))$ 和  $\frac{\partial y_{2}}{\partial z^{\prime\prime}}(=\sigma''(z''))$      。</p>
+<p>所以，已知损失函数，也可以轻易求出 $\frac{\partial C}{\partial y_1}$ 和  $\frac{\partial C}{\partial y_2}$  。（  $C\left(y, \hat{y}\right)=-\left[\hat{y} \ln y+\left(1-\hat{y}\right) \ln \left(1-y\right)\right]$ )</p>
+<p>所以，可以直接求出  $\frac{\partial C}{\partial z}=\sigma^{\prime}(z)\left[w_{3} \frac{\partial C}{\partial z^{\prime}}+w_{4} \frac{\partial C}{\partial z^{\prime \prime}}\right]$  。</p>
+</li>
+<li><p>Not Output Layer:</p>
+<img src="https://s1.ax1x.com/2020/04/18/JmcsJS.md.png" alt="JmcsJS.md.png" style="zoom:75%;" />
+
+<p>上图中，如果我们要计算 $\frac{\partial C}{\partial z’}$ ，必须要已知下一层的 $\frac{\partial C}{\partial z_a}$ ，然后一直递归下去，直到到达最后的输出层，也就是上面一种情况，可以直接计算出，再递归回来，计算当前层的 $\frac{\partial C}{\partial z’}$ 。</p>
+<p>但是，这样计算每个参数的 $\frac{\partial{C}}{\partial{z}}$ 都要一直递归到输出层，效率显然太低了。</p>
+<img src="https://s1.ax1x.com/2020/04/18/JmcyRg.md.png" alt="JmcyRg.md.png" style="zoom:75%;" />
+
+<p>计算方法如上图：</p>
+<p>当我们已知输出层的  $\frac{\partial{C}}{\partial{z'}},\frac{\partial{C}}{\partial{z''}}$  时，再通过上面的步骤3（且的确算出了    $\frac{\partial{C}}{\partial{z'}},\frac{\partial{C}}{\partial{z''}}$ ），画成反向的NN，计算$\frac{\partial{C}}{\partial{z}}$. </p>
+<p>再依次反向传播计算出每一个neuron的输出z （也是正向传播neuron的输入）的 $\frac{\partial{C}}{\partial{z}}$ .</p>
+</li>
+</ul>
+<hr>
+<p><strong>Backforward pass 的做法：</strong></p>
+<img src="https://s1.ax1x.com/2020/04/18/Jmcri8.md.png" alt="Jmcri8.md.png" style="zoom:75%;" />
+
+<ol>
+<li>先计算出输出层的 $\frac{\partial{C}}{\partial{z}}$ （也就是上图的  $\frac{\partial{C}}{\partial{z_5}}$ 和 $\frac{\partial{C}}{\partial{z_6}}$  ）</li>
+<li>用反向传播的NN，向后依次计算出每一层每一个neuron的 $\frac{\partial{C}}{\partial{z}}$ 。</li>
+</ol>
+<h1 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h1><img src="https://s1.ax1x.com/2020/04/18/JmcgMj.md.png" alt="JmcgMj.md.png" style="zoom:67%;" />
+
+<p>公式：  $\frac{\partial z}{\partial w} \frac{\partial C}{\partial z}=\frac{\partial C}{\partial w}$ </p>
+<p>在正向传播NN中，z是neuron的activation function的输入。</p>
+<p>在反向传播NN中，z是neuron的放缩器的输出。</p>
+<p>通过Forward Pass计算出正向传播NN的每一个neuron的 $\frac{\partial z}{\partial w}$ ，等于该层neuron的输入。</p>
+<p>通过Backward Pass计算出反向传播NN的每一个neuron的 $\frac{\partial C}{\partial z}$ 。</p>
+<p>然后，通过相乘，计算出每个参数的 $\frac{\partial C}{\partial w}$。</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1></div><div class="article-licensing box"><div class="licensing-title"><p>「机器学习-李宏毅」：Backpropagation</p><p><a href="https://f7ed.com/2020/04/18/Backpropagation/">https://f7ed.com/2020/04/18/Backpropagation/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2020-04-18</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-01-25</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习, </a><a class="link-muted" rel="tag" href="/tags/DeepLearning/">DeepLearning, </a><a class="link-muted" rel="tag" href="/tags/Backpropagation/">Backpropagation </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/04/21/tips-for-DL/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「机器学习-李宏毅」：Tips for Deep Learning</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2020/04/18/DL-introdunction/"><span class="level-item">「机器学习-李宏毅」：Deep Learning-Introduction</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "4eb77c15120b362adce39b76ccd2d822",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">70</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">135</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Gradient-Descent"><span class="level-left"><span class="level-item">1</span><span class="level-item">Gradient Descent</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Chain-Rule"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">Chain Rule</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Backpropagation"><span class="level-left"><span class="level-item">2</span><span class="level-item">Backpropagation</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#BP：Forward-pass"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">BP：Forward pass</span></span></a></li><li><a class="level is-mobile" href="#BP：Backward-pass"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">BP：Backward pass</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Summary"><span class="level-left"><span class="level-item">3</span><span class="level-item">Summary</span></span></a></li><li><a class="level is-mobile" href="#Reference"><span class="level-left"><span class="level-item">4</span><span class="level-item">Reference</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Tools-VSCode」:Remote SSH-跳板机设置 - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="VSCode就是最棒的IDE！ 最近遇到一个Remote SSH的问题：想要连接校内的服务器，必须经过两个跳板机。 即需要三次ssh，才能连接到目标服务器D：A➡️B➡️C➡️D  Terminal：如何无痛免密登录校内服务器 （需要输入三次ssh命令） VSCode：如何无痛用VSCode连接远程服务器以进行开发（一键式）"><meta property="og:type" content="blog"><meta property="og:title" content="「Tools-VSCode」:Remote SSH-跳板机设置"><meta property="og:url" content="https://f7ed.com/2021/10/19/vscode-remote-ssh/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="VSCode就是最棒的IDE！ 最近遇到一个Remote SSH的问题：想要连接校内的服务器，必须经过两个跳板机。 即需要三次ssh，才能连接到目标服务器D：A➡️B➡️C➡️D  Terminal：如何无痛免密登录校内服务器 （需要输入三次ssh命令） VSCode：如何无痛用VSCode连接远程服务器以进行开发（一键式）"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/1_4pcAVkaZOTLrcUV9dio3oA.png"><meta property="article:published_time" content="2021-10-18T16:00:00.000Z"><meta property="article:modified_time" content="2021-10-20T01:25:08.432Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Tools"><meta property="article:tag" content="VSCode"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/1_4pcAVkaZOTLrcUV9dio3oA.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2021/10/19/vscode-remote-ssh/"},"headline":"「Tools-VSCode」:Remote SSH-跳板机设置","image":["https://f7ed.com/gallery/thumbnails/1_4pcAVkaZOTLrcUV9dio3oA.png"],"datePublished":"2021-10-18T16:00:00.000Z","dateModified":"2021-10-20T01:25:08.432Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"VSCode就是最棒的IDE！ 最近遇到一个Remote SSH的问题：想要连接校内的服务器，必须经过两个跳板机。 即需要三次ssh，才能连接到目标服务器D：A➡️B➡️C➡️D  Terminal：如何无痛免密登录校内服务器 （需要输入三次ssh命令） VSCode：如何无痛用VSCode连接远程服务器以进行开发（一键式）"}</script><link rel="canonical" href="https://f7ed.com/2021/10/19/vscode-remote-ssh/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Tools-VSCode」:Remote SSH-跳板机设置</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2021-10-18T16:00:00.000Z" title="2021-10-18T16:00:00.000Z">2021-10-19</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2021-10-20T01:25:08.432Z" title="2021-10-20T01:25:08.432Z">2021-10-20</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Tools/">Tools</a></span><span class="level-item"><i class="far fa-clock"></i> 6 minutes read (About 876 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>VSCode就是最棒的IDE！</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><p>最近遇到一个Remote SSH的问题：想要连接校内的服务器，必须经过两个跳板机。</p>
+<p>即需要三次ssh，才能连接到目标服务器D：A➡️B➡️C➡️D</p>
+<ul>
+<li>Terminal：如何无痛免密登录校内服务器 （需要输入三次ssh命令）</li>
+<li>VSCode：如何无痛用VSCode连接远程服务器以进行开发（一键式）</li>
+</ul>
+<span id="more"></span>
+
+<h1 id="Terminal"><a href="#Terminal" class="headerlink" title="Terminal"></a>Terminal</h1><p>如果只需要在terminal中免密连接远程服务器，步骤比较直观，但仍需要三次输入ssh命令：</p>
+<ol>
+<li>A、B、C主机通过<code>ssh-keygen</code> 生成公私钥</li>
+<li>公钥认证链：<ol>
+<li>A的公钥内容加入B主机下的<code>~/.ssh/authorized_keys</code> 中</li>
+<li>B的公钥内容加入C主机下的<code>~/.ssh/authorized_keys</code> 中</li>
+<li>C的公钥内容加入D主机下的<code>~/.ssh/authorized_keys</code> 中</li>
+</ol>
+</li>
+<li>Done</li>
+</ol>
+<h1 id="VSCode"><a href="#VSCode" class="headerlink" title="VSCode"></a>VSCode</h1><p>在vscode<a target="_blank" rel="noopener" href="https://code.visualstudio.com/blogs/2019/10/03/remote-ssh-tips-and-tricks">官方博客: Remote SSH: Tips and Tricks</a> 有提到，配置文件的<code>ProxyCommand</code>设置，可以让remote ssh通过一个跳板机再连接到受保护的目标主机。</p>
+<blockquote>
+<p>To use a jump-box setup with the Remote - SSH extension, you can use the <code>ProxyCommand</code> config option.</p>
+</blockquote>
+<h2 id="通过一个跳板机"><a href="#通过一个跳板机" class="headerlink" title="通过一个跳板机"></a>通过一个跳板机</h2><p>A➡️B➡️C：A是用户主机，B是跳板机，C是目标主机</p>
+<ol>
+<li><p>把<strong>A的公钥内容</strong>加入到<strong>B主机下</strong>的<code>~/.ssh/authorized_keys</code> 和<strong>C主机下</strong>的<code>~/.ssh/authorized_keys</code> </p>
+<p><strong>注意：</strong>这里和上面terminal的方式不同。上面是链式验证，这里是中心式的验证。（意会就好，乱取的名字）如果不加入，VSCode中每次跳转都要输密码。（懒zzz，并不想）</p>
+<p>Q：为什么要把A的公钥加入到B主机和C主机的已认证密钥中？原因如下。</p>
+<blockquote>
+<p>This configuration will open a background SSH connection to the jump box, and then connect via a private IP address to the target.</p>
+</blockquote>
+</li>
+<li><p>A主机下生成两个文件：<code>b_private</code> 和<code>c_private</code> </p>
+<p><strong>A主机：</strong></p>
+<ul>
+<li><code>~/.ssh/b_private</code> : B跳板机的<strong>私钥内容</strong>。（注意是私钥）</li>
+<li><code>~/.ssh/c_private</code> : C跳板机的<strong>私钥内容</strong>。</li>
+</ul>
+</li>
+<li><p>编辑VSCode ssh的配置文件<code>~/.ssh/config</code> </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># B is Jump Box with public IP address</span></span><br><span class="line">Host B</span><br><span class="line">    HostName &lt;IP address of B&gt;</span><br><span class="line">    User fred</span><br><span class="line">    IdentityFile ~/.ssh/b_private</span><br><span class="line"></span><br><span class="line"><span class="comment"># C is Target Machine with private IP address</span></span><br><span class="line">Host C</span><br><span class="line">    HostName &lt;IP address of C&gt;</span><br><span class="line">    User fred</span><br><span class="line">    Port <span class="number">6000</span></span><br><span class="line">    IdentityFile ~/.ssh/c_private</span><br><span class="line">    ProxyCommand ssh -q -W %h:%p B</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>IdentityFile: 私钥文件的路径</p>
+</blockquote>
+</li>
+<li><p>Done：在VSCode中一键连接远程服务器C。</p>
+</li>
+</ol>
+<h2 id="通过多个跳板机"><a href="#通过多个跳板机" class="headerlink" title="通过多个跳板机"></a>通过多个跳板机</h2><p>由此可以实现多次跳转。</p>
+<p>比如经过两次跳转A➡️B➡️C➡️D：A是用户主机，B、C是跳板机，D是目标主机。</p>
+<ol>
+<li><p>把<strong>A的公钥内容</strong>加入到<strong>B、C、D主机下</strong>的<code>~/.ssh/authorized_keys</code> </p>
+</li>
+<li><p>A主机下生成两个文件：<code>b_private</code> 、<code>c_private</code> 和<code>d_private</code> </p>
+<p><strong>A主机：</strong></p>
+<ul>
+<li><code>~/.ssh/b_private</code> : B跳板机的<strong>私钥内容</strong>。（注意是私钥）</li>
+<li><code>~/.ssh/c_private</code> : C跳板机的<strong>私钥内容</strong>。</li>
+<li><code>~/.ssh/d_private</code> : D跳板机的<strong>私钥内容</strong>。</li>
+</ul>
+</li>
+<li><p>编辑VSCode ssh的配置文件<code>~/.ssh/config</code> </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># B is Jump Box with public IP address</span></span><br><span class="line">Host B</span><br><span class="line">    HostName &lt;IP address of B&gt;</span><br><span class="line">    User fred</span><br><span class="line">    IdentityFile ~/.ssh/b_private</span><br><span class="line"></span><br><span class="line"><span class="comment"># C is Jump Box with private IP address</span></span><br><span class="line">Host C</span><br><span class="line">    HostName &lt;IP address of C&gt;</span><br><span class="line">    User fred</span><br><span class="line">    Port <span class="number">6000</span></span><br><span class="line">    IdentityFile ~/.ssh/c_private</span><br><span class="line">    ProxyCommand ssh -q -W %h:%p B</span><br><span class="line"></span><br><span class="line"><span class="comment"># D is Target Machine with private IP address</span></span><br><span class="line">Host D</span><br><span class="line">    HostName &lt;IP address of D&gt;</span><br><span class="line">    User abc</span><br><span class="line">    IdentityFile ~/.ssh/d_private</span><br><span class="line">    ProxyCommand ssh -q -W %h:%p C</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Done：在VSCode中一键连接远程服务器D。</p>
+</li>
+</ol>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Tools-VSCode」:Remote SSH-跳板机设置</p><p><a href="https://f7ed.com/2021/10/19/vscode-remote-ssh/">https://f7ed.com/2021/10/19/vscode-remote-ssh/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2021-10-19</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-10-20</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Tools/">Tools, </a><a class="link-muted" rel="tag" href="/tags/VSCode/">VSCode </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2021/11/08/2021-11-paper-reading/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Paper Reading」：未整理版论文笔记</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2021/09/13/stanford-crypto-blockcipher2/"><span class="level-item">「Cryptography-Boneh」:Block Cipher 2</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "4039d709885b47fcb4b34dd7133ca5cf",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">70</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">135</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Terminal"><span class="level-left"><span class="level-item">1</span><span class="level-item">Terminal</span></span></a></li><li><a class="level is-mobile" href="#VSCode"><span class="level-left"><span class="level-item">2</span><span class="level-item">VSCode</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#通过一个跳板机"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">通过一个跳板机</span></span></a></li><li><a class="level is-mobile" href="#通过多个跳板机"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">通过多个跳板机</span></span></a></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

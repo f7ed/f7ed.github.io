@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「MPC-Mike Rosulek 」：Advanced Techniques and Optimizations for Garbled Circuits - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="本系列是总结Mike Rosulek教授在上海期智研究院的密码学学术讲座。 这是Mike教授的第二个分享：Advanced Techniques and Optimizations for Garbled Circuits Roadmap  Optimizations: How did garbled boolean circuits get so small? New frontiers: Ho"><meta property="og:type" content="blog"><meta property="og:title" content="「MPC-Mike Rosulek 」：Advanced Techniques and Optimizations for Garbled Circuits"><meta property="og:url" content="https://f7ed.com/2021/07/05/MPC2-GarbledCircuits/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="本系列是总结Mike Rosulek教授在上海期智研究院的密码学学术讲座。 这是Mike教授的第二个分享：Advanced Techniques and Optimizations for Garbled Circuits Roadmap  Optimizations: How did garbled boolean circuits get so small? New frontiers: Ho"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/mpc2fasasafsa.png"><meta property="article:published_time" content="2021-07-04T16:00:00.000Z"><meta property="article:modified_time" content="2021-07-06T08:51:35.042Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="MPC"><meta property="article:tag" content="Lectures"><meta property="article:tag" content="Secure Computation"><meta property="article:tag" content="Garbled Circuits"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/mpc2fasasafsa.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2021/07/05/MPC2-GarbledCircuits/"},"headline":"「MPC-Mike Rosulek 」：Advanced Techniques and Optimizations for Garbled Circuits","image":["https://f7ed.com/gallery/thumbnails/mpc2fasasafsa.png"],"datePublished":"2021-07-04T16:00:00.000Z","dateModified":"2021-07-06T08:51:35.042Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"本系列是总结Mike Rosulek教授在上海期智研究院的密码学学术讲座。 这是Mike教授的第二个分享：Advanced Techniques and Optimizations for Garbled Circuits Roadmap  Optimizations: How did garbled boolean circuits get so small? New frontiers: Ho"}</script><link rel="canonical" href="https://f7ed.com/2021/07/05/MPC2-GarbledCircuits/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「MPC-Mike Rosulek 」：Advanced Techniques and Optimizations for Garbled Circuits</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2021-07-04T16:00:00.000Z" title="2021-07-04T16:00:00.000Z">2021-07-05</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2021-07-06T08:51:35.042Z" title="2021-07-06T08:51:35.042Z">2021-07-06</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/MPC/">MPC</a></span><span class="level-item"><i class="far fa-clock"></i> 27 minutes read (About 4119 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>本系列是总结Mike Rosulek教授在上海期智研究院的密码学学术讲座。</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><p>这是Mike教授的第二个分享：Advanced Techniques and Optimizations for Garbled Circuits</p>
+<p>Roadmap</p>
+<ol>
+<li>Optimizations: How did garbled boolean circuits get so small?</li>
+<li>New frontiers: How to garble arithmetic circuits?</li>
+</ol>
+<p>在这篇文章中，会介绍在garble boolean circuits时的优化技术：包括point-and-permute, row-reduction, free-XOR和half gates。此外，这篇文章还会介绍如何garble arithmetic circuits。</p>
+<span id="more"></span>
+
+<h1 id="Optimizing-garbled-circuits"><a href="#Optimizing-garbled-circuits" class="headerlink" title="Optimizing garbled circuits"></a>Optimizing garbled circuits</h1><p>在上一篇文章中，介绍了garbled circuits的核心思想：</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoqsgK.png" alt="garbled circuits" style="zoom:50%;" />
+
+<p>Given garbled gate + one wire label per input wire:</p>
+<ul>
+<li>can learn only one output label (authenticity)</li>
+<li>cannot learn truth value of labels (privacy)</li>
+</ul>
+<p>garbled circuits的计算性能和速度主要取决于他的大小（ciphertext的数量），但现实中garbled circuits的计算是非常快的。</p>
+<p>因为现有的garbled boolean circuits使用了一些优化技术，使得garbled gate的ciphertext表示数量大幅下降。</p>
+<img src="https://z3.ax1x.com/2021/07/06/Roqr36.png" alt="optimizations" style="zoom:50%;" />
+
+
+
+<h2 id="Ciphertext-expansion"><a href="#Ciphertext-expansion" class="headerlink" title="Ciphertext expansion"></a>Ciphertext expansion</h2><p>在介绍这些优化技术之前，我们先来分析Yao’s protocol中garbled circuits的大小。</p>
+<p>每个boolean gate的wire有两种输入（0或者1），对每个输入都随机选择一个label，再用对应的label（密钥）对输出加密，得到下图的garbled gates（ciphertext）。</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoqD9x.png" alt="this list leaks semantic value" style="zoom:50%;" />
+
+<p>但是这样的排列方式会泄漏语意信息，因此需要打乱ciphertext的顺序。</p>
+<p>而evaluator在evaluate时，只能用得到的labels一个一个尝试性解密。</p>
+<p>为了让evaluator在解密时能清楚知道解密出的label是正确的，就需要使用带有ciphertext expansion的加密方案。（比如在加密时，如果label是4位的，可以通过在label前加4个前导0）这样得到的garbled gate的ciphertext长度是原label长度的一倍。</p>
+<h2 id="Point-and-permute"><a href="#Point-and-permute" class="headerlink" title="Point-and-permute"></a>Point-and-permute</h2><p>首先介绍的是Point-and-permute技术：</p>
+<ol>
+<li><p>Assign <strong>color bits</strong> <font color="red">red</font> &amp; <font color="blue">blue</font> to wire labels.</p>
+</li>
+<li><p>Association between (<font color="red">red</font>, <font color="blue">blue</font> ) &lt;-&gt; (True, Flase) <strong>is random for each wire</strong>.</p>
+<p>【color bits 可以看作是一个bit mask，或者说是一个1-bit one-time pad。在为每一个wire的labels分配color bits时，是随机分配的：随机选择一个bit r (0或者1)，对于wire a，label的color bits的计算是 $a\oplus r$ 。】</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoqwNR.png" alt="assign color bits" style="zoom:50%;" />
+</li>
+<li><p>A wire label reveals its own color(e.g. as last bit)</p>
+<p>【可以在label后再附加一个bit作为color bit，来表示该wire label的颜色】</p>
+</li>
+<li><p>Order the 4 ciphertexts canonically, by color of keys.</p>
+<p>【然后对表示garbled gate的4个ciphertexts按照指定的颜色组合排序】</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoqyjO.png" alt="order by color of keys" style="zoom:50%;" />
+</li>
+<li><p>Evaluate by decrypting ciphertext indexed by your colors</p>
+<p>【这样evaluator在evaluate混淆电路时，就可以通过已知labels的颜色组合索引出正确的密文，再进行解密，不再需要对每一个密文进行尝试性解密。】</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoqcuD.png" alt="indexed by colors" style="zoom:50%;" />
+
+</li>
+</ol>
+<p>通过Point-and-permute技术，evaluator在评估电路时不再需要对每个密文尝试性解密，garbler在混淆电路时也不再需要做ciphertext expansion。</p>
+<p>同时，该技术支持简单的one-time pad加密，即 $\mathbb{E}_{A, B}(C)=H(A, B)\oplus C$ ，$H$ 可以是任意的一种加密方式，比如AES。</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoqgDe.png" alt="support one-time pad" style="zoom:50%;" />
+
+<hr>
+<p>我们将Point-and-permute与Yao’s protocol进行比较：</p>
+<img src="https://z3.ax1x.com/2021/07/06/Roq2HH.png" alt="Scoreboard: P&P" style="zoom:50%;" />
+
+<ul>
+<li>假定单个label大小是 $\lambda$ ，garbled circuits的大小表示为ciphertexts的大小 。garble cost的值代表garbler加密时的开销，eval cost的值表示evaluator解密时的开销。</li>
+<li>对于Yao的方案，因为有ciphertext expansion，所以garbled circuits的大小为 $8\lambda$ 。对每个garbled gate，都需要生成4个ciphertexts。而evaluator在评估电路时，每个ciphertext都有 1/4的概率是正确的，所以开销为 $2.5 = 1\times 1/4 + 2 \times 1/4 + 3\times 1/4 + 4\times 1/4$ .</li>
+<li>对于Point-and-permute的方案，不需要ciphertext expansion，所以garbled circuits的大小为 $4\lambda$ 。在evaluator评估电路时，可以通过labels的颜色组合来索引密文，因此只需要1的开销。</li>
+</ul>
+<h2 id="Garbled-Row-Reduction"><a href="#Garbled-Row-Reduction" class="headerlink" title="Garbled Row Reduction"></a>Garbled Row Reduction</h2><p>Row Reduction<font color="green">[NaorPinkasSumner99]</font> 是在Point-and-permute方案上进一步优化：</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoqWEd.png" alt="Point-and-permute" style="zoom:50%;" />
+
+<p>相较于Point-and-permute方案中的随机生成输出wire的labels，Row Reduction方案在输出wire的labels生成中，使用了一个trick：label $C_0$ 随机生成，而label $C_1$ 是一个能让P&amp;P方案中的第一个ciphertext为 $0^n$ ，即 $C_1 = H(A_0, B_1)$  。虽然$C_1 = H(A_0, B_1)$ ，但对除garbler以外的人来说，$C_1$ 和random bits是不可区分的，即 $C_1$ 看起来和随机生成的label一样。</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoqfUA.png" alt="Row Reduction" style="zoom:50%;" />
+
+<p>对garbler来说，每个garbled gate就可以只用3个ciphertexts表示。</p>
+<img src="https://z3.ax1x.com/2021/07/06/Roqh4I.png" alt="garbler: 3ciphertexts" style="zoom:50%;" />
+
+<p>但对evaluator来说，他只需要把 $0^n$ 加上，重构为4个ciphertexts，后面的操作和P&amp;P方案相同。</p>
+<img src="https://z3.ax1x.com/2021/07/06/Roq5Ct.png" alt="evaluator: 4 ciphertexts" style="zoom:50%;" />
+
+<hr>
+<p>同样的，我们把Row Reduction的方案和前两种方案进行比较：</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoqI8P.png" alt="Scoreboard: GRR3" style="zoom:50%;" />
+
+<p>GRR3方案相对于P&amp;P方案，可以将garbled circuits的数量从4降为3。</p>
+<h2 id="Free-XOR"><a href="#Free-XOR" class="headerlink" title="Free XOR"></a>Free XOR</h2><p>Free XOR<font color="green">[KolesnikovSchneider08]</font> 是对异或门的优化技术。</p>
+<ol>
+<li><p>Define offset of a wire ≡ XOR of its two labels</p>
+<p>【Free XOR对wire定义了一种offset $\Delta$ ，该值其实等于两个labels的异或】</p>
+<img src="https://z3.ax1x.com/2021/07/06/Roqogf.png" alt="offset of a wire" style="zoom:50%;" />
+</li>
+<li><p>Choose all wires in circuit to have same (secret) offset ∆</p>
+<p>【Free XOR方案中，对所有的wires都选择了一个相同的保密的offset】</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoqTv8.png" alt="same secret offset" style="zoom:50%;" />
+</li>
+<li><p>Choose false output = false input ⊕ false input</p>
+<p>【相较于之前方案的随机生成output wire的label，Free XOR让output wire的false output = false input ⊕ false input】</p>
+<p>【也就是令 $C = A \oplus B$ (A: false , B: false, C: false)】</p>
+</li>
+<li><p>Evaluate by xoring input wire labels (no crypto)</p>
+<p>【如此定义output wire的label，output wire的label可以通过input wire的label直接计算出来，而不需要再对其加密解密】</p>
+<p>【false xor false = false ｜  $A \oplus B = C$ 】</p>
+<p>【false xor true  = true ｜  $A \oplus B \oplus \Delta = C\oplus \Delta$ 】</p>
+<p>【true xor false  = true ｜  $A \oplus \Delta \oplus B  = C\oplus \Delta$ 】</p>
+<p>【true xor true   = false ｜  $A \oplus \Delta \oplus B \oplus \Delta = C$ 】 </p>
+</li>
+</ol>
+<hr>
+<p>同样，我们把XOR的方案和之前方案比较，由于XOR方案只适用于XOR gate，因此把XOR gate和AND gate分开：</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoqHKS.png" alt="Scoreboard: Free XOR" style="zoom:50%;" />
+
+<h2 id="Row-reduction-times-2"><a href="#Row-reduction-times-2" class="headerlink" title="Row reduction $\times$ 2"></a>Row reduction $\times$ 2</h2><p>Row reduction $\times$ 2<font color="green">[GueronLindellNofPinkas15]</font> 方案是对Row Reduction方案的进一步优化，Row Reduction方案对输出wire的label选择上：$C_0$ 随机生成，$C_1$ 的值是能让P&amp;P方案第一个ciphertext 为 $0^n$ 的方案，即 $C_1 = H(A_0, B_1)$ （式子只是针对下图的样例）。</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoqbDg.png" alt="Row Reduction" style="zoom:50%;" />
+
+<p>而Row reduction $\times$ 2方案规定label $C_0 = H_{00}\oplus H_{11} \oplus H_{10}$ ，这样能让剩下三个ciphertext的XOR值为 $0^n$ ，同样的 $C_0$ 对除garbler之外的人来说和random bits不可区分。</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoqqbQ.png" alt="Row reduction X 2" style="zoom:50%;" />
+
+<p>因此，对garbler来说，每一个garbled gate只需要用两个ciphertexts表示：</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoxzG9.png" alt="garbler: 2 ciphertexts" style="zoom:50%;" />
+
+<p>而对evaluator来说，他只需要用这两个ciphertexts重构出原本的garbled circuits即可：</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoLib4.png" alt="evaluator: 4 ciphertexts" style="zoom:50%;" />
+
+<hr>
+<p>同样，把GRR2方案和其他方案比较，主要和P&amp;P和GRR3方案比较，每个garbled gate都只需要用两个ciphertexts即可表示：</p>
+<img src="https://z3.ax1x.com/2021/07/06/Roqj5n.png" alt="Scoreboard: GRR2" style="zoom:50%;" />
+
+<p>这里需要注意的是，Free XOR技术和GRR2技术是不可兼容的。因为在GRR2中，$C_0 = H_{00}\oplus H_{11} \oplus H_{10}$ ，$C_1 = H(A_0, B_1)$ ，无法保证 $C_0\oplus C_1=\Delta$ 。因此在一个电路中，那么使用Free-XOR方案，要么使用GRR2方案。</p>
+<h2 id="Half-Gates"><a href="#Half-Gates" class="headerlink" title="Half Gates"></a>Half Gates</h2><p>Half Gates 方案出自Samee Zahur, Mike Rosulek, David Evans的15年的文章：Two Halves Make a Whole: Reducing Data Transfer in Garbled Circuits using Half Gates. (Eurocrypt 2015)</p>
+<p>这个方案garbled circuits的设计是借用了Free-XOR的部分设计：即所有的wire都选择了一个相同的offset。但output wire label $C$与input wire的label无关。</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoqXUs.png" alt="Free-XOR" style="zoom:50%;" />
+
+<h3 id="Garbler-half-gate"><a href="#Garbler-half-gate" class="headerlink" title="Garbler: half gate"></a>Garbler: half gate</h3><p>如果garbler提前知道了input wire a的值：</p>
+<ul>
+<li><p>$a = 0$</p>
+<p>如果$a = 0$, 这个门就变成一个一元门： $b \rightarrow 0$ </p>
+<img src="https://z3.ax1x.com/2021/07/06/RoqOEj.png" alt="garbler knows a = 0" style="zoom:50%;" />
+
+<p>可以用2个ciphertexts来表示这个门，evaluator解密后都得到output wire 的label $C$。</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoqxCq.png" alt="garbler(a = 0): 2 ciphertexts" style="zoom:50%;" />
+</li>
+<li><p>$a = 1$</p>
+<p>如果$a = 1$, 这个门就变成一个一元门：$b\rightarrow b$ </p>
+<img src="https://z3.ax1x.com/2021/07/06/Roqz80.png" alt="garbler knows a = 1" style="zoom:50%;" />
+
+<p>同样可以用2个ciphertexts表示这个门，evaluator可以用label $B$解密得到output wire 的 label $C$，可以用 label$B\oplus \Delta$ 解密得到output wire 的label $C\oplus \Delta$ 。</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoLS2V.png" alt="garbler(a = 1): 2 ciphertexts" style="zoom:50%;" />
+
+</li>
+</ul>
+<p>结合两种情况：</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoLpvT.png" alt="garbler knows a" style="zoom:50%;" />
+
+<p>可以归纳为下式，garbler可以根据已知a的值来生成对应的ciphertexts，同样用point-and-permute的color bit的思想来重排列ciphertexts。</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoLCKU.png" alt="garbler knows a" style="zoom:50%;" />
+
+<p>同样，也可以再用row reduction的技术来选择output wire的false label $C=H(B)$ ，使得第一个ciphertext为 $0^n$ ，这样对于garbler知道一个input wire真值的garbled half gate就可以用一个ciphertext来表示：</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoLPrF.png" alt="garbler half gate" style="zoom:50%;" />
+
+<h3 id="Evaluator-half-gate"><a href="#Evaluator-half-gate" class="headerlink" title="Evaluator: half gate"></a>Evaluator: half gate</h3><p>如果evaluator提前知道了input wire b的值，即知道label的对应真值：</p>
+<ul>
+<li><p>Evaluator has B (knows label B is false): should obtain C (false)</p>
+<img src="https://z3.ax1x.com/2021/07/06/Roxj54.png" alt="evaluator has false label B" style="zoom:50%;" />
+</li>
+<li><p>Evaluator has $B\oplus \Delta$ (knows label $B\oplus \Delta$ is true): should be able to transfer truth value from “a” wire to “c” wire.</p>
+<p>【即如果evaluator知道wire b的label是true，那evaluate的结果的真值应该和wire a上label对应的真值相同（即使她不知道wire a上实际的真值是什么）】</p>
+<p>Evaluator只要知道 $A\oplus C$ 的值，就可以实现 “transfer truth value from “a” wire to “c” wire.”</p>
+<ul>
+<li><p>false($A$) -&gt; false ($C$) : $A\oplus A \oplus C = C$  </p>
+<img src="https://z3.ax1x.com/2021/07/06/RoLkVJ.png" alt="evaluator get label $A$" style="zoom:50%;" />
+</li>
+<li><p>true($A\oplus \Delta$ )-&gt; true ($C\oplus \Delta$ ): $A\oplus \Delta \oplus A \oplus C = C\oplus \Delta$  </p>
+<img src="https://z3.ax1x.com/2021/07/06/RoLAa9.png" alt="evaluator get label $A\oplus \Delta$" style="zoom:50%;" />
+
+</li>
+</ul>
+</li>
+</ul>
+<p>同样的，可以使用row reduction的技术，令false label $C = H(B)$ ，使得garbled circuits的第一个ciphertext为 $0^n$ ，这样对于evaluator知道一个input wire真值的garbled half gate就可以用一个ciphertext表示。</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoxxPJ.png" alt="evaluator half gate" style="zoom:50%;" />
+
+<h3 id="Two-halves-make-a-whole"><a href="#Two-halves-make-a-whole" class="headerlink" title="Two halves make a whole"></a>Two halves make a whole</h3><p>对于在复杂电路中的AND门，他的input wire可能和双方输入都相关，因此garbler不知道某个input wire的真值到底是什么，evaluator更不知道。</p>
+<p>如何才能将上文中的half gate应用到一般AND门上？</p>
+<p>对于garbler来说，在garble AND gate时，即然不知道某个inpu wire的真值，那我们可以引入一个随机bit r（0或者1），该值其实就是在计算label的color bit时引入的，而bit $a\oplus r$ 就是label $A$ 的color bit。</p>
+<ul>
+<li>对于garbler来说，<strong>garbler知道bit $r$的真值</strong>，true or false。</li>
+<li>对于evaluator来说，他在evaluate这个AND gate时，他会得到wire a的label，虽然不知道这个label实际是对应着true还是false（即不知道 $a$ 的值），但是他知道这个label的color bit是什么（像P&amp;P中提到的那样，可以把color bit放在label的最后一位），而这个color bit其实就是bit $a\oplus r$ 的真值，所以<strong>evaluator在evaluate时是知道 bit $a\oplus r$ 的真值的。</strong> </li>
+</ul>
+<p>现在我们通过引入了 bit $r$ ，实现了half gate的两个假设，一个是让garbler知道AND gate其中一个的输入真值，一个是让evaluator知道AND gate其中一个的输入真值。</p>
+<p>那如何通过 bit $r$ ，把一个一般AND gate转变为half gates 呢？</p>
+<p>把 $a\wedge b$ 写成如下式：<br>$$<br>\begin{align}<br>a\wedge b &amp;= (a\oplus r \oplus r)\wedge b \<br>&amp;=[(a\oplus r)\wedge b]\oplus [r\wedge b]<br>\end{align}<br>$$</p>
+<ul>
+<li>对于左边的 $[(a\oplus r)\wedge b]$ ：evaluator知道 $a\oplus r$ 的真值，可以用上面提到的第二种half gate。</li>
+<li>对于右边的 $[r\wedge b]$ : garbler知道 $r$ 的真值，可以用上面提到的第一种 half gate。</li>
+<li>两个式子的xor运算：就可以使用Free-XOR 技术。</li>
+</ul>
+<p>因此，总开销 = 2 “half gates” + “1 XOR gate” = 2 ciphertexts</p>
+<hr>
+<p>同样的，把Half gates的方案和其他技术进行比较，AND gate的大小可以降为2，同时Half gates技术和Free-XOR技术是兼容的，因此在half gates方案中，XOR gate的开销为0.</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoLE5R.png" alt="Scoreboard: Half gates" style="zoom:50%;" />
+
+
+
+<h1 id="Garbling-arithmetic-circuits"><a href="#Garbling-arithmetic-circuits" class="headerlink" title="Garbling arithmetic circuits"></a>Garbling arithmetic circuits</h1><h2 id="Generalized-Free-XOR"><a href="#Generalized-Free-XOR" class="headerlink" title="Generalized Free XOR"></a>Generalized Free XOR</h2><p>将Free XOR的思想迁移到 $\mathbb{Z}_m$ 上。</p>
+<table>
+<thead>
+<tr>
+<th>Free XOR</th>
+<th>Gerneralized Free XOR</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Wire carries a truth value from ${0, 1}$</td>
+<td>Wire carries a truth value from $\mathbb{Z}_m$</td>
+</tr>
+<tr>
+<td>Wire labels are bit strings ${0, 1}^\lambda$ .</td>
+<td>Wire labels are tuples $(\mathbb{Z}_m)^\lambda$.</td>
+</tr>
+<tr>
+<td>Global wire-label-offset $\Delta\in{0, 1}^\lambda$</td>
+<td>Global wire-label-offset $\Delta\in(\mathbb{Z}_m)^\lambda$</td>
+</tr>
+<tr>
+<td>false wire labe lis $A$ ；true wire label is $A\oplus \Delta$</td>
+<td>Wire label encoding truth value $a\in \mathbb{Z}_m$ is $A+a\Delta$</td>
+</tr>
+<tr>
+<td>⊕ is componentwise addition mod 2</td>
+<td>+ is componentwise addition mod m</td>
+</tr>
+</tbody></table>
+<p>Generalized Free XOR的核心就是：用wire label $A+a\Delta\in (\mathbb{Z}_m)^\lambda$ 来编码 $a\in \mathbb{Z}_m$  。</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoxXaF.png" alt="encoded by generalized Free XOR" style="zoom:50%;" />
+
+<p>这样编码后，evaluator可以直接通过对label进行模 $m$ 的加法操作来完成evaluate：</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoxOVU.png" alt="free garbled addition mod m" style="zoom:50%;" />
+
+
+
+<h2 id="Garbling-unary-gates"><a href="#Garbling-unary-gates" class="headerlink" title="Garbling unary gates"></a>Garbling unary gates</h2><p>一元门 $\phi$ （unary gates）: 只有一个input wire $\in \mathbb{Z}_m$， 一个output wire $\in \mathbb{Z}_l$，<strong>注意两个wire可以属于不同的有限域。</strong></p>
+<img src="https://z3.ax1x.com/2021/07/06/RozS2R.png" alt="unary gate" style="zoom:50%;" />
+
+<p>Generalized Free XOR除了可以混淆模 $m$的加法电路，还可以混淆一元门。</p>
+<p>用input wire label $A+a\Delta_m\in (\mathbb{Z}_m)^\lambda$ 来编码 $a\in \mathbb{Z}_m$ ，用output wire label $C+a\Delta_l \in (\mathbb{Z}_l)^\lambda$ 来编码 $c\in \mathbb{Z}_l$ ，因为两个wire可以属于不同的有限域，所以注意是不同的offset $\Delta$ 。</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoLZP1.png" alt="generalized free xor: garbling unary gates" style="zoom:50%;" />
+
+<p>因此，使用generalized free XOR技术garble unary gates需要$m$个ciphertexts。</p>
+<img src="https://www.imgpp.com/images/2021/07/06/2021-07-06-4.02.05.png" alt="garble unary gates: m ciphertexts" style="zoom:50%;" />
+
+<p>当然如果加上row reduction技术，只需要 $m-1$ 个ciphertexts。</p>
+<p>因为作用在 $\mathbb{Z}_m$ 上，所以为了减少evaluator的开销，一般化point-and-permute技术， color bits $\in \mathbb{Z}_m$ 。</p>
+<h2 id="Generalized-garbling-tool"><a href="#Generalized-garbling-tool" class="headerlink" title="Generalized garbling tool"></a>Generalized garbling tool</h2><p>通过generalized free xor的思想，我们可以高效混淆有如下特征的电路：</p>
+<ul>
+<li>Each wire has a preferred modulus $\mathbb{Z}_m$ <ul>
+<li>Wire-label-offset $\Delta_m$ global to all $\mathbb{Z}_m$ -wires </li>
+</ul>
+</li>
+<li><strong>Addition gates</strong>: all wires touching gate have same modulus<ul>
+<li>Garbling cost: free</li>
+</ul>
+</li>
+<li><strong>Mult-by-constant gates</strong>: input/output wires have same modulus<ul>
+<li>Garbling cost: free</li>
+</ul>
+</li>
+<li><strong>Unary gates</strong>: $\mathbb{Z}_m$ input and $\mathbb{Z}_l$ output<ul>
+<li>Garbling cost: $m-1$ ciphertexts</li>
+</ul>
+</li>
+</ul>
+<h2 id="Arithmetic-computations"><a href="#Arithmetic-computations" class="headerlink" title="Arithmetic computations"></a>Arithmetic computations</h2><p>为什么要引入arithmetic circuits，因为他往往会比传统布尔电路高效，以一个32-bit的数为例，使用half-gates技术来混淆一些常见运算，结果如下：</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoLe8x.png" alt="operation of 32-bit integers" style="zoom:50%;" />
+
+<p>而如果使用上文提到的generalized garbling tool，加法操作和乘以常数操作的开销都降为0，而模 $m$ 乘法操作的开销为 $2m-2$ ciphetextes（讲座中没有详细讲解，方法是generalization of half-gates)，同样以32-bit的数为例，和传统布尔电路技术对比：</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoLm26.png" alt="boolean garbled circuits & generalized garbling tool" style="zoom:50%;" />
+
+<p>可见对于32-bit的乘法、开方操作，使用generalized garbling技术开销非常大，因为这是和 $m$ 相关的。</p>
+<h2 id="CRT-form"><a href="#CRT-form" class="headerlink" title="CRT form"></a>CRT form</h2><p>而这个可以通过中国剩余定理(Chinese remainder theorem, CRT)来进行优化。</p>
+<p>相较于之前在 $\mathbb{Z}_{32}=\mathbb{Z}_{4294967296}$ 进行算数运算，通过CRT可以在 $\mathbb{Z}_{2\cdot 3\cdot 5\cdot 7\cdot 11\cdots 29}=\mathbb{Z}_{6469693239}$ 下进行高效的乘法、开方操作。</p>
+<p>通过把一个32-bit的数 $x$ 表示为 $(x\%2, x\%3,x\%5,\cdots,x\%29)$ ，对每个余数单独进行算数运算，最后通过中国剩余定理，即可求解出结果。</p>
+<p>将使用CRT表示方法的系统与上述方法比较：</p>
+<img src="https://www.imgpp.com/images/2021/07/06/2021-07-06-4.04.10.png" alt="CRT system" style="zoom:50%;" />
+
+<p>可见，用CRT的表示方法能大幅降低garbled circuits的开销。但是CRT的表示方法同样也带来了一些问题：</p>
+<ul>
+<li>Not so good:<ul>
+<li>Converting from binary to CRT is not so good.</li>
+<li>Getting CRT valurs into the citcuit via OT is not so good.</li>
+</ul>
+</li>
+<li>Kinda bad: (room for improvement)<ul>
+<li><strong>Comparing</strong> two CRT-encoded values</li>
+<li>Converting from CRT to binaty</li>
+<li>Integer division</li>
+<li>Modular reduction different than the CRT composite modulus (e.g., garbled RSA)</li>
+</ul>
+</li>
+</ul>
+<p>下面会主要介绍如何比较两个CRT表示方法的数字。</p>
+<h3 id="Comparing-CRT-values"><a href="#Comparing-CRT-values" class="headerlink" title="Comparing CRT values"></a>Comparing CRT values</h3><p>下表是CRT的表示方法，可以看出CRT的表示方法不能直接对数字进行比较：</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoLnxK.png" alt="CRT view" style="zoom:50%;" />
+
+<p>但如果将CRT转换为一种叫PMR (Primorial Mixed Radix)的表示方法，就可以直接对数字进行比较了：</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoLQqe.png" alt="PMR view" style="zoom:50%;" />
+
+<p>转换方法如下图所示：</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoLKKO.png" alt="convert CRT values to PMR" style="zoom:50%;" />
+
+<p>要实现上述的转换方法，只需要实现 $(x\%p, x\%q)\mapsto \lfloor \frac{x}{p}\rfloor\%q$ 模块的garbled circuits。</p>
+<p>实现该模块的具体步骤可以参考下图：</p>
+<img src="https://www.imgpp.com/images/2021/07/06/2021-07-06-4.05.40.png" alt="gadget" style="zoom:50%;" />
+
+<ol>
+<li><p>Subtract x%3 − x%5 (mod 7 is fine)【相减】</p>
+<ul>
+<li>“Project” x%3 and x%5 to $\mathbb{Z}_7$ wires</li>
+<li>Subtract mod 7 for free</li>
+</ul>
+</li>
+<li><p>Result has the same “constant segments” as what we want</p>
+<ul>
+<li><p>Apply unary projection：【再做一个一元映射】</p>
+<img src="https://z3.ax1x.com/2021/07/06/RoLMrD.png" alt="unary projection" style="zoom:50%;" />
+
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>最后分析一下CRT表示方式的比较效率：</p>
+<ul>
+<li> $(x\%p, x\%q)\mapsto \lfloor \frac{x}{p}\rfloor\%q$  模块大约需要 $2p+2q$ 的开销。
+</li>
+<li><p>而将CRT转换为PMR：对于每一个质数对都需要上述模块。</p>
+</li>
+<li><p>对于k-bit: CRT比较 $O(k^3)$ </p>
+</li>
+</ul>
+<img src="https://z3.ax1x.com/2021/07/06/RoL1VH.png" alt="Operations on 32-bit integers" style="zoom:50%;" /></div><div class="article-licensing box"><div class="licensing-title"><p>「MPC-Mike Rosulek 」：Advanced Techniques and Optimizations for Garbled Circuits</p><p><a href="https://f7ed.com/2021/07/05/MPC2-GarbledCircuits/">https://f7ed.com/2021/07/05/MPC2-GarbledCircuits/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2021-07-05</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-07-06</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/MPC/">MPC, </a><a class="link-muted" rel="tag" href="/tags/Lectures/">Lectures, </a><a class="link-muted" rel="tag" href="/tags/Secure-Computation/">Secure Computation, </a><a class="link-muted" rel="tag" href="/tags/Garbled-Circuits/">Garbled Circuits </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2021/07/07/MPC3-OT/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「MPC-Mike Rosulek 」：Oblivious Transfer and Extension</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2021/07/03/MPC1-Yaos-protocol/"><span class="level-item">「MPC-Mike Rosulek 」：Overview of Secure Computation and Yao&#039;s Protocol</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "61f003d50adff8bf878a3396f3d88cd3",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">70</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">135</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Optimizing-garbled-circuits"><span class="level-left"><span class="level-item">1</span><span class="level-item">Optimizing garbled circuits</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Ciphertext-expansion"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">Ciphertext expansion</span></span></a></li><li><a class="level is-mobile" href="#Point-and-permute"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">Point-and-permute</span></span></a></li><li><a class="level is-mobile" href="#Garbled-Row-Reduction"><span class="level-left"><span class="level-item">1.3</span><span class="level-item">Garbled Row Reduction</span></span></a></li><li><a class="level is-mobile" href="#Free-XOR"><span class="level-left"><span class="level-item">1.4</span><span class="level-item">Free XOR</span></span></a></li><li><a class="level is-mobile" href="#Row-reduction-times-2"><span class="level-left"><span class="level-item">1.5</span><span class="level-item">Row reduction $\times$ 2</span></span></a></li><li><a class="level is-mobile" href="#Half-Gates"><span class="level-left"><span class="level-item">1.6</span><span class="level-item">Half Gates</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Garbler-half-gate"><span class="level-left"><span class="level-item">1.6.1</span><span class="level-item">Garbler: half gate</span></span></a></li><li><a class="level is-mobile" href="#Evaluator-half-gate"><span class="level-left"><span class="level-item">1.6.2</span><span class="level-item">Evaluator: half gate</span></span></a></li><li><a class="level is-mobile" href="#Two-halves-make-a-whole"><span class="level-left"><span class="level-item">1.6.3</span><span class="level-item">Two halves make a whole</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Garbling-arithmetic-circuits"><span class="level-left"><span class="level-item">2</span><span class="level-item">Garbling arithmetic circuits</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Generalized-Free-XOR"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">Generalized Free XOR</span></span></a></li><li><a class="level is-mobile" href="#Garbling-unary-gates"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">Garbling unary gates</span></span></a></li><li><a class="level is-mobile" href="#Generalized-garbling-tool"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">Generalized garbling tool</span></span></a></li><li><a class="level is-mobile" href="#Arithmetic-computations"><span class="level-left"><span class="level-item">2.4</span><span class="level-item">Arithmetic computations</span></span></a></li><li><a class="level is-mobile" href="#CRT-form"><span class="level-left"><span class="level-item">2.5</span><span class="level-item">CRT form</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Comparing-CRT-values"><span class="level-left"><span class="level-item">2.5.1</span><span class="level-item">Comparing CRT values</span></span></a></li></ul></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

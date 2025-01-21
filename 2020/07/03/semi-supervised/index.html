@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「机器学习-李宏毅」:Semi-supervised Learning - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="这篇文章开篇讲述了什么是Semi-supervised Learning（半监督学习）？ 再次，文章具体阐述了四种Semi-supervised Learning，包括Generative Model，Low-density，Smoothness Assumption和Better Representation。 对于Generative Model，文章重点讲述了如何用EM算法来训练模型。 对于"><meta property="og:type" content="blog"><meta property="og:title" content="「机器学习-李宏毅」:Semi-supervised Learning"><meta property="og:url" content="https://f7ed.com/2020/07/03/semi-supervised/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="这篇文章开篇讲述了什么是Semi-supervised Learning（半监督学习）？ 再次，文章具体阐述了四种Semi-supervised Learning，包括Generative Model，Low-density，Smoothness Assumption和Better Representation。 对于Generative Model，文章重点讲述了如何用EM算法来训练模型。 对于"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/81648714_p0.jpg"><meta property="article:published_time" content="2020-07-02T16:00:00.000Z"><meta property="article:modified_time" content="2021-01-30T02:59:21.563Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Machine-Learning"><meta property="article:tag" content="open-classes"><meta property="article:tag" content="Semi-supervised"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/81648714_p0.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2020/07/03/semi-supervised/"},"headline":"「机器学习-李宏毅」:Semi-supervised Learning","image":["https://f7ed.com/gallery/thumbnails/81648714_p0.jpg"],"datePublished":"2020-07-02T16:00:00.000Z","dateModified":"2021-01-30T02:59:21.563Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"这篇文章开篇讲述了什么是Semi-supervised Learning（半监督学习）？ 再次，文章具体阐述了四种Semi-supervised Learning，包括Generative Model，Low-density，Smoothness Assumption和Better Representation。 对于Generative Model，文章重点讲述了如何用EM算法来训练模型。 对于"}</script><link rel="canonical" href="https://f7ed.com/2020/07/03/semi-supervised/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「机器学习-李宏毅」:Semi-supervised Learning</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2020-07-02T16:00:00.000Z" title="2020-07-02T16:00:00.000Z">2020-07-03</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2021-01-30T02:59:21.563Z" title="2021-01-30T02:59:21.563Z">2021-01-30</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E6%9D%8E%E5%AE%8F%E6%AF%85/">机器学习-李宏毅</a></span><span class="level-item"><i class="far fa-clock"></i> 30 minutes read (About 4545 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>这篇文章开篇讲述了什么是Semi-supervised Learning（半监督学习）？</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><p>再次，文章具体阐述了四种Semi-supervised Learning，包括Generative Model，Low-density，Smoothness Assumption和Better Representation。</p>
+<p>对于Generative Model，文章重点讲述了如何用EM算法来训练模型。</p>
+<p>对于Low-density，文章重点讲述了如何让模型进行Self-training，并且在训练中引入Entropy-based Regularization term来尽可能low-density的假设。</p>
+<p>对于Smoothness Assumption，文章重点讲述了Graph-based Approach（基于图的方法），并且在训练中引入Smoothness Regularization term来尽可能满足Smoothness Assumption的假设。</p>
+<p>对于Better Representation，本篇文章只是简单阐述了其思想，具体介绍见这篇博客。</p>
+<span id="more"></span>
+
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>什么是Semi-supervised learning(半监督学习)？和Supervised learning（监督式学习）的区别在哪？</p>
+<p><strong>Supervised learning（监督式学习）</strong>：</p>
+<p>用来训练的数据集 $R$  中的数据labeled data，即 ${(x^r,\hat{y}^r)}_{r=1}^R$ .</p>
+<p>比如在图像分类数据集中： $x^r$ 是image，对应的target output $y^r$ 是分类的label。</p>
+<p>而<strong>Semi-supervised learning（半监督式学习）</strong>：</p>
+<p>用来的训练的数据集由两部分组成 $\{(x^r,\hat{y}^r)\}_{r=1}^R$   ,    $\{x^u\}_{u=R}^{R+U}$   ，即labeled data和unlabeled data，而且通常情况下，unlabeled data的数量远远高于labeled data的数量，即 $U&gt;&gt;R$ .</p>
+<p>对于一般的机器学习，有训练集（labeled）和测试集，测试集是不会出现在训练集中的，这种情况就是inductive learning（归纳推理，即通过已有的labeled的data去推断没有见过的其他的数据的label）。</p>
+<p>而Semi-supervised learning 又分为两种，Transductive learning （转导/推论推导）和 Inductive learning（归纳推理）</p>
+<ul>
+<li>Transductive learing: unlabeled data is the testing data. 即这里用来训练的   $\{x^u\}_{u=R}^{R+U}$   就是来自测试数据集中的数据。（只使用他的feature，而不使用他的label！）</li>
+<li>Inductive learning: unlabeled data is not the testing data.即用来训练的   $\{x^u\}_{u=R}^{R+U}$   不是来自测试数据集中的数据，是另外的unlabeled data。</li>
+<li>这里的使用testing data是指使用testing data的feature，即unlabel而不是使用testing data的label。</li>
+</ul>
+<hr>
+<p>为什么会有semi-supervised learning？</p>
+<ul>
+<li><p>Collecting data is easy, but collecting “labelled” data is expensive.</p>
+<p>【收集数据很简单，但收集有label的数据很难】</p>
+</li>
+<li><p>We do semi-supervised learning in our lives</p>
+<p>【在生活中，更多的也是半监督式学习，我们能明白少量看到的事物，但看到了更多我们不懂的，即unlabeled data】</p>
+</li>
+</ul>
+<h2 id="Why-Semi-supervised-learning-helps"><a href="#Why-Semi-supervised-learning-helps" class="headerlink" title="Why Semi-supervised learning helps"></a>Why Semi-supervised learning helps</h2><p>为什么半监督学习能帮助解决一些问题？</p>
+<p>如上图所示，如果只有labeled data，分类所画的boundary可能是一条竖线。</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXRNz6.md.png" alt="NXRNz6.md.png" style="zoom:75%;" />
+
+<p>但如果有一些unlabeled data（如灰色的点），分类所画的boundary可能是一条斜线。</p>
+<p>The distribution of the unlabeled data tell us something.</p>
+<p>半监督式学习之所以有用，是因为这些unlabeled data的分布能告诉我们一些东西。</p>
+<p>通常这也伴随着一些假设，所以半监督式学习是否有用往往取决于这些假设是否合理。</p>
+<h1 id="Semi-supervised-Learning-for-Generative-Model"><a href="#Semi-supervised-Learning-for-Generative-Model" class="headerlink" title="Semi-supervised Learning for Generative Model"></a>Semi-supervised Learning for Generative Model</h1><h2 id="Supervised-Generative-Model"><a href="#Supervised-Generative-Model" class="headerlink" title="Supervised Generative Model"></a>Supervised Generative Model</h2><p>在<a href="/2020/03/20/Classification1/" title="这篇">这篇</a>文章中，有详细讲述分类问题中的generative model。</p>
+<p>给定一个labelled training data $x^r\in C_1,C_2$ 训练集。</p>
+<p>prior probability（先验概率）有 $P(C_i)$ 和 $P(x|C_i)$ ，假设是Gaussian模型，则 $P(x|C_i)$ 由Gaussian模型中的 $\mu^i,\Sigma$ 参数决定。</p>
+<p>根据已有的labeled data，计算出假设的Gaussian模型的参数（如下图），从而得出prior probability。</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXonAS.md.png" alt="NXonAS.md.png" style="zoom:75%;" />
+
+<p>即可算出posterior probability  $P\left(C_{1} \mid x\right)=\frac{P\left(x \mid C_{1}\right) P\left(C_{1}\right)}{P\left(x \mid C_{1}\right) P\left(C_{1}\right)+P\left(x \mid C_{2}\right) P\left(C_{2}\right)}$ </p>
+<h2 id="Semi-supervised-Generative-Model"><a href="#Semi-supervised-Generative-Model" class="headerlink" title="Semi-supervised Generative Model"></a>Semi-supervised Generative Model</h2><p>在只有labeled data的图中，算出来的 $\mu,\Sigma$ 参数如下图所示：</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXonAS.md.png" alt="NXonAS.md.png" style="zoom:75%;" />
+
+<p>但如果有unlabeled data（绿色点），会发现分布的模型参数更可能是是下图：</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXRtRx.md.png" alt="NXRtRx.md.png" style="zoom:75%;" />
+
+<p>The unlabeled data $x^u$ help re-estimate $P(C_1),P(C_2),\mu^1,\mu^2,\Sigma$ .</p>
+<p>因此，unlabeled data会影响分布，从而影响prior probability，posterior probability，最终影响 boundary。</p>
+<h3 id="EM"><a href="#EM" class="headerlink" title="EM"></a>EM</h3><p>所以有unlabeled data, 这个Semi-supervised 的算法怎么做呢？</p>
+<p>其实就是<strong>EM</strong>（Expected-maximization algorithm，期望最大化算法。）</p>
+<ol>
+<li><p>Initialization : $\theta={P(C_1),P(C_2),\mu^1,\mu^2,\Sigma}$ .</p>
+<p>初始化Gaussian模型参数，可以随机初始，也可以通过labeled data得出。</p>
+<p>虽然这个算法最终会收敛，但是初始化的参数影响收敛结果，就像gradient descent一样。</p>
+</li>
+<li><p>E：Step 1: compute the posterior probability of unlabeled data $P_\theta(C_1|x^u)$ (depending on model $\theta$ )</p>
+<p>根据当前model的参数，计算出unlabeled data的posterior probability $P(C_1|x^u)$ .(以$P(C_1|x^u)$ 为例) </p>
+</li>
+<li><p>M：Step 2: update model. Back to step1 until the algorithm converges enventually.</p>
+<p>用E步得到unlabeled data的posterior probability来最大化极大似然函数，更新得到新的模型参数，公式很直觉。(以 $C_1$ 为例)</p>
+<p>（$N$ ：data 的总数，包括unlabeled data; $N_1$ :label= $C_1$ 的data数）</p>
+<ul>
+<li><p>$P(C_1)=\frac{N_1+\Sigma_{x^u}P(C_1|x^u)}{N}$  </p>
+<p>对比没有unlabeled data之前的式子， $P(C_1)=\frac{N_1}{N}$ ，除了已有label= $C_1$ ，还多了一部分，即unlabeled data中属于 $C_1$ 的概率和。</p>
+</li>
+<li>$\mu^{1}=\frac{1}{N_{1}} \sum_{x^{r} \in C_{1}} x^{r}+\frac{1}{\sum_{x^{u}} P\left(C_{1} \mid x^{u}\right)} \sum_{x^{u}} P\left(C_{1} \mid x^{u}\right) x^{u}$  
+
+<p>对比没有unlabeled data的式子 ，$\mu^{1}=\frac{1}{N_{1}} \sum_{x^{r} \in C_{1}} x^{r}$ ，除了已有的label= $C_1$ ，还多了一部分，即unlabeled data的 $x^u$ 的加权平均（权重为 $P(C_1\mid x^u)$ ，即属于 $C_1$ 的概率）。</p>
+</li>
+<li><p>$\Sigma$ 公式也包括了unlabeled data.</p>
+</li>
+</ul>
+</li>
+</ol>
+<p>所以这个算法的Step 1就是EM算法的Expected期望部分，根据已有的labeled data得出极大似然函数的估计值；</p>
+<p>Step 2就是EM算法的Maximum部分，利用unlabeled data（通过已有模型的参数）最大化E步的极大似然函数，更新模型参数。</p>
+<p>最后反复迭代Step 1和Step 2，直至收敛。</p>
+<h3 id="Why-EM"><a href="#Why-EM" class="headerlink" title="Why EM"></a>Why EM</h3><p>[1]挖坑EM详解。</p>
+<p>为什么可以用EM算法来解决Semi-supervised?</p>
+<ul>
+<li><p>只有labeled data</p>
+<p>极大似然函数 $\log{L(\theta)}=\sum_{x^r}\log{P_\theta(x^r,\hat{y}^r)}$ , 其中 $P_\theta(x^r,\hat{y}^r)=P_\theta(x^r\mid \hat{y}^r)P(\hat{y}^r)$ .</p>
+<p>对上式子求导是有closed-form solution的。</p>
+</li>
+<li><p>有labeled data和unlabeled data</p>
+<p>极大似然函数增加了一部分  $\log L(\theta)=\sum_{x^{r}} \log P_{\theta}\left(x^{r}, \hat{y}^{r}\right)+\sum_{x^{u}} \log P_{\theta}\left(x^{u}\right)$ .</p>
+<p>将后部分用全概率展开， $P_{\theta}\left(x^{u}\right)=P_{\theta}\left(x^{u} \mid C_{1}\right) P\left(C_{1}\right)+P_{\theta}\left(x^{u} \mid C_{2}\right) P\left(C_{2}\right)$  .</p>
+<p>如果要求后部分，因为是unlabeled data, 所以模型 $\theta$ 需要得知unlabeled data的label，即 $P(C_1\mid x^u)$ ,而求这个式子，也需要得到 prior probability $P(x^u\mid C_1)$ ,但这个式子需要事先得知模型 $\theta$ ，因此陷入了死循环。</p>
+<p>因此这个极大似然函数不是convex（凸），不能直接求解，因此用迭代的EM算法逐步maximum极大似然函数。</p>
+</li>
+</ul>
+<h1 id="Low-density-Separation-Assumption"><a href="#Low-density-Separation-Assumption" class="headerlink" title="Low-density Separation Assumption"></a>Low-density Separation Assumption</h1><p>另一种假设是Low-density Separation的假设，即这个世界是非黑即白的”Black-or-white”。</p>
+<p>两种类别之间是low-density，交界处有明显的鸿沟，因此要么是类别1，要么是类别2，没有第三种情况。</p>
+<h2 id="Self-training"><a href="#Self-training" class="headerlink" title="Self-training"></a>Self-training</h2><p>对于Low-density Separation Assumption的假设，使用Self-training的方法。</p>
+<p>Given：labeled data set  $=\{(x^r,\hat{y}^r\}_{r=1}^R$   ,unlabeled data set $ =\{x^u\}_{u=R}^{R+U}$   .</p>
+<p><strong>Repeat：</strong> </p>
+<ol>
+<li><p>Train model  $f^*$  from labeled data set.  $f^*$   is independent to the model)</p>
+<p>从labeled data set中训练出一个模型</p>
+</li>
+<li><p>Apply $f^*$ to the unlabeled data set. Obtain pseudo-label  $\{(x^u,y^u\}_{u=l}^{R+U}\}$  </p>
+<p>用这个模型 $f^*$ 来预测unlabeled data set， 获得伪label</p>
+</li>
+<li><p>Remove a set of data from unlabeled data set, and add them into the labeled data set.</p>
+<p>拿出一些unlabeled data(pseudo-label)，放到labeled data set中，回到步骤1，再训练。</p>
+<ul>
+<li><p>how to choose the data set remains open</p>
+<p>如何选择unlabeled data 是自设计的</p>
+</li>
+<li><p>you can also provide a weight to each data.</p>
+<p>训练中可以对unlabeled data(pseudo-label)和labeled data 赋予不同的权重.</p>
+</li>
+</ul>
+</li>
+</ol>
+<p><strong>注意：</strong> Regression模型是不能self-training的，因为unlabeled data和其pseudo-label放在模型中的loss为0，无法再minimize。</p>
+<h2 id="Hard-Label"><a href="#Hard-Label" class="headerlink" title="Hard Label"></a>Hard Label</h2><p><strong>V.S.  semi-supervised learning for generative model</strong> </p>
+<p>Semi-supervised learning for generative model和Low-density Separation的区别其实是soft label 和hard label的区别。</p>
+<p>Generative Model是利用来unlabeled data的 $P(C_1|x^u)$ posterior probability来计算新的prior probability，迭代更新模型。</p>
+<p>而low-density是计算出unlabeled data的pseudo-label，选择性扩大labeled data set(即加入部分由pseudo-label的unlabeled data)来迭代训练模型。</p>
+<p>因此，如果考虑Neural Network：</p>
+<p>($\theta^*$ 是labeled data计算所得的network parameters)</p>
+<p>如下图，unlabeled data $x^u$ 放入模型中预测，得到 $\begin{bmatrix} 0.7 \ 0.3\end{bmatrix}$ .</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXRYJ1.md.png" alt="NXRYJ1.md.png" style="zoom:75%;" />
+
+<p>如果是使用hard label，则 $x^u$ 的target是 $\begin{bmatrix} 1 \ 0\end{bmatrix}$ .</p>
+<p>如果是使用soft label，则 $x^u$ 的target是 $\begin{bmatrix} 0.7 \ 0.3\end{bmatrix}$ .</p>
+<p>如果是使用soft label，则self-training不会有效，因为新的data对原loss的改变为0，不会增大模型的loss，也就无法再对其minimize.</p>
+<p><strong>所以基于Low-density Separation的假设，是非黑即白的，需要使用hard label来self-training。</strong> </p>
+<h2 id="Entropy-based-Regularization"><a href="#Entropy-based-Regularization" class="headerlink" title="Entropy-based Regularization"></a>Entropy-based Regularization</h2><p>在训练模型中，我们需要尽量保证unlabeled data在模型中的分布是low-density separation。</p>
+<p>即下图中，unlabeled data得到的pseudo-label的分布应该尽量集中，而不应该太分散。</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXRJiR.md.png" alt="NXRJiR.md.png" style="zoom:30%;" /> 
+
+
+
+<p>所以，在训练中，<strong>如何评估 $y^u$ 的分布的集中度？</strong></p>
+<p>根据信息学，使用 $y^u$ 的entropy，即  $E\left(y^{u}\right)=-\sum_{m=1}^{5} y_{m}^{u} \ln \left(y_{m}^{u}\right)$ </p>
+<p>(注：这里的 $y^u_m$ 是变量  $y^u=m$ 的概率)</p>
+<p>当 $E(y^u)$ 越小，说明 $y^u$ 分布越集中，如下图。</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXR3dJ.md.png" alt="NXR3dJ.md.png" style="zoom:40%;" />
+
+<hr>
+<p>因此，在self-training中：</p>
+<p>$L=\sum_{y^r} C(x^r,\hat{y}^r)+\lambda\sum_{x^u}E(y^u)$ </p>
+<p>Loss function的前一项（cross entropy）minimize保证分类的正确性，后一项（entropy of  $y^u$ ) minimize保证 unlabeled data分布尽量集中，最大可能满足low-density separation的假设。</p>
+<p>training：gradient decent.</p>
+<p>因为这样的形式很像之前提到过的regularization(具体见<a href="/2020/04/21/tips-for-DL/" title="这篇文章的3.2">这篇文章的3.2</a>)，所以又叫entropy-based regularization.</p>
+<h2 id="Outlook-Semi-supervised-SVM"><a href="#Outlook-Semi-supervised-SVM" class="headerlink" title="Outlook: Semi-supervised SVM"></a>Outlook: Semi-supervised SVM</h2><p>SVM也是解决semi-supervised learning的方法.</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXRaQK.md.png" alt="NXRaQK.md.png" style="zoom:50%;" />
+
+<p>上图中，在有unlabeled data的情况下，希望boundary 分的越开越好（largest margin）和有更小的error.</p>
+<p>因此枚举unlabeled data所有可能的情况，但枚举在计算量上是巨大的，因此SVM（Support Vector Machines）可以实现枚举的目标，但不需要这么大的枚举量。</p>
+<h1 id="Smoothness-Assumption"><a href="#Smoothness-Assumption" class="headerlink" title="Smoothness Assumption"></a>Smoothness Assumption</h1><p>Smoothness Assumption的思想可以用以下话归纳：</p>
+<p>“You are known by the company you keep”</p>
+<p>近朱者赤，近墨者黑。</p>
+<p>蓬生麻中，不扶而直。白沙在涅，与之俱黑。</p>
+<p>Assumption：“similar” $x$ has the same $\hat{y}$ .</p>
+<p>【意思就是说：相近的 $x$ 有相同的label $\hat{y}$ .】</p>
+<p><strong>More precise assumption：</strong></p>
+<ul>
+<li>x is not uniform</li>
+<li>if $x^1$ and $x^2$ are close in a hign density region, $\hat{y}^1$ and $\hat{y}^2$ are the same.</li>
+</ul>
+<p>Smoothness Assumption假设更准确的表述是：</p>
+<p> x不是均匀分布，如果 $x^1$ 和 $x^2$ 通过一个high density region的区域连在一起，且离得很近，则 $\hat{y}^1$ 和 $\hat{y}^2$ 相同。</p>
+<p>如下图， $x^1$ 和 $x^2$ 通过high density region连接在一起，有相同的label，而 $x^2$ 和 $x^3$ 有不同的label.</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXR1Z4.md.png" alt="NXR1Z4.md.png" style="zoom:50%;" />
+
+<hr>
+<p>Smoothness Assumption通过观察大量unlabeled data，可以得到一些信息。</p>
+<p>比如下图中的两张人的左脸和右脸图片，都是unlabeled，但如果给大量的过渡形态（左脸转向右脸）unlabeled data，可以得出这两张图片是相似的结论.</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/NXoQpj"><img src="https://s1.ax1x.com/2020/07/03/NXoQpj.md.png" alt="NXoQpj.md.png"></a> </p>
+<p>Smoothness Assumption还可以用在文章分类中，比如分类天文学和旅游学的文章。</p>
+<p>如下图， 文章 d1和d3有overlap word（重叠单词），所以d1和d3是同一类，同理 d4和d2是一类。</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXoutg.md.png" alt="NXoutg.md.png" style="zoom:50%;" />
+
+<p>如果，下图中，d1和d3没有overlap word，就无法说明d1和d3是同一类。</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXoKhQ.md.png" alt="NXoKhQ.md.png" style="zoom:50%;" />
+
+<p>但是，如果我们收集到足够多但unlabeled data，如下图，通过high density region的连接和传递，也可以得出d1和d3一类，d2和d4一类。</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXol1s.md.png" alt="NXol1s.md.png" style="zoom:80%;" />
+
+<h2 id="Cluster-and-then-Label"><a href="#Cluster-and-then-Label" class="headerlink" title="Cluster and then Label"></a>Cluster and then Label</h2><p>在Smoothness Assumption假设下，直观的可以用cluster and then label，先用所有的data训练一个classifier。</p>
+<p>直接聚类标记(比较难训练）。</p>
+<h2 id="Graph-based-Approach"><a href="#Graph-based-Approach" class="headerlink" title="Graph-based Approach"></a>Graph-based Approach</h2><p>另一种方法是利用图的结构（Graph structure）来得知 $x^1$ and $x^2$ are close in a high density region (connected by a high density path).</p>
+<p>Represent the data points as a graph.</p>
+<p>【把这些数据点看作一个图】</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXRKMT.md.png" alt="NXRKMT.md.png" style="zoom:50%;" />
+
+<p>建图有些时候是很直观的，比如网页中的超链接，论文中的引用。</p>
+<p>但有的时候也需要自己建图。</p>
+<p>注意：</p>
+<p>如果是影像类，base on pixel，performance就不太好，一般会base on autoencoder，将feature抽象出来，效果更好。</p>
+<h3 id="Graph-Construction"><a href="#Graph-Construction" class="headerlink" title="Graph Construction"></a>Graph Construction</h3><p>建图过程如下：</p>
+<ol>
+<li><p>Define the similarity $s(x^i, x^j)$ between $x^i$ and $x^j$ .</p>
+<p>【定义data $x^i$ 和 $x^j$ 的相似度】</p>
+</li>
+<li><p>Add edge【定义数据点中加边（连通）的条件】</p>
+<ul>
+<li><p>K Nearest Neighbor【和该点最近的k个点相连接】</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXReGq.png" alt="NXReGq.png" style="zoom:50%;" />
+</li>
+<li><p>e-Neighborhood【与离该点距离小于等于e的点相连接】</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXRZin.png" alt="NXRZin.png" style="zoom:50%;" />
+</li>
+</ul>
+</li>
+<li><p>Edge weight is proportional to $s(x^i, x^j)$ 【边点权重就是步骤1定义的连接两点的相似度】</p>
+<p>Gaussian Radial Basis Function： $s\left(x^{i}, x^{j}\right)=\exp \left(-\gamma\left\|x^{i}-x^{j}\right\|^{2}\right)$ </p>
+<p>一般采用如上公式（经验上取得较好的performance）。</p>
+<p>因为利用指数化后（指数内是两点的Euclidean distance），函数下降的很快，只有当两点离的很近时，该相似度 $s(x^i,x^j)$  才大，其他时候都趋近于0.</p>
+</li>
+</ol>
+<h3 id="Graph-based-Approach-1"><a href="#Graph-based-Approach-1" class="headerlink" title="Graph-based Approach"></a>Graph-based Approach</h3><p>图建好后：</p>
+<p>The labeled data influence their neighbors.</p>
+<p>Propagate through the graph.</p>
+<p>【label data 不仅会影响他们的邻居，还会一直传播下去】</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXRmR0.md.png" alt="NXRmR0.md.png" style="zoom:40%;" />
+
+<p>如果data points够多，图建的好，就会像下图这样：</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXREIs.png" alt="NXREIs.png" style="zoom:50%;" />
+
+<p>但是，如果data较少，就可能出现下图这种label传不到unlabeled data的情况：</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXRPsS.png" alt="NXRPsS.png" style="zoom:50%;" />
+
+<h3 id="Smoothness-Definition"><a href="#Smoothness-Definition" class="headerlink" title="Smoothness Definition"></a>Smoothness Definition</h3><p>因为是基于Smoothness Assumption，所以最后训练出的模型应让得到的图尽可能满足smoothness的假设。</p>
+<p><strong>注意：</strong> 这里的因果关系是，unlabeled data作为NN的输入，得到label $y$ ，该label $y$ 和labeled data的 label $\hat{y}$  一起得到的图是尽最大可能满足Smoothness Assumption的。</p>
+<p>（<strong>而不是</strong>建好图，然后unlabeled data的label $y$ 是labeled data原有的 $\hat{y}$ 直接传播过来的，不然训练NN干嘛）</p>
+<p>把unlabeled data作为NN的输入，得到label ，对labeled data和”unlabeled data” 建图。</p>
+<p>为了在训练中使得最后的图尽可能满足假设，定义<strong>smoothness of the labels on the graph</strong>.</p>
+$S=\frac{1}{2} \sum_{i,j} w_{i, j}\left(y^{i}-y^{j}\right)^{2}$  
+
+<p>（对于所有的labeled data 和 “unlabeled data”（作为NN输入后，有label））</p>
+<p>按照上式计算，得到的Smoothness如下图所示：</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/NXRiqg"><img src="https://s1.ax1x.com/2020/07/03/NXRiqg.md.png" alt="NXRiqg.md.png"></a> </p>
+<p><strong>Smaller means smoother.</strong> </p>
+<p>【Smoothness $S$ 越小，表示图越满足这个假设】</p>
+<hr>
+<p>计算smoothness $S$ 有一种简便的方法：</p>
+$S=\frac{1}{2} \sum_{i, j} w_{i, j}\left(y^{i}-y^{j}\right)^{2}=y^{T} L y$  (这里的1/2只是为了计算方便)
+
+<ul>
+<li><p>$y$ : (R+U)-dim vector，是所有label data和”unlabeled data” 的label，所以是R+U维。</p>
+<p>$y=\begin{bmatrix}…y^i…y^j…\end{bmatrix}^T$ </p>
+</li>
+<li><p>$L$ :(R+U) $\times$ (R+U) matrix，也叫Graph Laplacian（调和矩阵，拉普拉斯矩阵）</p>
+<p>$L$ 的计算方法：$L=D-W$ </p>
+<p>其中 $W$ 矩阵算是图的邻接矩阵（区别是无直接可达边的值是0）</p>
+<p>$D$ 矩阵是一个对角矩阵，对角元素的值等于 $W$ 矩阵对应行的元素和</p>
+<p>矩阵表示如下图所示：</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXRkZQ.md.png" alt="NXRkZQ.md.png" style="zoom:50%;" />
+
+</li>
+</ul>
+<p>（证明据说很枯燥，暂时略[2])</p>
+<h3 id="Smoothness-Regularization"><a href="#Smoothness-Regularization" class="headerlink" title="Smoothness Regularization"></a>Smoothness Regularization</h3>$S=\frac{1}{2} \sum_{i, j} w_{i, j}\left(y^{i}-y^{j}\right)^{2}=y^{T} L y$  
+
+<p> $S$ 中的 $y$ 其实是和network parameters有关的（unlabeled data的label），所以把 $S$ 也放进损失函数中minimize，以求尽可能满足smoothness assumption.</p>
+<p>以满足smoothness assumption的损失函数： $L=\sum_{x^r} C\left(y^{r}, \hat{y}^{r}\right)+\lambda S$ </p>
+<p>损失函数的前部分使labeled data的输出更贴近其label，后部分 $\lambda S$ 作为regularization term，使得labeled data和unlabeled data尽可能满足smoothness assumption.</p>
+<p>除了让NN的output满足smoothness的假设，还可以让NN的任何一层的输出满足smoothness assumption，或者让某层外接一层embedding layer，使其满足smoothness assumption，如下图：</p>
+<img src="https://s1.ax1x.com/2020/07/03/NXRAaj.png" alt="NXRAaj.png" style="zoom:50%;" />
+
+<h1 id="Better-Representation"><a href="#Better-Representation" class="headerlink" title="Better Representation"></a>Better Representation</h1><p>Better Presentation的思想就是：去芜存菁，化繁为简。</p>
+<ul>
+<li>Find the latent(潜在的) factors behind the observation.</li>
+<li>The latent factors (usually simpler) are better representation.</li>
+</ul>
+<p>【找到所观察事物的潜在特征，即该事物的better representation】</p>
+<p>该部分后续见这篇博客。</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li><p>挖坑：EM算法详解</p>
+</li>
+<li><p>挖坑：Graph Laplacian in smoothness.</p>
+</li>
+<li><p>Olivier Chapelle：Semi-Supervised Learning </p>
+</li>
+</ol>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「机器学习-李宏毅」:Semi-supervised Learning</p><p><a href="https://f7ed.com/2020/07/03/semi-supervised/">https://f7ed.com/2020/07/03/semi-supervised/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2020-07-03</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-01-30</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Machine-Learning/">Machine-Learning, </a><a class="link-muted" rel="tag" href="/tags/open-classes/">open-classes, </a><a class="link-muted" rel="tag" href="/tags/Semi-supervised/">Semi-supervised </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/07/18/Git-and-GitHub/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Tools」:Git and GitHub</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2020/06/29/sort-preview/"><span class="level-item">「算法导论」:排序-总结</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "ef29c399c3355abb569fd1bfa4ec997b",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">70</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">135</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><ul class="menu-list"><li><a class="level is-mobile" href="#Introduction"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">Introduction</span></span></a></li><li><a class="level is-mobile" href="#Why-Semi-supervised-learning-helps"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">Why Semi-supervised learning helps</span></span></a></li></ul><li><a class="level is-mobile" href="#Semi-supervised-Learning-for-Generative-Model"><span class="level-left"><span class="level-item">2</span><span class="level-item">Semi-supervised Learning for Generative Model</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Supervised-Generative-Model"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">Supervised Generative Model</span></span></a></li><li><a class="level is-mobile" href="#Semi-supervised-Generative-Model"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">Semi-supervised Generative Model</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#EM"><span class="level-left"><span class="level-item">2.2.1</span><span class="level-item">EM</span></span></a></li><li><a class="level is-mobile" href="#Why-EM"><span class="level-left"><span class="level-item">2.2.2</span><span class="level-item">Why EM</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Low-density-Separation-Assumption"><span class="level-left"><span class="level-item">3</span><span class="level-item">Low-density Separation Assumption</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Self-training"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">Self-training</span></span></a></li><li><a class="level is-mobile" href="#Hard-Label"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">Hard Label</span></span></a></li><li><a class="level is-mobile" href="#Entropy-based-Regularization"><span class="level-left"><span class="level-item">3.3</span><span class="level-item">Entropy-based Regularization</span></span></a></li><li><a class="level is-mobile" href="#Outlook-Semi-supervised-SVM"><span class="level-left"><span class="level-item">3.4</span><span class="level-item">Outlook: Semi-supervised SVM</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Smoothness-Assumption"><span class="level-left"><span class="level-item">4</span><span class="level-item">Smoothness Assumption</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Cluster-and-then-Label"><span class="level-left"><span class="level-item">4.1</span><span class="level-item">Cluster and then Label</span></span></a></li><li><a class="level is-mobile" href="#Graph-based-Approach"><span class="level-left"><span class="level-item">4.2</span><span class="level-item">Graph-based Approach</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Graph-Construction"><span class="level-left"><span class="level-item">4.2.1</span><span class="level-item">Graph Construction</span></span></a></li><li><a class="level is-mobile" href="#Graph-based-Approach-1"><span class="level-left"><span class="level-item">4.2.2</span><span class="level-item">Graph-based Approach</span></span></a></li><li><a class="level is-mobile" href="#Smoothness-Definition"><span class="level-left"><span class="level-item">4.2.3</span><span class="level-item">Smoothness Definition</span></span></a></li><li><a class="level is-mobile" href="#Smoothness-Regularization"><span class="level-left"><span class="level-item">4.2.4</span><span class="level-item">Smoothness Regularization</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Better-Representation"><span class="level-left"><span class="level-item">5</span><span class="level-item">Better Representation</span></span></a></li><li><a class="level is-mobile" href="#Reference"><span class="level-left"><span class="level-item">6</span><span class="level-item">Reference</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

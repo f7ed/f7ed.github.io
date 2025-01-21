@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Tools」：Docker - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="本篇文章主要分四个部分，首先介绍了Docker是什么：为什么会有Docker技术的出现；虚拟化技术和容器虚拟化技术的区别；Docker的基本组成；Docker的运行为什么会比虚拟机快。 第二个部分主要介绍了Docker的常用命令，包括镜像命令和容器命令，文中还从底层的角度分析Docker镜像。 第三个部分介绍了Docker中的容器数据卷，和如何挂载数据卷。 最后一个部分，简单介绍了Dockerfi"><meta property="og:type" content="blog"><meta property="og:title" content="「Tools」：Docker"><meta property="og:url" content="https://f7ed.com/2020/07/21/Docker/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="本篇文章主要分四个部分，首先介绍了Docker是什么：为什么会有Docker技术的出现；虚拟化技术和容器虚拟化技术的区别；Docker的基本组成；Docker的运行为什么会比虚拟机快。 第二个部分主要介绍了Docker的常用命令，包括镜像命令和容器命令，文中还从底层的角度分析Docker镜像。 第三个部分介绍了Docker中的容器数据卷，和如何挂载数据卷。 最后一个部分，简单介绍了Dockerfi"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/81509978_p0_master1200.jpg"><meta property="article:published_time" content="2020-07-20T16:00:00.000Z"><meta property="article:modified_time" content="2020-07-25T03:34:59.360Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Tools"><meta property="article:tag" content="Docker"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/81509978_p0_master1200.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2020/07/21/Docker/"},"headline":"「Tools」：Docker","image":["https://f7ed.com/gallery/thumbnails/81509978_p0_master1200.jpg"],"datePublished":"2020-07-20T16:00:00.000Z","dateModified":"2020-07-25T03:34:59.360Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"本篇文章主要分四个部分，首先介绍了Docker是什么：为什么会有Docker技术的出现；虚拟化技术和容器虚拟化技术的区别；Docker的基本组成；Docker的运行为什么会比虚拟机快。 第二个部分主要介绍了Docker的常用命令，包括镜像命令和容器命令，文中还从底层的角度分析Docker镜像。 第三个部分介绍了Docker中的容器数据卷，和如何挂载数据卷。 最后一个部分，简单介绍了Dockerfi"}</script><link rel="canonical" href="https://f7ed.com/2020/07/21/Docker/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Tools」：Docker</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2020-07-20T16:00:00.000Z" title="2020-07-20T16:00:00.000Z">2020-07-21</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2020-07-25T03:34:59.360Z" title="2020-07-25T03:34:59.360Z">2020-07-25</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Tools/">Tools</a></span><span class="level-item"><i class="far fa-clock"></i> 32 minutes read (About 4728 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>本篇文章主要分四个部分，首先介绍了Docker是什么：为什么会有Docker技术的出现；虚拟化技术和容器虚拟化技术的区别；Docker的基本组成；Docker的运行为什么会比虚拟机快。</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><p>第二个部分主要介绍了Docker的常用命令，包括镜像命令和容器命令，文中还从底层的角度分析Docker镜像。</p>
+<p>第三个部分介绍了Docker中的容器数据卷，和如何挂载数据卷。</p>
+<p>最后一个部分，简单介绍了Dockerfile文件。</p>
+<span id="more"></span>
+
+<h1 id="Docker简介"><a href="#Docker简介" class="headerlink" title="Docker简介"></a>Docker简介</h1><h2 id="Docker-是什么"><a href="#Docker-是什么" class="headerlink" title="Docker 是什么"></a>Docker 是什么</h2><p>开发和运维之间的环境和配置问题：在我的机器上可以正常工作。</p>
+<p>把代码/配置/系统/数据等全部打包成镜像，运维工程师带环境安装软件。</p>
+<p>Docker基于Go语言实现的云开源项目，Docker的主要目标是“Build，Ship and Run Any App,Anywhere”，做到一次封装，处处运行。</p>
+<p>Linux 容器技术的出现就解决了这样一个问题，而 Docker 就是在它的基础上发展过来的。将应用运行在 Docker 容器上面，而 Docker 容器在任何操作系统上都是一致的，这就实现了跨平台、跨服务器。只需要一次配置好环境，换到别的机子上就可以一键部署好，大大简化了操作。</p>
+<p>Docker解决了运行环境和配置问题的软件容器，方便做持续集成并有助于整体分布的容器虚拟化技术。</p>
+<h2 id="能干嘛？"><a href="#能干嘛？" class="headerlink" title="能干嘛？"></a>能干嘛？</h2><h3 id="之前的虚拟化技术"><a href="#之前的虚拟化技术" class="headerlink" title="之前的虚拟化技术"></a>之前的虚拟化技术</h3><p>虚拟机是带环境安装的解决方案，可以在一种操作系统中运行另一种操作系统。</p>
+<p>虚拟机用软件实现了硬件、内核、操作系统及应用程序，对底层来说，虚拟机就是一个普通文件。</p>
+<p>虚拟机的缺点缺点：</p>
+<ol>
+<li>资源占用多</li>
+<li>冗余步骤</li>
+<li>启动慢</li>
+</ol>
+<h3 id="容器虚拟化技术"><a href="#容器虚拟化技术" class="headerlink" title="容器虚拟化技术"></a>容器虚拟化技术</h3><p>Linux容器（Linux Containers,LXC)，对进程隔离，将软件运行所需的资源打包到一个隔离的痛其中。</p>
+<img src="https://s1.ax1x.com/2020/07/25/UzVUbV.png" alt="UzVUbV.png" style="zoom:50%;" />
+
+<p>Linux容器不是模拟一个完整的操作系统，而是将软件工作所需的库资源和设置等资源打包到一个隔离的容器中，因此Linux容器变得高效且轻量，并且能保证部署在任何环境中的软件都能始终如一地运行。在</p>
+<p>宿主机上，Linux容器就是一个运行的进程，所以Linux容器是对进程进行隔离。</p>
+<p>再看Docker的图标，上面的集装箱就是一个一个容器，鲸鱼就是宿主机的硬件、内核。</p>
+<p>比较：</p>
+<ol>
+<li>传统虚拟机技术虚拟一套硬件，在其上运行一个完整的操作系统，再运行所需的应用进程。</li>
+<li>容器内的应用直接运行于宿主的内核，容器内没有硬件虚拟，容器更轻便。</li>
+<li>容器之间互相隔离，每个容器有自己的文件系统，容器之间进程不会相互影响。</li>
+</ol>
+<p>所以，可以认为容器是一个轻量的Linux。</p>
+<h3 id="开发-运维（DevOps"><a href="#开发-运维（DevOps" class="headerlink" title="开发/运维（DevOps)"></a>开发/运维（DevOps)</h3><p>DevOps, Develop and Operations, 可以利用Docker实现开发自运维。</p>
+<ol>
+<li>更快速的应用交付和部署。</li>
+<li>更便捷的升级和扩缩容器。</li>
+<li>更简单的系统运维。</li>
+<li>更高效的计算资源利用。</li>
+</ol>
+<h2 id="Docker的基本组成"><a href="#Docker的基本组成" class="headerlink" title="Docker的基本组成"></a>Docker的基本组成</h2><p><strong>Docker的三要素：</strong></p>
+<ol>
+<li>镜像(image)：只读的模版，类比Java中的类。镜像可以用来创造Docker容器。</li>
+<li>容器(container)：镜像的实例，独立运行的一个或一组实例。可以把容器看作一个简易版的Linux环境。</li>
+<li>仓库(repository)：保存镜像的场所。</li>
+</ol>
+<p>Docker本身是一个容器运行载体或管理引擎。</p>
+<p>把应用程序和配置打包成为一个可交付的运行环境，打包好的运行环境就是一个image镜像文件，只有通过这个镜像文件才能生成Docker容器。image文件可以看作是容器的模版。Docker根据image文件生成容器的实例。</p>
+<h2 id="Docker运行原理"><a href="#Docker运行原理" class="headerlink" title="Docker运行原理"></a>Docker运行原理</h2><p>Docker是一个C/S结构的系统。</p>
+<p>Docker守护进程运行在宿主机上，客户通过Socket连接从客户端访问，守护进程从客户端接受命令并管理运行在主机上的容器。</p>
+<h3 id="为什么比虚拟机快"><a href="#为什么比虚拟机快" class="headerlink" title="为什么比虚拟机快"></a>为什么比虚拟机快</h3><ol>
+<li>Docker有比虚拟机更少的抽象层，不需要实现硬件资源虚拟化，运行在docker容器中的程序直接使用的都是实际物理机的硬件资源。</li>
+<li>Docker使用宿主机上的内核，新建容器时，不需要和虚拟机一样重新加载一个操作系统内核。因此新建一个dock er容器只需要几秒钟。</li>
+</ol>
+<h2 id="Docker镜像加速"><a href="#Docker镜像加速" class="headerlink" title="Docker镜像加速"></a>Docker镜像加速</h2><p>可以登陆阿里云获得专属镜像加速器链接，配置本机Docker拉取镜像仓库的链接，将拉取镜像的链接从DockerHub换成阿里云的仓库，下载更快捷。</p>
+<p>具体按照系统自行Google。</p>
+<h1 id="Docker常用命令"><a href="#Docker常用命令" class="headerlink" title="Docker常用命令"></a>Docker常用命令</h1><p>docker version</p>
+<p>docker info</p>
+<p>docker –help 帮助命令</p>
+<h2 id="镜像命令"><a href="#镜像命令" class="headerlink" title="镜像命令"></a>镜像命令</h2><ul>
+<li><p>列出本地images</p>
+<p><code>docker images</code></p>
+<p>repo</p>
+<ul>
+<li>参数<ul>
+<li>-a :包括中间映像层</li>
+<li>-q : 只显示镜像id</li>
+<li>–digests :显示摘要信息</li>
+<li>–no-trunc :显示完整信息</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>从Docker Hub查询镜像名</p>
+<p><code>docker search [OPTIONS] image_name</code> </p>
+<ul>
+<li>–no-trunc </li>
+<li>-s n：收藏数不小于n的镜像</li>
+<li>–automated</li>
+</ul>
+</li>
+<li><p>下载/拉取镜像</p>
+<p><code>docker pull 镜像名[:TAG]</code> </p>
+<p>默认:latest</p>
+</li>
+<li><p>删除镜像</p>
+<p><code>docker rmi 镜像唯一名字/镜像ID</code></p>
+<p>-f :强制删除运行中的镜像文件</p>
+<ul>
+<li><p>删除单个：</p>
+<p> <code>docker rmi -f 镜像ID</code></p>
+</li>
+<li><p>删除多个</p>
+<p><code>docker rmi -f 镜像名1:TAG 镜像名2:TAG</code></p>
+</li>
+<li><p>删除全部：</p>
+<p><code>docker rmi -f $(docker images -qa)</code> </p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="容器命令"><a href="#容器命令" class="headerlink" title="容器命令"></a>容器命令</h2><p>容器是一个建议的Linux。</p>
+<ul>
+<li><p>启动容器：</p>
+<p><code>docker run [OPTIONS] IMAGE [COMMAND] [ARG...]</code></p>
+<ul>
+<li><code>--name 容器名</code> :为容器指定一个名字</li>
+<li><code>-d</code> ：后台运行容器，返回</li>
+<li><code>-i</code> : 以<strong>交互模式</strong>运行容器，通常与<code>-t</code> 一同使用</li>
+<li><code>-t</code> :为容器重新分配一个伪输入终端，通常与<code>-i</code> 一同使用。</li>
+<li><code>-p</code>  :主机端口和容器端口<ul>
+<li><code>-p ip:hostPort:containerPort</code> </li>
+<li><code>-p ip::containerPort</code> </li>
+<li><code>-p hostPort:containerPort</code> </li>
+<li><code>-p containerPort</code> </li>
+</ul>
+</li>
+<li><code>-P</code> :随机分配端口</li>
+</ul>
+</li>
+<li><p>列出当前运行所有容器：</p>
+<p><code>docker ps</code> </p>
+<ul>
+<li><code>-a</code> : 列出当前所有正在运行的容器和历史上运行过的容器</li>
+<li><code>-l</code> :显示最近创建的容器</li>
+<li><code>-n</code> :显示最近创建的num个容器<ul>
+<li><code>docker ps -n 3</code> </li>
+</ul>
+</li>
+<li><code>-q</code> :静默模式，只显示容器编号</li>
+<li><code>--no-trunc</code> : 不截断输出</li>
+</ul>
+</li>
+<li><p>退出/停止容器</p>
+<ul>
+<li><p>容器停止退出</p>
+<p><code>exit</code> </p>
+</li>
+<li><p>容器不停止退出</p>
+<p>Ctrl + P + Q</p>
+</li>
+</ul>
+</li>
+<li><p>启动容器</p>
+<p><code>docker start 容器名/容器ID</code> </p>
+</li>
+<li><p>重启容器</p>
+<p><code>docker restart 容器名/容器ID</code> </p>
+<p>重启成功后返回容器名/容器ID</p>
+</li>
+<li><p>停止容器</p>
+<p><code>docker stop 容器名/容器ID</code></p>
+</li>
+<li><p>强制停止容器</p>
+<p><code>docker kill 容器名/容器ID</code> </p>
+</li>
+<li><p>删除已停止的容器</p>
+<p><code>docker rm 镜像ID</code> </p>
+<ul>
+<li><p>一次删除多个容器</p>
+<p><code>docker rm -f $(docker ps -a -q)</code> </p>
+<p><code>docker ps -a -q | xargs docker rm</code>  （管道传递参数）</p>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<ul>
+<li><p>启动守护式容器</p>
+<p><code>docker run -d 镜像名/镜像ID</code> </p>
+<p><code>docker run -d -p 主机端口:容器内端口 容器ID</code> </p>
+<ul>
+<li><p>如果使用 <code>docker ps -a</code> 查看，会发现容器已经退出</p>
+</li>
+<li><p><strong>Docker容器后台运行，就必须要有一个前台进程与之交互</strong> </p>
+<p>如果容器后台运行，如果不是一直挂起的命令，他就会自动退出。</p>
+</li>
+<li><p>所以最佳的解决方式是将运行的进程以前台进程运行。</p>
+</li>
+</ul>
+</li>
+<li><p>查看容器日志</p>
+<p><code>docker logs -f -t --tail 容器ID</code> </p>
+<ul>
+<li><code>-t</code>：显示加入时间戳</li>
+<li><code>-f</code> ：持续显示最新的日志</li>
+<li><code>--tail</code> ：显示最后多少条</li>
+</ul>
+</li>
+<li><p>显示容器内运行的进程</p>
+<p><code>docker top 容器ID</code> </p>
+</li>
+<li><p>查看容器内部的细节</p>
+<p><code>docker inspect 容器ID</code> </p>
+</li>
+<li><p>进入正在运行的容器并以命令行与之交互</p>
+<ul>
+<li><p>直接进入容器启动命令的终端</p>
+<p><code>docker attach 容器ID</code> </p>
+</li>
+<li><p>在容器中打开新的终端，并且可以启动新的进程。</p>
+<p><code>docker exec -it 容器ID bashShell</code></p>
+<p><code>docker exec -it 容器ID /bin/bash</code>  和<code>docker attach 容器ID</code> 相同。</p>
+</li>
+</ul>
+</li>
+<li><p>把容器内文件拷贝文件到主机上</p>
+<p><code>docker cp 容器ID:容器内的路径 目录主机路径</code> </p>
+<p><code>docker cp 130b1f6708dd:/x.txt /Users</code> </p>
+</li>
+</ul>
+<h1 id="Docker镜像"><a href="#Docker镜像" class="headerlink" title="Docker镜像"></a>Docker镜像</h1><p>image：</p>
+<p>镜像是轻量级、可执行的独立软件包，用来打包软件运行环境和基于运行环境开发的软件，包含运行某个软件所需的所有内容，包括代码、库、环境变量、配置文件等。</p>
+<h2 id="UnionFS"><a href="#UnionFS" class="headerlink" title="UnionFS"></a>UnionFS</h2><p>UnionFS（联合文件系统）是一种分层、轻量高性能的文件系统，支持对文件系统的修改作为一次提交来一层层的叠加，同时将不同目录挂载到同一个虚拟文件系统下。</p>
+<p>Union文件系统时Docker镜像的基础。</p>
+<p>镜像通过分层来进行继承，基于基础镜像可以制作各种具体的应用镜像。</p>
+<p>特点：一次加载多个文件系统，但从外面看起来，只能看到一个文件系统，联合加载会把各层文件系统叠加起来，最终的文件系统包含所有底层的文件和目录。</p>
+<h2 id="Docker镜像的加载"><a href="#Docker镜像的加载" class="headerlink" title="Docker镜像的加载"></a>Docker镜像的加载</h2><p>Docker镜像实际是由一层一层的文件系统组成。</p>
+<p>bootfs(boot file system)包含bootloader和kernel，bootloader主要是引导加载kernel，Linux刚启动时会加载bootfs文件系统。</p>
+<p>Docker镜像的最底层就是bootfs，这一层和典型的Linux/Unix系统是一样的，包含bootloader和kernel。</p>
+<p>当boot加载完成后，整个kernel就在内存中了，此时内存的使用权已由bootfs转交给kernel，此时系统也会卸载bootfs。</p>
+<p>rootfs（root file system)，在bootfs之上，包含的就是典型Linux系统中的/dev, /proc, /bin, /etc等标准目录和文件。rootfs就是各种不同的操作系统发行版，比如Linux，Centos等。</p>
+<p>平常安装等虚拟机的CentOS都是几个G，为什么docker版的centos只有几百兆？</p>
+<p>对于一个精简的OS，rootfs可以很小，只需要包括最基本的命令、工具和程序库，因为底层直接使用宿主机的kernel，自己只需要提供rootfs就行了。</p>
+<p>因此，对于不同的Linux发行版，bootfs基本一致，rootfs会有差别，因此不同的发行版可以共用bootfs。</p>
+<h2 id="分层的镜像"><a href="#分层的镜像" class="headerlink" title="分层的镜像"></a>分层的镜像</h2><p>在docker image下载、删除时，可以发现是一层一层的。</p>
+<p>分层的镜像的一个最大的好处是共享资源。</p>
+<p>如果有多个镜像都是从相同的base镜像build而来，那宿主机中只需在磁盘上保存一份base镜像，同时内存中也只需要加载一份base镜像，就可以为所有的容器服务了。</p>
+<h2 id="镜像commit操作"><a href="#镜像commit操作" class="headerlink" title="镜像commit操作"></a>镜像commit操作</h2><p>Docker镜像都是只读的，但当镜像实例化，启动容器时，一个新的可写层被加载到镜像的顶部，这一层通常被称作“容器层”，“容器层”之下的都叫“镜像层”。</p>
+<p>docker commit提交容器层副本使之成为一个新的镜像。</p>
+<p><code>docker commit -m &quot;message&quot;  -a &quot;author&quot; 容器ID 命名空间/新建镜像名[:TAGS]</code> </p>
+<h1 id="容器数据卷"><a href="#容器数据卷" class="headerlink" title="容器数据卷"></a>容器数据卷</h1><p>Docker理念：</p>
+<p>将代码和运行的环境打包形成容器，运行伴随着容器，但希望运行中的数据是持久化的，希望容器之间是共享数据的。</p>
+<p>如果不通过docker commit生成新的镜像，使得数据作为镜像的一部分保存下来，那么容器删除后，数据也没有了，为了保存数据，使用容器数据卷。</p>
+<p>如果不使用commit 生成新的镜像，Docker容器产生的数据将随着容器的删除而一起删除，为了保存数据，我们使用卷。</p>
+<h2 id="卷"><a href="#卷" class="headerlink" title="卷"></a>卷</h2><p>卷就是目录或者文件，存在于一个或多个容器中，由docker挂载到容器，但不属于UnionFS（联合文件系统），因此能绕过UnionFS，提供一些用于持续存储或共享数据的特性。</p>
+<p>卷的设计目的就是为了数据持久化，完全独立于容器的生存周期，因此Docker不会在容器删除的时候删除其挂载的数据卷。</p>
+<p>数据卷的特点：</p>
+<ol>
+<li>数据卷可以在容器之间共享或重用数据。</li>
+<li>卷中的更改直接在所有共享该卷容器中生效。</li>
+<li>数据卷中的更改不会包含在镜像的更新中。</li>
+<li>数据卷的生命周期一直持续到没有容器使用它为止。</li>
+</ol>
+<h2 id="数据卷挂载"><a href="#数据卷挂载" class="headerlink" title="数据卷挂载"></a>数据卷挂载</h2><h3 id="直接命令添加"><a href="#直接命令添加" class="headerlink" title="直接命令添加"></a>直接命令添加</h3><ol>
+<li><p>数据挂载(<code>-v</code> value)</p>
+<p><code>docker run -it -v /宿主机目录:/容器内目录 镜像名</code> </p>
+</li>
+<li><p>查看挂载是否成功</p>
+<p><code>docker inspect 镜像名</code> </p>
+</li>
+<li><p>宿主机和容器之间实现数据共享，在容器停止退出后，修改宿主机数据，数据完全同步。</p>
+</li>
+</ol>
+<ul>
+<li><p>带权限的数据挂载，加<code>:ro</code> (readonly) </p>
+<p><code>docker run -it -v /宿主机绝对路径目录:/容器内目录:ro 镜像名</code></p>
+<p>此时容器中对数据卷只读。</p>
+</li>
+</ul>
+<hr>
+<p>当挂载主机目录事，Docker访问出现<code>cannot open directory .: Permission denied</code> </p>
+<p>解决办法：在挂砸目录后加参数 <code>--privileged=true</code> </p>
+<h3 id="DockerFile添加"><a href="#DockerFile添加" class="headerlink" title="DockerFile添加"></a>DockerFile添加</h3><p>在DockerFile中可以使用<code>VOLUME</code> 指令给镜像添加一个或多个数据卷。</p>
+<p>注意：</p>
+<p>Docker出于可移植性和分享的考虑，指令中只有容器内的地址，因为宿主主机目录依赖于特定的主机。</p>
+<ol>
+<li><p>Dockerfile文件构建</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> centos</span><br><span class="line"><span class="keyword">VOLUME</span><span class="language-bash"> [<span class="string">&quot;/dataVolumeContainer1&quot;</span>, <span class="string">&quot;/dataVolumeContainer2&quot;</span>, <span class="string">&quot;/dataVolumeContainer3&quot;</span>]</span></span><br><span class="line"><span class="keyword">CMD</span><span class="language-bash"> <span class="built_in">echo</span> <span class="string">&quot;finished,-----success&quot;</span></span></span><br><span class="line"><span class="keyword">CMD</span><span class="language-bash"> /bin/bash</span></span><br></pre></td></tr></table></figure>
+
+<p>以上docker文件类似于一下命令挂载</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it -v /host1:/dataVolumeContainer1 -v/host1:/dataVolumeContainer2 -v /host3:/dataVolumeContainer3 centos /bin/bash</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>build构建镜像（<code>-f</code> file)</p>
+<p><code>docker build -f DockerFile文件路径 -t 命名空间/镜像名 镜像生成路径</code></p>
+<p><code>docker build -f ./Dockerfile  -t fred/centos .</code></p>
+</li>
+</ol>
+<h2 id="数据卷容器"><a href="#数据卷容器" class="headerlink" title="数据卷容器"></a>数据卷容器</h2><p>数据容器卷：</p>
+<p>命名的容器挂载数据卷，其他容器通过挂载这个父容器实现数据共享，挂载数据卷的容器称为数据卷容器。</p>
+<p><strong>容器之间可以传递配置信息，数据卷的生命周期一直持续到没有容器使用它为止。</strong></p>
+<ol>
+<li><p>挂载数据卷到父容器（命名为<code>dc01</code> ）上：命令添加/Dockerfile添加</p>
+</li>
+<li><p>容器继承父容器的数据卷(<code>--volumes-from</code> )</p>
+<p><code>docker run -it --name 子容器名 --volumes-from 父容器名 生成子容器的镜像名</code> </p>
+<p>e.g: <code>docker run -it --name dc02 --volumes-from dc01 fred/centos</code> </p>
+</li>
+</ol>
+<p>dc01已经挂载数据卷，此时dc02继承它，那么dc01挂载的数据卷，dc02也实现了共享。</p>
+<h1 id="Dockerfile"><a href="#Dockerfile" class="headerlink" title="Dockerfile"></a>Dockerfile</h1><p>Dockerfile是用来构建Docker镜像的构建文件，是由一系列命令和参数构成的脚本。</p>
+<p>构建容器卷的步骤：</p>
+<ol>
+<li>编写Dockerfile文件</li>
+<li>docker build构建</li>
+<li>docker run启动容器</li>
+</ol>
+<p>Centos的Dockerfile文件</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> scratch</span><br><span class="line"><span class="keyword">ADD</span><span class="language-bash"> centos-7.8.2003-x86_64-docker.tar.xz /</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">LABEL</span><span class="language-bash"> \</span></span><br><span class="line"><span class="language-bash">    org.label-schema.schema-version=<span class="string">&quot;1.0&quot;</span> \</span></span><br><span class="line"><span class="language-bash">    org.label-schema.name=<span class="string">&quot;CentOS Base Image&quot;</span> \</span></span><br><span class="line"><span class="language-bash">    org.label-schema.vendor=<span class="string">&quot;CentOS&quot;</span> \</span></span><br><span class="line"><span class="language-bash">    org.label-schema.license=<span class="string">&quot;GPLv2&quot;</span> \</span></span><br><span class="line"><span class="language-bash">    org.label-schema.build-date=<span class="string">&quot;20200504&quot;</span> \</span></span><br><span class="line"><span class="language-bash">    org.opencontainers.image.title=<span class="string">&quot;CentOS Base Image&quot;</span> \</span></span><br><span class="line"><span class="language-bash">    org.opencontainers.image.vendor=<span class="string">&quot;CentOS&quot;</span> \</span></span><br><span class="line"><span class="language-bash">    org.opencontainers.image.licenses=<span class="string">&quot;GPL-2.0-only&quot;</span> \</span></span><br><span class="line"><span class="language-bash">    org.opencontainers.image.created=<span class="string">&quot;2020-05-04 00:00:00+01:00&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">CMD</span><span class="language-bash"> [<span class="string">&quot;/bin/bash&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Dockerfile构建过程"><a href="#Dockerfile构建过程" class="headerlink" title="Dockerfile构建过程"></a>Dockerfile构建过程</h2><p><strong>基础规则：</strong></p>
+<ol>
+<li>保留字指令必须大写，且后面必须至少一个参数。</li>
+<li>指令顺序执行。</li>
+<li>注释符号：<code>#</code> </li>
+<li>每条指令都会创建一个新的镜像层，并对该镜像进行提交。</li>
+</ol>
+<p><strong>执行流程：</strong></p>
+<ol>
+<li>从基础镜像运行一个容器</li>
+<li>执行一条指令后并对容器进行修改</li>
+<li>执行类似docker commit操作提交一个新的镜像层</li>
+<li>docker再基于刚提交的镜像运行一个容器</li>
+<li>直到文件所有指令执行完成</li>
+</ol>
+<hr>
+<p>辨析Dockerfile，Docker镜像，Docker容器：</p>
+<p>Dockerfile、Docker镜像与Docker容器从软件应用的角度分别代表软件的三个不同阶段：</p>
+<ol>
+<li><p>Dockerfile是软件的原材料，是面向开发的。</p>
+<p>Dockerfile定义了进程需要的一切东西。Dockerfile设计的内容包括执行代码或者是文件、环境变量、依赖包、运行时环境、动态链接库、操作系统的发行版、服务进程和内核进程等等。</p>
+</li>
+<li><p>Docker镜像是软件的交付品，是交付标准。</p>
+<p>在用Dockerfile定义一个文件之后，docker build会产生一个Docker镜像，运行 Docker镜像时，才真正开始提供服务。</p>
+</li>
+<li><p>Docker容器则可以认为是软件的运行态，涉及部署和运维。</p>
+<p>Docker容器是直接提供服务的。</p>
+</li>
+</ol>
+<h2 id="Dockfile体系结构"><a href="#Dockfile体系结构" class="headerlink" title="Dockfile体系结构"></a>Dockfile体系结构</h2><img src="https://s1.ax1x.com/2020/07/25/UzVdET.png" alt="UzVdET.png" style="zoom:50%;" /> 
+
+<ul>
+<li><p>FROM</p>
+<p>基础镜像</p>
+</li>
+<li><p>MAINTAINER</p>
+<p>镜像维护者的姓名和邮箱地址</p>
+</li>
+<li><p>RUN</p>
+<p>容器构建时需要运行的命令</p>
+</li>
+<li><p>EXPOSE</p>
+<p>当前容器对外暴露的端口号</p>
+</li>
+<li><p>WORKDIR</p>
+<p>指定在创建容器后，终端默认登陆进来的工作目录</p>
+</li>
+<li><p>ENV</p>
+<p>构建容器中的设置环境变量</p>
+</li>
+<li><p>ADD</p>
+<p>将宿主机目录下的文件拷贝进镜像且ADD命令会自动处理URL和解压tar压缩包</p>
+</li>
+<li><p>COPY</p>
+<p>拷贝文件和目录到镜像中</p>
+<p><code>COPY src dest</code></p>
+<p><code>COPY [&quot;src&quot;, &quot;dest&quot;]</code> </p>
+</li>
+<li><p>VOLUME</p>
+<p>容器数据卷 用于数据保存和持久化工作</p>
+</li>
+<li><p>CMD</p>
+<p>指定一个容器启动时运行的命令</p>
+<ul>
+<li><p>shell 格式：CMD &lt;命令&gt;</p>
+</li>
+<li><p>exec格式：CMD[“可执行文件”, “arg1”, “arg2”,…]</p>
+</li>
+<li><p>参数列表格式：CMD [“arg1”, “arg2”,…] 在指定来ENTRYPOINT指令后，用⌘指定具体的参数。</p>
+</li>
+</ul>
+<p>只有最后一个CMD生效，CMD会被docker run之后的参数替换</p>
+</li>
+<li><p>ENTRYPOINT</p>
+<p>指定一个容器启动时运行的命令</p>
+<p>会在docker run后面追加参数</p>
+</li>
+<li><p>ONBUILD</p>
+<p>当构建一个被继承的Dockerfile时，父镜像在被子镜像继承后父镜像的ONBUILD被触发</p>
+</li>
+</ul>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Tools」：Docker</p><p><a href="https://f7ed.com/2020/07/21/Docker/">https://f7ed.com/2020/07/21/Docker/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2020-07-21</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2020-07-25</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Tools/">Tools, </a><a class="link-muted" rel="tag" href="/tags/Docker/">Docker </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/07/22/html-css/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Web」:HTML and CSS</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2020/07/18/Git-and-GitHub/"><span class="level-item">「Tools」:Git and GitHub</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "abaafe4b8b2c874eaf06985bb8fb17c0",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">70</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">135</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Docker简介"><span class="level-left"><span class="level-item">1</span><span class="level-item">Docker简介</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Docker-是什么"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">Docker 是什么</span></span></a></li><li><a class="level is-mobile" href="#能干嘛？"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">能干嘛？</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#之前的虚拟化技术"><span class="level-left"><span class="level-item">1.2.1</span><span class="level-item">之前的虚拟化技术</span></span></a></li><li><a class="level is-mobile" href="#容器虚拟化技术"><span class="level-left"><span class="level-item">1.2.2</span><span class="level-item">容器虚拟化技术</span></span></a></li><li><a class="level is-mobile" href="#开发-运维（DevOps"><span class="level-left"><span class="level-item">1.2.3</span><span class="level-item">开发/运维（DevOps)</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Docker的基本组成"><span class="level-left"><span class="level-item">1.3</span><span class="level-item">Docker的基本组成</span></span></a></li><li><a class="level is-mobile" href="#Docker运行原理"><span class="level-left"><span class="level-item">1.4</span><span class="level-item">Docker运行原理</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#为什么比虚拟机快"><span class="level-left"><span class="level-item">1.4.1</span><span class="level-item">为什么比虚拟机快</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Docker镜像加速"><span class="level-left"><span class="level-item">1.5</span><span class="level-item">Docker镜像加速</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Docker常用命令"><span class="level-left"><span class="level-item">2</span><span class="level-item">Docker常用命令</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#镜像命令"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">镜像命令</span></span></a></li><li><a class="level is-mobile" href="#容器命令"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">容器命令</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Docker镜像"><span class="level-left"><span class="level-item">3</span><span class="level-item">Docker镜像</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#UnionFS"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">UnionFS</span></span></a></li><li><a class="level is-mobile" href="#Docker镜像的加载"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">Docker镜像的加载</span></span></a></li><li><a class="level is-mobile" href="#分层的镜像"><span class="level-left"><span class="level-item">3.3</span><span class="level-item">分层的镜像</span></span></a></li><li><a class="level is-mobile" href="#镜像commit操作"><span class="level-left"><span class="level-item">3.4</span><span class="level-item">镜像commit操作</span></span></a></li></ul></li><li><a class="level is-mobile" href="#容器数据卷"><span class="level-left"><span class="level-item">4</span><span class="level-item">容器数据卷</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#卷"><span class="level-left"><span class="level-item">4.1</span><span class="level-item">卷</span></span></a></li><li><a class="level is-mobile" href="#数据卷挂载"><span class="level-left"><span class="level-item">4.2</span><span class="level-item">数据卷挂载</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#直接命令添加"><span class="level-left"><span class="level-item">4.2.1</span><span class="level-item">直接命令添加</span></span></a></li><li><a class="level is-mobile" href="#DockerFile添加"><span class="level-left"><span class="level-item">4.2.2</span><span class="level-item">DockerFile添加</span></span></a></li></ul></li><li><a class="level is-mobile" href="#数据卷容器"><span class="level-left"><span class="level-item">4.3</span><span class="level-item">数据卷容器</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Dockerfile"><span class="level-left"><span class="level-item">5</span><span class="level-item">Dockerfile</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Dockerfile构建过程"><span class="level-left"><span class="level-item">5.1</span><span class="level-item">Dockerfile构建过程</span></span></a></li><li><a class="level is-mobile" href="#Dockfile体系结构"><span class="level-left"><span class="level-item">5.2</span><span class="level-item">Dockfile体系结构</span></span></a></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

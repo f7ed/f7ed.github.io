@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Cryptography-Boneh」:Block Cipher 1 - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="这篇文章介绍了块密码。 文中主要分为四个部分。 第一个部分解释了块密码的基础概念，包括抽象概念PRF（伪随机函数）和PRP（伪随机置换）的定义及其安全定义。 第二个部分介绍了经典块密码DES，包括DES的Feistel网络，支撑Feistel网络的Luby-Rackoff定理，triple-DES和对DES的一些攻击方法。特别是有效的中间相遇攻击。 第三个部分介绍了目前流行的块密码AES，包括AE"><meta property="og:type" content="blog"><meta property="og:title" content="「Cryptography-Boneh」:Block Cipher 1"><meta property="og:url" content="https://f7ed.com/2021/09/09/stanford-crypto-blockcipher1/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="这篇文章介绍了块密码。 文中主要分为四个部分。 第一个部分解释了块密码的基础概念，包括抽象概念PRF（伪随机函数）和PRP（伪随机置换）的定义及其安全定义。 第二个部分介绍了经典块密码DES，包括DES的Feistel网络，支撑Feistel网络的Luby-Rackoff定理，triple-DES和对DES的一些攻击方法。特别是有效的中间相遇攻击。 第三个部分介绍了目前流行的块密码AES，包括AE"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/blockcipher-nail.png"><meta property="article:published_time" content="2021-09-08T16:00:00.000Z"><meta property="article:modified_time" content="2021-12-28T06:30:13.876Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="公开课"><meta property="article:tag" content="Cryptography"><meta property="article:tag" content="BlockCipher"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/blockcipher-nail.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2021/09/09/stanford-crypto-blockcipher1/"},"headline":"「Cryptography-Boneh」:Block Cipher 1","image":["https://f7ed.com/gallery/thumbnails/blockcipher-nail.png"],"datePublished":"2021-09-08T16:00:00.000Z","dateModified":"2021-12-28T06:30:13.876Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"这篇文章介绍了块密码。 文中主要分为四个部分。 第一个部分解释了块密码的基础概念，包括抽象概念PRF（伪随机函数）和PRP（伪随机置换）的定义及其安全定义。 第二个部分介绍了经典块密码DES，包括DES的Feistel网络，支撑Feistel网络的Luby-Rackoff定理，triple-DES和对DES的一些攻击方法。特别是有效的中间相遇攻击。 第三个部分介绍了目前流行的块密码AES，包括AE"}</script><link rel="canonical" href="https://f7ed.com/2021/09/09/stanford-crypto-blockcipher1/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Cryptography-Boneh」:Block Cipher 1</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2021-09-08T16:00:00.000Z" title="2021-09-08T16:00:00.000Z">2021-09-09</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2021-12-28T06:30:13.876Z" title="2021-12-28T06:30:13.876Z">2021-12-28</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Cryptography-Boneh/">Cryptography-Boneh</a></span><span class="level-item"><i class="far fa-clock"></i> 30 minutes read (About 4557 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>这篇文章介绍了块密码。</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><p>文中主要分为四个部分。</p>
+<p>第一个部分解释了块密码的基础概念，包括抽象概念PRF（伪随机函数）和PRP（伪随机置换）的定义及其安全定义。</p>
+<p>第二个部分介绍了经典块密码DES，包括DES的Feistel网络，支撑Feistel网络的Luby-Rackoff定理，triple-DES和对DES的一些攻击方法。特别是有效的中间相遇攻击。</p>
+<p>第三个部分介绍了目前流行的块密码AES，包括AES的结构和一些攻击方法等。</p>
+<p>最后一小部分介绍了用PRG构造PRF，再利用Feistel网络变成块密码。</p>
+<span id="more"></span>
+
+<h1 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h1><p>块密码，简单来说，就是在给定密钥 (k bits)下，将输入块(n bits)映射到输出块(n bits)。</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvYi3n.png" alt="block ciphers" style="zoom:60%;" />
+
+<p>比如，在3DES中，n = 64 bits, k = 168 bits；在AES中，n = 128 bits, k = 128, 192, 256 bits。</p>
+<p>块密码算法一般是通过迭代（iteration）实现的，如下图的结构：</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvY9hj.png" alt="block ciphers built by iteration" style="zoom:67%;" />
+
+<p>密钥k通过密钥扩展(key expansion)得到一系列轮密钥。</p>
+<p>明文块m通过迭代运算，得到最终的密文c，其中每一次运算称为轮函数R(k, m)。</p>
+<p>对于3DES来说，轮数为n = 48，对于AES-128来说，轮数为n = 10。</p>
+<p>虽然迭代运算会让块密码比流密码慢很多，但块密码有很多应用。</p>
+<img src="https://z3.ax1x.com/2021/09/13/4CkDNq.png" alt="block ciphers performance" style="zoom:67%;" />
+
+<h2 id="PRPs-and-PRFs"><a href="#PRPs-and-PRFs" class="headerlink" title="PRPs and PRFs"></a>PRPs and PRFs</h2><p>这里介绍两个抽象的概念，伪随机置换（PRP）和伪随机函数（PRF）。</p>
+<p><strong>Pseudo Random Function(PRF):</strong> </p>
+<p>defined over(K, X, Y): $F:K\times X \rightarrow Y$  such that exists “efficient” algorithm to evaluate F(k, x)</p>
+<p>【伪随机函数定义在(K, X, Y)上，只要求是可计算的，没有要求是可逆的】</p>
+<p><strong>Pseudo Random Permutations(PRP):</strong></p>
+<p>defined over(K, X): $E:K\times X\rightarrow X$ such that:</p>
+<ol>
+<li>Exists “efficient” deterministic algorithm to evaluate E(k, x)</li>
+<li>The function E(k, ·) is one to one</li>
+<li>Exists “efficient” inversion algorithm D(k, y)</li>
+</ol>
+<p>【而伪随机置换定义在(K, X)上，除了要求是可计算的，还要求是一对一映射（单射），即存在可逆运算】</p>
+<p>块密码都是PRPs（不然怎么解密），常见的PRP有3DES，AES等：</p>
+<ul>
+<li><p>AES: $K \times X \rightarrow X$ where K = X =  $\{0, 1\}^{128}$ </p>
+</li>
+<li><p>3DES: $K\times X \rightarrow X$ where X =  $\{0, 1\}^{64}$  , K =  $\{0, 1\}^{168}$ </p>
+</li>
+</ul>
+<p>从定义上来说，任何PRP都是PRF；但一个PRF是PRP的充分条件是X=Y，且存在可逆运算(efficiently invertible)。</p>
+<h2 id="Secure-PRFs"><a href="#Secure-PRFs" class="headerlink" title="Secure PRFs"></a>Secure PRFs</h2><p>在介绍PRF的安全性之前，先定义一些符号：</p>
+<p>$F: K \times X \rightarrow Y$ is a PRF.</p>
+<ul>
+<li><p>Funs[X, Y]: the set of all functions from X to Y</p>
+<p>【X到Y的所有映射关系】</p>
+</li>
+<li><p>$S_F={ F(k, \cdot)}$ s.t. $k\in K$  $\subseteq$ Funs[X, Y]</p>
+<p>【确定k就确定了一种X到Y的映射关系】</p>
+</li>
+</ul>
+<img src="https://z3.ax1x.com/2021/09/13/4CkKnH.png" alt="Funs and SF" style="zoom:67%;" />
+
+<p>直觉上来说，当从Funs[X, Y]中随机采样的函数与从 $S_F$ 中随机采样的函数不可区分时，PRF是安全的。</p>
+<blockquote>
+<p>Intuition: a PRF is <strong>secure</strong> if a random function in Funs[X, Y] is indistinguishable from a random function in $S_F$ .</p>
+</blockquote>
+<p>定义下图的游戏：</p>
+<img src="https://z3.ax1x.com/2021/09/13/4CkQHA.png" alt="attack PRF" style="zoom:67%;" />
+
+<p>云从Funs[X, Y]中随机选取一个函数f，并随机选择一个k，即确定了一个在 $S_F$ 中函数。</p>
+<p>攻击者向云多次询问x的计算结果，对云来说，如果是b = 0，他返回f(x)，如果b = 1，他返回F(k, x)。</p>
+<p>当攻击者输入任意输入x时，都无法区分计算结果是f(x)计算的还是F(k, x)计算的，PRF是安全的。</p>
+<h2 id="Secure-PRPs-Block-Ciphers"><a href="#Secure-PRPs-Block-Ciphers" class="headerlink" title="Secure PRPs/Block Ciphers"></a>Secure PRPs/Block Ciphers</h2><p>块密码都是PRP，所以这里也在定义什么是安全的块密码。</p>
+<p>同样定义一些符号：</p>
+<p>$E: K\times X\rightarrow Y$  is a PRP ( X = Y).</p>
+<ul>
+<li><p>Perms[X, Y]: the set of all <strong>one-to-one</strong> functions from X to Y</p>
+<p>【X到Y的所有的一对一映射关系】</p>
+</li>
+<li><p>$S_F={ E(k, \cdot)}$ s.t. $k\in K$  $\subseteq$ Perms[X, Y]</p>
+<p>【确定k就确定了一种X到Y的一对一映射关系】</p>
+</li>
+</ul>
+<p>同样，当从Perms[X, Y]中随机采样的函数与从 $S_F$ 中随机采样的函数不可区分时，PRP是安全的。</p>
+<blockquote>
+<p>Intuition: a PRP is <strong>secure</strong> if a random function in Perms[X, Y] is indistinguishable from a random function in $S_F$ .</p>
+</blockquote>
+<p>定义下图的游戏：</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvYP9s.png" alt="attack PRP" style="zoom:67%;" />
+
+<p>云从Perms[X, Y]中随机选取一个函数 $\pi$ ，并随机选择一个k，即确定了一个在 $S_F$ 中函数。</p>
+<p>攻击者向云多次询问x的计算结果，对云来说，如果是b = 0，他返回$\pi(x)$，如果b = 1，他返回F(k, x)。</p>
+<p>当攻击者输入任意输入x时，都无法区分计算结果是$\pi(x)$计算的还是F(k, x)计算的，PRP是安全的。</p>
+<p>注意：这里是对任意输入，如果对某一个输入，攻击者能区分，这个PRP都是不安全的。</p>
+<h2 id="PRF-rightarrow-PRG"><a href="#PRF-rightarrow-PRG" class="headerlink" title="PRF $\rightarrow$ PRG"></a>PRF $\rightarrow$ PRG</h2><p>PRF的一个简单应用是把它变成一个PRG。</p>
+<p>Let   $F: K\times \{0, 1\}^n\rightarrow \{0, 1\}^n$  be a secure PRF.</p>
+<p>The following  $G: K\rightarrow \{0,1\}^{nt}$  is a secure PRF:</p>
+
+$$
+G(k) = F(k, 0)\mid\mid F(k, 1) \mid\mid \dots \mid\mid F(k, t-1)
+$$
+
+
+<p>这是一种计数器模式，计数器模式最显著的优点是可并行计算。</p>
+<p>此外该PRG的安全性来自于PRF的安全性，即F(k, ·)与f(·)不可区分。</p>
+<h1 id="DES"><a href="#DES" class="headerlink" title="DES"></a>DES</h1><p>Data Encryption Standard（DES）</p>
+<p>DES的核心就是Feistel网络结构：</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvYpNQ.png" alt="DES Feistel" style="zoom:67%;" />
+
+<ul>
+<li> $R_i = f_i(R_{i-1})\oplus L_{i-1}$  </li>
+<li> $L_i = R_{i-1}$   
+
+</li>
+</ul>
+<p>对于给定的函数的轮函数 f1, …, fd:  $ \{0,1\}^n\rightarrow \{0,1\}$ ，Feistel网络结构都可以构造出2n bits的可逆函数:   $ F: \{0,1\}^{2n}\rightarrow \{0,1\}^{2n}$</p>
+<blockquote>
+<p>Claim: for all f1, …, fd:  $ \{0,1\}^n\rightarrow \{0,1\}$ , Feistel network   $ F: \{0,1\}^{2n}\rightarrow \{0,1\}^{2n}$ is invertible.</p>
+</blockquote>
+<p>证明：构造出可逆函数即可</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJxHS.png" alt="inverse" style="zoom:67%;" />
+
+<ul>
+<li> $R_{i-1} = L_i$  </li>
+<li> $L_{i-1}=R_i\oplus f_i(L_i)$   
+
+</li>
+</ul>
+<p>需要注意的是，在解密电路中，轮函数的使用如下图是逆序使用的。</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJvB8.png" alt="decryption circuit" style="zoom:67%;" />
+
+<hr>
+<h2 id="Luby-Rackoff’85-Thm"><a href="#Luby-Rackoff’85-Thm" class="headerlink" title="Luby-Rackoff’85 Thm"></a>Luby-Rackoff’85 Thm</h2><p>支撑Feistel Network安全性的一个理论是Luby-Rackoff的一个定理，这将安全的PRF变成安全的PRP，这也是块密码（使用Feistel结构的块密码）安全性的支撑。</p>
+<p>Thm: </p>
+ $f:K\times \{0,1\}^n\rightarrow \{0,1\}^n$  a secure PRF
+
+<p>then, 3-round Feistel $F: K^3\times{0,1}^{2n}\rightarrow {0,1}^{2n}$ a secure PRP.</p>
+<img src="https://z3.ax1x.com/2021/09/13/4Ck1AI.png" alt="3-round Feistel" style="zoom:67%;" />
+
+<h2 id="DES-Structure"><a href="#DES-Structure" class="headerlink" title="DES Structure"></a>DES Structure</h2><p>DES的核心是一个16轮的Feistel的网络。</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvYSAg.png" alt="DES" style="zoom:67%;" />
+
+<p>DES的输入是64 bits块，通过一个初始置换（IP），该置换并不是为安全性服务的，只是DES标准里的要求。</p>
+<p>然后再通过16轮的Feistel网络，在Feistel网络中依次调用轮函数，轮函数中的轮密钥是通过初试密钥扩展得到的16个不同密钥。</p>
+<p>最后再通过逆置换得到64 bits的输出块。</p>
+<h3 id="The-function-F-ki-x"><a href="#The-function-F-ki-x" class="headerlink" title="The function F(ki, x)"></a>The function F(ki, x)</h3><p>DES的轮函数结构如下图：</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJOjP.png" alt="round function" style="zoom:67%;" />
+
+<p>轮函数的输入是32 bits x和48 bits的密钥ki：</p>
+<ol>
+<li><p>32 bits x通过expansion box，扩展为48 bits。扩展方式只是复制一些位。</p>
+</li>
+<li><p>扩展后的x与轮密钥ki进行异或运算。</p>
+</li>
+<li><p>异或运算后的结果为48 bits，再被划分为8组6 bits，每一组都通过一个S-box，每一个S-box实则是一个非线形映射 ${0,1}^6\rightarrow {0,1}^4$ ，在实现中往往使用查表的形式使用。</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJjnf.png" alt="S-box" style="zoom:70%;" />
+</li>
+<li><p>通过S-box后，又得到了32 bits，最后通过一个置换（Permutation），得到该轮的最终输出。</p>
+</li>
+</ol>
+<h3 id="S-box"><a href="#S-box" class="headerlink" title="S-box"></a>S-box</h3><p>S-box也是DES中最重要的一部分，因为他是DES中唯一的非线性部分，它保证了整个DES的非线形映射关系。</p>
+<p>来看一个糟糕的S-box的例子： $\mathrm{S}_{\mathrm{i}}\left(\mathrm{x}_{1}, \mathrm{x}_{2}, \ldots, \mathrm{x}_{6}\right)=\left(\mathrm{x}_{2} \oplus \mathrm{x}_{3}, \mathrm{x}_{1} \oplus \mathrm{x}_{4} \oplus \mathrm{x}_{5}, \quad \mathrm{x}_{1} \oplus \mathrm{x}_{6}, \quad \mathrm{x}_{2} \oplus \mathrm{x}_{3} \oplus \mathrm{x}_{6}\right)$  </p>
+<p>上式也可以写做： $\mathrm{S}<em>{\mathrm{i}}(\mathbf{x})=\mathrm{A}</em>{\mathrm{i}} \cdot x(\bmod 2)$   </p>
+<p><img src="https://z3.ax1x.com/2021/09/10/hvJLct.png" alt="S-box" style="zoom:67%;" /><img src="https://z3.ax1x.com/2021/09/10/hvJq1I.png" alt="DES"></p>
+<p>我们称上面的S盒是一个线性函数。</p>
+<p>这会带来什么影响呢？如果S盒是线性的，那么整个DES都会变成线性的，即存在一个确定的二元矩阵 $\mathbf{B}$ 满足：</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJq1I.png" alt="DES" style="zoom:80%;" />
+
+<p>而该线性关系还有一个简单的检验方法：</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJ7hd.png" alt="test" style="zoom:70%;" />
+
+<h2 id="Exhaustive-Search-Attacks"><a href="#Exhaustive-Search-Attacks" class="headerlink" title="Exhaustive Search Attacks"></a>Exhaustive Search Attacks</h2><p>DES的密钥空间比较小，因此可以使用穷举密钥的方法攻击。</p>
+<p>对于已知的一些明文-密文对，我们希望穷举攻击能得到唯一的一个密钥，而不是说对于一个明文-密文对，有多个密钥（映射关系）都符合。</p>
+<p>因此支撑穷举攻击DES的一个定理是：</p>
+<p>假设DES是一个理想的密码，即 $2^{56}$ 个密钥对应 $2^{56}$ 个不同的随机可逆函数，那么对于任意的明文-密文对（$c = \mathrm{DES}(k,m)$） ，最多只有一个密钥的概率大于 99.5%。</p>
+<p><strong>证明：</strong> </p>
+<p>假设存在一个密钥k’，不是真正的密钥k，但满足 $c = \mathrm{DES}(k’, m)=\mathrm{DES}(k,m)$ 。</p>
+<p>这样的概率是小于 所有 $2^{56}$ 个密钥都满足该明文-密文对的概率。</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJb9A.png" alt="Lemma" style="zoom:70%;" />
+
+<p>因此，如果已知两个明文-密文对，那么通过这两个DES pairs就可以以 $1-1/2^{71}$ 的概率确定出正确的密钥。</p>
+<p>同样，对于AES-128来说，通过两个AES pairs就可以以 $1-1/2^{128}$ 的概率确定出正确的密钥。</p>
+<h2 id="Strength-DES-against-ex-search"><a href="#Strength-DES-against-ex-search" class="headerlink" title="Strength DES against ex. search"></a>Strength DES against ex. search</h2><p>因为DES的密钥空间实在是太小了，所以有一个DES challenge的挑战，随着计算能力的发展，破解DES的速度越来越快。</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJTtH.png" alt="DES challenge" style="zoom:60%;" />
+
+<h3 id="1-Triple-DES"><a href="#1-Triple-DES" class="headerlink" title="1: Triple-DES"></a>1: Triple-DES</h3><p>一个抵御DES穷举攻击的算法是<strong>Triple- DES</strong>。</p>
+<ul>
+<li>Let $\mathrm{E}:\mathrm{K}\times \mathrm{M}\rightarrow \mathrm{M}$ be a block cipher.</li>
+<li>Define $\mathrm{3E}: \mathrm{K}^3\times \mathrm{M}\rightarrow \mathrm{M}$ as $\mathrm{3E}((\mathrm{k_1},\mathrm{k_2},\mathrm{k_3}),\mathrm{m})=\mathrm{E}(\mathrm{k_1},\mathrm{D}(\mathrm{k_2},\mathrm{E}(\mathrm{k_3},\mathrm{m})))$ </li>
+</ul>
+<p>triple- DES为什么是E、D、E的运算顺序，而不是E、E、E的运算顺序？</p>
+<p>因为对于Triple- DES来说，如果 $k_1=k_2=k_3$ ，就变成了single DES（虽然在运算速度上，没有什么必要）</p>
+<p>Triple- DES的密钥空间大小是 $3\times 56=168$ bits，在运算上会比DES慢三倍，但攻击triple- DES只需要 $O(2^{118})$ 的时间复杂度。（下文介绍的中间相遇攻击）</p>
+<h4 id="Meet-in-the-middle-attack"><a href="#Meet-in-the-middle-attack" class="headerlink" title="Meet in the middle attack"></a>Meet in the middle attack</h4><p>为什么不用double DES? </p>
+<p>因为有一种中间相遇攻击(meet in the middle attack)，让攻击double DES的时间和穷举攻击single DES的时间差不多。</p>
+<p>如果我们使用double DES，$\mathrm{2E}((\mathrm{k_1},\mathrm{k_2}),\mathrm{m})=\mathrm{E}(\mathrm{k_1},\mathrm{E}(\mathrm{k_2},\mathrm{m}))$  </p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJoAe.png" alt="double DES" style="zoom:67%;" />
+
+<p>double DES的密钥空间为112 bits，但在中间相遇攻击下，穷举范围可以少一半比特。</p>
+<p>中间相遇攻击的核心思想是，我们希望找到 $(k_1, k_2)$ 满足 $E(k_1, E(k_2, M))=C$ ，即满足：$E(k_2,M)=D(k_1, C)$ 。</p>
+<p>Attack: M = (m1, …, m10), C = (c1, …, c10)</p>
+<ol>
+<li><p>build table and sort on 2nd column.</p>
+<p>从double DES 的左边的明文开始，枚举 $k_2$ ，计算 $E(k^i, M)$ 的值，最后按照 $E(k^i, M)$ 的值排序。</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJ57D.png" alt="build table" style="zoom:67%;" />
+</li>
+<li><p>for all $k\in {0,1}^{56} do:$ test if $D(k,C)$ is in 2nd column.</p>
+<p>从double DES的右边的密文开始检测，是否 $D(k,C)$ 存在在上述表中，如果 $E(k^i, M)=D(k,C)$ ，那么就得到了 $(k^i, k)=(k_2, k_1)$ </p>
+</li>
+</ol>
+<p>分析一下攻击时间，第一部分是建表排序，第二部分是计算二分查表的时间。</p>
+<p>Time = $2^{56} \log \left(2^{56}\right)+2^{56}  \log \left(2^{56}\right)&lt;2^{63}&lt;&lt;2^{112}, \quad \text { space } \approx 2^{56}$ </p>
+<p>同样的，中间相遇攻击同样可以应用于3DES中：$\text{Time}=2^{118},\quad \text{space}\approx 2^{56}$ </p>
+<h3 id="2-DESX"><a href="#2-DESX" class="headerlink" title="2: DESX"></a>2: DESX</h3><p>$\mathrm{E}: \mathrm{K} \times{0,1}^{n} \rightarrow{0,1}^{\mathrm{n}} \text { a block cipher }$ </p>
+<p>Define EX as $\operatorname{EX}\left(\left(\mathrm{k}<em>{1}, \mathrm{k}</em>{2}, \mathrm{k}<em>{3}\right), \mathrm{m}\right)=\mathrm{k}</em>{1} \oplus \mathrm{E}\left(\mathrm{k}<em>{2}, \mathrm{~m} \oplus \mathrm{k}</em>{3}\right)$ </p>
+<p>对于DESX来说，密钥空间长度为: 64+56+64 = 184 bits，但同样的通过中间相遇攻击，time = $2^{64+56}=2^{120}$ .</p>
+<p>需要注意的一点是，在实际使用中，有人使用 $\mathrm{k}<em>{1} \oplus \mathrm{E}\left(\mathrm{k}</em>{2}, \mathrm{<del>m}\right) \text { and } \mathrm{E}\left(\mathrm{k}_{2}, \mathrm{</del>m} \oplus \mathrm{k}_{1}\right)$ 的设计，这样的设计和原始DES一样易收ex. search的攻击。（通过中间相遇攻击）</p>
+<h2 id="More-attacks-on-block-ciphers"><a href="#More-attacks-on-block-ciphers" class="headerlink" title="More attacks on block ciphers"></a>More attacks on block ciphers</h2><h3 id="Attacks-on-the-implementation"><a href="#Attacks-on-the-implementation" class="headerlink" title="Attacks on the implementation"></a>Attacks on the implementation</h3><p>对于DES，还有一些针对实现上的攻击。</p>
+<p>第一种是侧信道攻击（Side channel attacks），通过测量加密解密时的时间差异、能源消耗差异来得到一些额外的信息。</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJhnK.png" alt="side channel attacks" style="zoom:67%;" />
+
+<p>另一种是Fault attacks，通过最后一轮的计算错误可能会暴露密钥k。</p>
+<p>对于实现上的攻击的经验教训是：除了不要自己设计密码学算法，甚至都不要自己去实现。</p>
+<h3 id="Linear-and-differential-attacks"><a href="#Linear-and-differential-attacks" class="headerlink" title="Linear and differential attacks"></a>Linear and differential attacks</h3><p>该攻击的目标是，给定许多inp/out pairs，希望能在比 $2^{56}$ 更少的时间内攻击成功。</p>
+<p><u>Linear cryptanalysis (overview):</u> </p>
+<p>let c = DES(k, m), suppose for random k, m: </p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJR6x.png" alt="prob " style="zoom:77%;" />
+
+<p>第一部分是msg bits的子集合，第二部分是密文bits 的子集合，第三部分是key bits的子集合。</p>
+<p>如果这些都是相互独立的，那么这个概率应该为1/2，但因为有slightly 线性的关系，所以这个概率会有一点bias。对于DES来说，因为第五个S-box的一点bug，$\varepsilon=1/2^{21}\approx 0.0000000477$ .</p>
+<p><u>Thm:</u> </p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJgpR.png" alt="Thm" style="zoom:67%;" />
+
+<p>基于上述线性的关系，该定理表示如果给了 $1/ \varepsilon^2$ 个随机明文密文对，大部分都满足上式比特集合的线性关系。</p>
+<p>所以，对于DES来说，$\varepsilon=1/2^{21}$ ，通过 $2^{42}$ 个inp/out pairs能在 $O(2^{42})$ 时间内得到 $k[l_1,…,k_u]$ 比特集异或的结果。</p>
+<p>但其实不止是xor of key bits，实际上: can find 14个key bits in time $2^{42}$ 。（todo)</p>
+<p>这样就将穷举攻击的复杂度降低到56-14=42 bits in time $2^{42}$  </p>
+<p>Total attack time $\approx 2^{43}&lt;&lt;2^{56}$ with $2^{42}$ random inp/out pairs.</p>
+<hr>
+<p>Lesson:</p>
+<p>A tiny bit of linearly in $S_5$ lead to a $2^{42}$ time attack.</p>
+<p>So don’t design ciphers yourself.</p>
+<h3 id="Quantum-attacks"><a href="#Quantum-attacks" class="headerlink" title="Quantum attacks"></a>Quantum attacks</h3><p>另一个针对穷举攻击的解决方法是量子攻击。</p>
+<p>对于一个一般的搜索问题：</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJytJ.png" alt="generic search problem" style="zoom:67%;" /> 
+
+<p>一般计算机解决该类问题的最优时间是 $O(|X|)$ ，而量子计算机解决该类问题的最优时间是 $O(|X|^{1/2})$ 。</p>
+<p>不过，量子计算机是否被实现还是一个疑问。</p>
+<p> 用量子计算机来穷举密钥空间，只需要 $O(|K|^{1/2})$ 的时间即可找到密钥。</p>
+<h1 id="AES"><a href="#AES" class="headerlink" title="AES"></a>AES</h1><p>AES的发展过程如图：</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJ6h9.png" alt="The AES peocess" style="zoom:50%;" /> 
+
+<p>AES不是Feistel网络结构的密码，他是一个替换-置换类网络(Subs-Perm network):</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJsk4.png" alt="Subs-Perm network" style="zoom:67%;" />
+
+<h2 id="AES-128-schematic"><a href="#AES-128-schematic" class="headerlink" title="AES-128 schematic"></a>AES-128 schematic</h2><p>AES-128的结构如下图：</p>
+<img src="https://z3.ax1x.com/2021/09/13/4Ck3Nt.png" alt="AES-128" style="zoom:67%;" />
+
+<p>输入块是16 bytes的4*4矩阵，通过10轮运算得到最后的输出块。</p>
+<p>每一轮都包括同样的操作（除了最后一轮不太一样），密钥加，字节替换(ByteSub)，行移位(ShiftRow)，列混淆(MixColumn)。其中每一轮的轮密钥是初始16 bytes的密钥通过密钥扩展得到的。</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJD7F.png" alt="round function" style="zoom:67%;" />
+
+<p>轮密钥中的字节替换可以通过预计算查表的形式，也可以通过直接运算的形式。因此在实际应用中可以根据需求做出权衡。</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJ0mT.png" alt="tradeoff" style="zoom:57%;" />
+
+<h2 id="AES-in-hardware"><a href="#AES-in-hardware" class="headerlink" title="AES in hardware"></a>AES in hardware</h2><p>为了加快AES的运算速度，各公司有设计相关指令。</p>
+<p>AES instructions in Intel Westmere:</p>
+<ul>
+<li><p>aesenc, aesenclast: 执行AES中的一轮运算</p>
+<ul>
+<li>128-bit registers: xmm1=state, xmm2=round key </li>
+<li><code>aesenc xmm1, xmm2</code> ：执行一轮运算，并把计算结果放在xmm1中</li>
+</ul>
+</li>
+<li><p>aeskeygenassist: 执行AES的密钥扩展。</p>
+</li>
+</ul>
+<p>同样的硬件上，相对于OpenSSL的实现，可以快14倍。</p>
+<p>同样，在 AMD Bulldozer上也有类似的指令设计。</p>
+<h2 id="Attacks"><a href="#Attacks" class="headerlink" title="Attacks"></a>Attacks</h2><p>AES也存在比暴力搜索密钥空间更好的算法。</p>
+<ul>
+<li><p>Best key recovery attack: four times better than ex. search [BKR’11]</p>
+</li>
+<li><p>Related key apack on AES-256: Given $2^{99}$ inp/out pairs from <strong>four related keys</strong> in AES-256 can recover keys in time ≈299[BK’09]</p>
+</li>
+</ul>
+<h1 id="Block-ciphers-from-PRGs"><a href="#Block-ciphers-from-PRGs" class="headerlink" title="Block ciphers from PRGs"></a>Block ciphers from PRGs</h1><p>我们能否从PRG中构建PRF？</p>
+<p>答案是：是的。</p>
+<p>Let G: $K\rightarrow K^2$ be a secure PRG.</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJNpn.png" alt="G: PRG" style="zoom:67%;" />
+
+<p>Define 1-bit PRF F: $K\times {0,1} \rightarrow K$ as<br>$$<br>F(k,x\in {0,1})=G(k)[x]<br>$$<br>根据定理，如果G是一个secure PRG,那么F就是一个secure PRF。</p>
+<blockquote>
+<p>Thm: If G is a secure PRG then F is a secure PRF.</p>
+</blockquote>
+<p>同样，我们可以通过这样的方式构建更大域的PRF。</p>
+<p>对得到的结果再做一次G运算，得到的G1就是一个2-bit PRF：</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJUlq.png" alt="2-bit PRF" style="zoom:60%;" />
+
+<p>Proof: G1 is a secure PRG</p>
+<p>证明思路就是，因为G是安全的PRG，所以k通过G运算得到的结果与随机串不可区分，同样的，最后扩展出的在 $K^4$ 中的字符串与随机串是不可区分的。</p>
+<img src="https://z3.ax1x.com/2021/09/13/4CkMBd.png" alt="G1 is a secure PRG" style="zoom:67%;" />
+
+<p>同样的，可以扩展出3-bit 的PRF，对于给定的比特输入，也是易于计算的：</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJB0U.png" alt="3-bit PRF eval F(k, 101)" style="zoom:60%;" />
+
+<hr>
+<p>而扩展出更多bit时，就得到了GGM PRF。</p>
+<p>GGM PRF就是通过上述的扩展方式得到 ${0,1}^n$ 域上的PRF：</p>
+<img src="https://z3.ax1x.com/2021/09/10/hvJa60.png" alt="GGM PRF" style="zoom:67%;" />
+
+<p>这种方式，PRF的安全性依赖于PRG的安全性。</p>
+<p>但由于这样的方式运行效率较低，所以在实际应用中很少。</p>
+<p>说到现在，我们好像还没有提到如何从PRG中构建块密码，因为块密码时PRPs。</p>
+<p>如果记性比较好的读者应该还记得我们刚刚提到的Luby-Rackoff定理，将一个安全的PRF作为Feistel网络中的轮函数，3-round Feistel就可以构建一个安全的PRP，即安全的块密码。</p>
+<blockquote>
+<p>Thm: </p>
+ $f:K\times \{0,1\}^n\rightarrow \{0,1\}^n$  a secure PRF
+
+<p>then, 3-round Feistel $F: K^3\times{0,1}^{2n}\rightarrow {0,1}^{2n}$ a secure PRP.</p>
+</blockquote>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Cryptography-Boneh」:Block Cipher 1</p><p><a href="https://f7ed.com/2021/09/09/stanford-crypto-blockcipher1/">https://f7ed.com/2021/09/09/stanford-crypto-blockcipher1/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2021-09-09</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-12-28</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课, </a><a class="link-muted" rel="tag" href="/tags/Cryptography/">Cryptography, </a><a class="link-muted" rel="tag" href="/tags/BlockCipher/">BlockCipher </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2021/09/13/stanford-crypto-blockcipher2/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Cryptography-Boneh」:Block Cipher 2</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2021/07/07/MPC3-OT/"><span class="level-item">「MPC-Mike Rosulek 」：Oblivious Transfer and Extension</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "7f14a4778bd4179e6ede4adb93ef2db2",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">70</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">135</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Overview"><span class="level-left"><span class="level-item">1</span><span class="level-item">Overview</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#PRPs-and-PRFs"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">PRPs and PRFs</span></span></a></li><li><a class="level is-mobile" href="#Secure-PRFs"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">Secure PRFs</span></span></a></li><li><a class="level is-mobile" href="#Secure-PRPs-Block-Ciphers"><span class="level-left"><span class="level-item">1.3</span><span class="level-item">Secure PRPs/Block Ciphers</span></span></a></li><li><a class="level is-mobile" href="#PRF-rightarrow-PRG"><span class="level-left"><span class="level-item">1.4</span><span class="level-item">PRF $\rightarrow$ PRG</span></span></a></li></ul></li><li><a class="level is-mobile" href="#DES"><span class="level-left"><span class="level-item">2</span><span class="level-item">DES</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Luby-Rackoff’85-Thm"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">Luby-Rackoff’85 Thm</span></span></a></li><li><a class="level is-mobile" href="#DES-Structure"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">DES Structure</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#The-function-F-ki-x"><span class="level-left"><span class="level-item">2.2.1</span><span class="level-item">The function F(ki, x)</span></span></a></li><li><a class="level is-mobile" href="#S-box"><span class="level-left"><span class="level-item">2.2.2</span><span class="level-item">S-box</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Exhaustive-Search-Attacks"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">Exhaustive Search Attacks</span></span></a></li><li><a class="level is-mobile" href="#Strength-DES-against-ex-search"><span class="level-left"><span class="level-item">2.4</span><span class="level-item">Strength DES against ex. search</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#1-Triple-DES"><span class="level-left"><span class="level-item">2.4.1</span><span class="level-item">1: Triple-DES</span></span></a></li><li><a class="level is-mobile" href="#2-DESX"><span class="level-left"><span class="level-item">2.4.2</span><span class="level-item">2: DESX</span></span></a></li></ul></li><li><a class="level is-mobile" href="#More-attacks-on-block-ciphers"><span class="level-left"><span class="level-item">2.5</span><span class="level-item">More attacks on block ciphers</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Attacks-on-the-implementation"><span class="level-left"><span class="level-item">2.5.1</span><span class="level-item">Attacks on the implementation</span></span></a></li><li><a class="level is-mobile" href="#Linear-and-differential-attacks"><span class="level-left"><span class="level-item">2.5.2</span><span class="level-item">Linear and differential attacks</span></span></a></li><li><a class="level is-mobile" href="#Quantum-attacks"><span class="level-left"><span class="level-item">2.5.3</span><span class="level-item">Quantum attacks</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#AES"><span class="level-left"><span class="level-item">3</span><span class="level-item">AES</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#AES-128-schematic"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">AES-128 schematic</span></span></a></li><li><a class="level is-mobile" href="#AES-in-hardware"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">AES in hardware</span></span></a></li><li><a class="level is-mobile" href="#Attacks"><span class="level-left"><span class="level-item">3.3</span><span class="level-item">Attacks</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Block-ciphers-from-PRGs"><span class="level-left"><span class="level-item">4</span><span class="level-item">Block ciphers from PRGs</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>
