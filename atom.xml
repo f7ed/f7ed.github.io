@@ -296,9 +296,9 @@
     
       <category term="Poly-commit" scheme="https://f7ed.com/tags/Poly-commit/"/>
     
-      <category term="KZG" scheme="https://f7ed.com/tags/KZG/"/>
-    
       <category term="Bulletproofs" scheme="https://f7ed.com/tags/Bulletproofs/"/>
+    
+      <category term="KZG" scheme="https://f7ed.com/tags/KZG/"/>
     
   </entry>
   
@@ -347,9 +347,9 @@
     
       <category term="SNARKs" scheme="https://f7ed.com/tags/SNARKs/"/>
     
-      <category term="KZG" scheme="https://f7ed.com/tags/KZG/"/>
-    
       <category term="Plonk" scheme="https://f7ed.com/tags/Plonk/"/>
+    
+      <category term="KZG" scheme="https://f7ed.com/tags/KZG/"/>
     
   </entry>
   

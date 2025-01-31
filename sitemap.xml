@@ -776,7 +776,21 @@
   </url>
   
   <url>
+    <loc>https://f7ed.com/tags/CNN/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://f7ed.com/tags/Backpropagation/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://f7ed.com/tags/open-classes/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -797,27 +811,6 @@
   </url>
   
   <url>
-    <loc>https://f7ed.com/tags/Logistic-Regression/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://f7ed.com/tags/Softmax/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://f7ed.com/tags/open-classes/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://f7ed.com/tags/Tools/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
@@ -826,27 +819,6 @@
   
   <url>
     <loc>https://f7ed.com/tags/Docker/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://f7ed.com/tags/Git/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://f7ed.com/tags/GitHub/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://f7ed.com/tags/CNN/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -888,7 +860,14 @@
   </url>
   
   <url>
-    <loc>https://f7ed.com/tags/Array/</loc>
+    <loc>https://f7ed.com/tags/Logistic-Regression/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://f7ed.com/tags/Softmax/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -923,20 +902,6 @@
   </url>
   
   <url>
-    <loc>https://f7ed.com/tags/Mersenne-Prime/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://f7ed.com/tags/Prime/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://f7ed.com/tags/Oblivious-Transfer/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
@@ -951,7 +916,35 @@
   </url>
   
   <url>
+    <loc>https://f7ed.com/tags/Mersenne-Prime/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://f7ed.com/tags/Prime/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://f7ed.com/tags/Array/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://f7ed.com/tags/Regression/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://f7ed.com/tags/Information-Theory/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1021,13 +1014,6 @@
   </url>
   
   <url>
-    <loc>https://f7ed.com/tags/Information-Theory/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://f7ed.com/tags/error/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
@@ -1050,6 +1036,48 @@
   
   <url>
     <loc>https://f7ed.com/tags/CSS/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://f7ed.com/tags/Cryptography/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://f7ed.com/tags/MIT6875/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://f7ed.com/tags/Perfect-Secrecy/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://f7ed.com/tags/Perfect-Indistinguishability/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://f7ed.com/tags/One-time-Pad/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://f7ed.com/tags/Shannon-s-lower-bound/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1175,48 +1203,6 @@
   </url>
   
   <url>
-    <loc>https://f7ed.com/tags/Cryptography/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://f7ed.com/tags/MIT6875/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://f7ed.com/tags/Perfect-Secrecy/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://f7ed.com/tags/Perfect-Indistinguishability/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://f7ed.com/tags/One-time-Pad/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://f7ed.com/tags/Shannon-s-lower-bound/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://f7ed.com/tags/Application-of-NIZK/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
@@ -1273,6 +1259,34 @@
   </url>
   
   <url>
+    <loc>https://f7ed.com/tags/Public-key-Encryption/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://f7ed.com/tags/IND-Secure/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://f7ed.com/tags/IND-CPA/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://f7ed.com/tags/Trapdoor-Permutations/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://f7ed.com/tags/Number-Theory/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
@@ -1301,28 +1315,28 @@
   </url>
   
   <url>
-    <loc>https://f7ed.com/tags/Public-key-Encryption/</loc>
+    <loc>https://f7ed.com/tags/OWF/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://f7ed.com/tags/IND-Secure/</loc>
+    <loc>https://f7ed.com/tags/OWP/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://f7ed.com/tags/IND-CPA/</loc>
+    <loc>https://f7ed.com/tags/HCB/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://f7ed.com/tags/Trapdoor-Permutations/</loc>
+    <loc>https://f7ed.com/tags/GL-Theorem/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1364,13 +1378,6 @@
   </url>
   
   <url>
-    <loc>https://f7ed.com/tags/Python/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://f7ed.com/tags/DEEPLIZARD/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
@@ -1385,28 +1392,7 @@
   </url>
   
   <url>
-    <loc>https://f7ed.com/tags/OWF/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://f7ed.com/tags/OWP/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://f7ed.com/tags/HCB/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://f7ed.com/tags/GL-Theorem/</loc>
+    <loc>https://f7ed.com/tags/Python/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1560,6 +1546,34 @@
   </url>
   
   <url>
+    <loc>https://f7ed.com/tags/Singleton-Bound/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://f7ed.com/tags/Plotkin-Bound/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://f7ed.com/tags/RS-Code/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://f7ed.com/tags/GRS-Code/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://f7ed.com/tags/DNN/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
@@ -1581,13 +1595,6 @@
   </url>
   
   <url>
-    <loc>https://f7ed.com/tags/VSCode/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://f7ed.com/tags/Unsupervised-learning/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
@@ -1596,6 +1603,13 @@
   
   <url>
     <loc>https://f7ed.com/tags/Word-Embedding/</loc>
+    <lastmod>2025-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://f7ed.com/tags/VSCode/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1637,13 +1651,6 @@
   </url>
   
   <url>
-    <loc>https://f7ed.com/tags/KZG/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://f7ed.com/tags/Bulletproofs/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
@@ -1658,28 +1665,21 @@
   </url>
   
   <url>
-    <loc>https://f7ed.com/tags/Singleton-Bound/</loc>
+    <loc>https://f7ed.com/tags/KZG/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://f7ed.com/tags/Plotkin-Bound/</loc>
+    <loc>https://f7ed.com/tags/Git/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://f7ed.com/tags/RS-Code/</loc>
-    <lastmod>2025-01-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://f7ed.com/tags/GRS-Code/</loc>
+    <loc>https://f7ed.com/tags/GitHub/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
