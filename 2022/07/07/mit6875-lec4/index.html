@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Cryptography-MIT6875」: Lecture 4 - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Topics:  Stateless Secret-key Encryption with"><meta property="og:type" content="blog"><meta property="og:title" content="「Cryptography-MIT6875」: Lecture 4"><meta property="og:url" content="https://f7ed.com/2022/07/07/mit6875-lec4/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Topics:  Stateless Secret-key Encryption with"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/covers/mit6875-lec4-banner.png"><meta property="article:published_time" content="2022-07-07T16:00:00.000Z"><meta property="article:modified_time" content="2022-08-12T04:30:59.299Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Cryptography"><meta property="article:tag" content="MIT6875"><meta property="article:tag" content="PRF"><meta property="article:tag" content="Hybrid Argument"><meta property="article:tag" content="GGM PRF"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/covers/mit6875-lec4-banner.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2022/07/07/mit6875-lec4/"},"headline":"「Cryptography-MIT6875」: Lecture 4","image":["https://f7ed.com/gallery/covers/mit6875-lec4-banner.png"],"datePublished":"2022-07-07T16:00:00.000Z","dateModified":"2022-08-12T04:30:59.299Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Topics:  Stateless Secret-key Encryption with"}</script><link rel="canonical" href="https://f7ed.com/2022/07/07/mit6875-lec4/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><div class="card-image"><span class="image is-7by3"><img class="fill" src="/gallery/covers/mit6875-lec4-banner.png" alt="「Cryptography-MIT6875」: Lecture 4"></span></div><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Cryptography-MIT6875」: Lecture 4</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2022-07-07T16:00:00.000Z" title="2022-07-07T16:00:00.000Z">2022-07-08</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2022-08-12T04:30:59.299Z" title="2022-08-12T04:30:59.299Z">2022-08-12</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Cryptography-MIT6875/">Cryptography-MIT6875</a></span><span class="level-item"><i class="far fa-clock"></i> 20 minutes read (About 3052 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><article class="message message-immersive is-info">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="message-body">
+<i class="fas fa-info-circle mr-2"></i>
+In this <a href="/categories/Cryptography-MIT6875">series</a>, I will learn MIT 6.875, <strong>Foundations of Cryptography</strong>, lectured by <strong>Vinod Vaikuntanathan</strong>.
+<br>Any corrections and advice are welcome. ^ - ^
+</div>
+</article>
+
+<p>Topics:</p>
+<ul>
+<li>Stateless Secret-key Encryption with PRF.</li>
+<li>The Goldreich-Goldwasser-Micali (GGM) PRF construction.</li>
+</ul>
+<span id="more"></span>
+
+<h1 id="Recap"><a href="#Recap" class="headerlink" title="Recap"></a>Recap</h1><p>In the previous blog, we introduced the second definition of PRG, <strong>Next-bit Unpredictability.</strong></p>
+<p>Using hybrid argument, we achieved the predicting-to-distinguishing reduction to prove <strong>Next-bit Unpredictability = Indistinguishability for PRGs.</strong></p>
+<p>We elaborated the <strong>theorem</strong> of <u>PRG Length Extension</u> and used it to construct stateful secret-key encryption scheme.</p>
+<p>For the purpose of stateless encryption, we brought about a new notion, <strong>Pseudorandom Functions (PRFs).</strong></p>
+<h1 id="Agenda"><a href="#Agenda" class="headerlink" title="Agenda"></a>Agenda</h1><p>In the first place, we’ll finish up the the stateless secret-key encryption scheme.</p>
+<p>The last blog elaborated the <strong>theorem of PRG Length Extension</strong>, if there is a PRG that stretched by one bit, there is one that stretched by poly. many bits.</p>
+<p>In this blog, we’ll introduce the <strong>theorem</strong> of PRF, <u>if there is a PRG, then there is a PRF.</u></p>
+<p>In addition, we will elaborate the <u>Goldreich-Goldwasser-Micali (GGM) construction.</u></p>
+<h1 id="PRF"><a href="#PRF" class="headerlink" title="PRF"></a>PRF</h1><h2 id="Definition"><a href="#Definition" class="headerlink" title="Definition"></a>Definition</h2><p>Recall the definition of PRF.</p>
+<p><u><b>Collection of the Pseudorandom Functions:</b></u> </p>
+<p>Consider the <strong>collection</strong> of pseudorandom functions $\mathcal{F}_l=\{f_k:\{0,1\}^l\rightarrow\{0,1\}^m\}_{k\in\{0,1\}^n}$, each of which maps $l$ bits to $m$ bits.</p>
+<ul>
+<li>indexed by a key $k$.</li>
+<li>$n$ :  key length, $l$: input length, $m$: output length.</li>
+<li>Independent parameters, all poly(sec-param)=poly(n).</li>
+<li>#functions in $\mathcal{F}_l\le 2^n$ (single exponential in $n$)</li>
+</ul>
+<p><u><b>Collection of ALL Functions:</b></u></p>
+<p>Consider the <strong>collection</strong> of ALL functions $ALL_l=\{f:\{\ 0,1\}^l\rightarrow \{0,1\}^m\}$, each of which is maps $l$ bits to $m$ bits.</p>
+<ul>
+<li>#functions in $ALL_l\le 2^{m2^l}$ (doubly exponential in $l$)</li>
+</ul>
+<hr>
+<p>The #functions in the pseudorandom collection is much less than that in the random collection.</p>
+<p>But the pseudorandom functions should be “<strong>indistinguishable</strong>” from random.</p>
+<p>There are two worlds, the pseudorandom world and the random world.</p>
+<img src="https://www.imgpp.com/s1/2022/07/08/Untitled.png" alt="Def of PRF" style="zoom:33%;" />
+
+<ul>
+<li><strong>The pseudorandom world</strong><ol>
+<li>Sample a function $f$ from $\mathcal{F}_l$.<br>The function $f$ is <u>picked one and stays fixed</u> for all. The oracle is instantiated once the $f$ is picked.</li>
+<li>The oracle responses $f(x)$ for each query $x$.<br>You can think there is a truth table of $f$ in the oracle.<br>It responses the same $f(x)$ for the same query $x$ since the function $f$ is fixed.</li>
+</ol>
+</li>
+<li><strong>The random world</strong><ol>
+<li>sample a function $f$ from $ALL_l$.<br>Likewise, the function $f$ is <u>picked one and stays fixed for all</u>. The oracle is instantiated once the $f$ is picked.</li>
+<li>The oracle responses $f(x)$ for each query $x$.<br>Likewise, it responses the same $f(x)$ for the same query $x$ since the function $f$ is fixed.</li>
+</ol>
+</li>
+<li>The Distinguisher $D$ <u>has the power of querying the oracle many poly. times</u> and <u>try to guess which world</u> she is in, the pseudorandom world or the random world.</li>
+</ul>
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Definition of PRF:</strong></p>
+ </div> <div class="message-body"> 
+
+<p>For all p.p.t. $D$, there is a negligible function $\mu$ s.t.</p>
+<p>$$<br>|\operatorname{Pr}[f\leftarrow \mathcal{F}_l:D^f(1^n)=1]-\operatorname{Pr}[f\leftarrow ALL_l:D^f(1^n)=1]|\le \mu(n)<br>$$</p>
+<p><u>Notation</u>: Actually, $D$ dose not have a challenge since she gets nothing as input except the secure parameter, but she has the power of querying the oracle many poly. times.</p>
+ </div> </article> 
+
+<h2 id="The-Relation-in-PRG-and-PRF"><a href="#The-Relation-in-PRG-and-PRF" class="headerlink" title="The Relation in PRG and PRF"></a>The Relation in PRG and PRF</h2><p>Ponder over the relation in PRG and PRF.</p>
+<img src="https://www.imgpp.com/s1/2022/07/08/Untitled-1.png" alt="PRF" style="zoom:33%;" />
+
+<p>They both expand a few random bits into many pseudorandom bit. </p>
+<p>PRG expands $n$ bits into $p(n)$ bits while PRF expands $n$ bits into $2^l$ bits that $l=p(n)$.</p>
+<p>With a PRG, accessing $2^l$-th bit takes time $2^l$ time. With a PRF, this can be done in time $l$.</p>
+<p>So, a <u>PRF = locally accessible (or, random-access) PRG.</u></p>
+<h2 id="Stateless-key-Encryption"><a href="#Stateless-key-Encryption" class="headerlink" title="Stateless-key Encryption"></a>Stateless-key Encryption</h2><p>We can design stateless secret-key encryption from PRF.</p>
+<ul>
+<li>$Gen(1^n)$: Generate a random $n$-bit key $k$ that defines $f_k:\{0,1\}^l\rightarrow \{0,1\}^m$.<br>The domain size of $f_k$, $2^l$, had better be super-polynomially large in $n$.</li>
+<li>$Enc(k,m)$: Pick a <strong>random</strong> $x$ and let the ciphertext $c$ be the pair $(x,y=f_k(x)\oplus m)$.<br>It’s a polynomial time to evaluate $f_k(x)$ since $f_k$ are random accessible.</li>
+<li>$Dec(k,c=(x,y))$: Output $f_k(x)\oplus y$.</li>
+</ul>
+<p>Instead of remembering the whole truth table of $f$, <u>we remember just the key $k$.</u></p>
+<p><u>Notation</u>: We <strong>cannot</strong> pick up the same $x$ for the different messages since one-time pad cannot be reused.</p>
+<p>Therefore, the <strong>domain size</strong> of $f_k$ <u>is supposed be super-polynomially large</u> in $n$ to prevent collision of $x$.</p>
+<h3 id="Security-of-Secret-Key-Enc-for-one-msg"><a href="#Security-of-Secret-Key-Enc-for-one-msg" class="headerlink" title="Security of Secret-Key Enc. (for one msg)"></a>Security of Secret-Key Enc. (for one msg)</h3><p>In <a href="/2022/07/02/mit6875-lec2/" title="[the second blog]">[the second blog]</a>  of this series, we defined the computationally indistinguishability of the secret-key encryption scheme.</p>
+<p>There are two mathematical forms of <strong>Computational  Indistinguishability</strong>. We can use them to define the security of the secret-key encryption from PRF respectively.</p>
+<p>There are two worlds, the left world and the right world.</p>
+<img src="https://www.imgpp.com/s1/2022/07/08/Untitled-2.png" alt="for one msg" style="zoom:33%;" />
+
+<ul>
+<li>They both sampled a key $k$ using $Gen(1^n)$. The <strong>left world</strong> uses the key to encrypt $m_0$ while the <strong>right world</strong> uses the key to encrypt $m_1$ using $Enc(k,m)$.</li>
+<li>The distinguisher $D$ gets the ciphertext $c=Enc(k,m)$ and tries to guess which world she is in.</li>
+</ul>
+<p>We can get the definitions.</p>
+<p><font color=blue><u><b><i>Definition 1</i></b></u></font> </p>
+
+
+$\begin{array}{l}\text{For all }m_0,m_1,\text{and all p.p.t. }D,\text{there is a negligible function }\mu \text{ s.t.} \\  \operatorname{Pr}[k\leftarrow \mathcal{K}; b\leftarrow \{0,1\}:D(Enc(k,m_b))=b] \le 1/2 + \mu(n)\end{array}$
+
+
+<p><font color=blue><u><b><i>Definition 2</i></b></u></font> </p>
+
+
+$\begin{array}{l}\text{For all }m_0,m_1,\text{and all p.p.t. }D,\text{there is a negligible function }\mu \text{ s.t.} \\  \mid \operatorname{Pr}[k\leftarrow \mathcal{K}:D(Enc(k,m_0))=1] -\operatorname{Pr}[k\leftarrow \mathcal{K}:D(Enc(k,m_1))=1]\mid \le  \mu(n)\end{array}$
+
+
+
+<p>The two definitions <u>are substantially equivalent.</u> The first emphasizes the probability of $D$ guessing correctly while the second emphasized the probability of $D$ guessing she is the world 1.</p>
+<hr>
+<p>However, the definition <strong>indicates</strong> that the <u>distinguisher only sees the ciphertext of one message,</u>  $m_0$ or $m_1$, which <strong>contradicts</strong> the setting that <u>distinguisher has the power of querying the oracle poly. many times.</u></p>
+<p>So this definition only <strong>defines</strong> the <u>secret-key encryption scheme for one message</u>, which encrypts different messages with different keys, such as one-time pad.</p>
+<h3 id="Security-of-Secret-Ket-Enc-for-many-msgs"><a href="#Security-of-Secret-Ket-Enc-for-many-msgs" class="headerlink" title="Security of Secret-Ket Enc. (for many msgs)"></a>Security of Secret-Ket Enc. (for many msgs)</h3><p>We need to modify it <u>for many messages</u> since the oracle is an <strong>interactive</strong> oracle.</p>
+<p>There are two oracles.</p>
+<img src="https://www.imgpp.com/s1/2022/07/08/Untitled-3.png" alt="for many msgs" style="zoom:33%;" />
+
+<ul>
+<li>The Left Oracle $Left(\cdot,\cdot)$<ul>
+<li>Sample a key $k$ .<br>The oracle is instantiated once is key is picked.</li>
+<li>For each query $(m_L, m_R)$, the left oracle uses the key $k$ to <strong>encrypt the left message</strong> $m_L$ by $c:=Enc(k,m_L)$ and responses with $c$.</li>
+</ul>
+</li>
+<li>The Right Oracle $Right(\cdot,\cdot)$<ul>
+<li>Sample a key $k$.<br>The oracle is instantiated once is key is picked.</li>
+<li>For each query $(m_L,m_R)$, the right oracle uses the key $k$ to <strong>encrypt the right message</strong> $m_R$ by $c:=Enc(k,m_R)$ and responses with $c$.</li>
+</ul>
+</li>
+<li>The distinguisher $D$ has the power of asking the oracle many poly. times.<br>For each query, $D$ <u>gets the ciphertext and tries to guess with which oracle she is interacting</u> (or which message is encrypted).</li>
+</ul>
+<p>We can get the secure definitions of the secret-key encryption for many messages.</p>
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Definition</strong>  :</p>
+ </div> <div class="message-body"> 
+
+<p>For all p.p.t. $D$, there is a negligible function $\mu$ s.t.<br>$$<br>\mid   \operatorname{Pr}[k\leftarrow \mathcal{K}:D^{Left(\cdot,\cdot)}(1^n)=1] -\operatorname{Pr}[k\leftarrow \mathcal{K}:D^{Left(\cdot,\cdot)}(1^n)=1]\mid\le \mu(n)<br>$$</p>
+ </div> </article> 
+
+ <article class="message message-immersive is-danger"> <div class="message-body"> <i class="fas fa-bug mr-2"></i> <strong>Crucial Supplement:</strong>
+
+<p>Actually, the definitions of security we gave above are <u>not achievable</u> including for one messages and for many messages.</p>
+<p>How can we attack them ?</p>
+<p><strong>Length Attack.</strong> We can <u>use messages of different lengths.</u></p>
+<p>For the secret-key encryption for one message, if $|m_0|\ne|m_1|$, the adversary can distinguish easily only from the length of ciphertext.</p>
+<p>For the secret-key encryption for many messages,  if $|m_L\ne m_R|$, the adversary can distinguish it easily as well.</p>
+<p>It’s a crucial point that the scheme is secure only if it hides all possible information, which many people often overlook in practice.</p>
+<p>Therefore, the <strong>supplements</strong> for these definitions are</p>
+<ul>
+<li>secure definition <u>for one message</u>: $|m_0|=|m_1|$.</li>
+<li>secure definition <u>for many messages</u>: $|m_L|=|m_R|$</li>
+</ul>
+ </div> </article> 
+
+<h3 id="Security-Analysis"><a href="#Security-Analysis" class="headerlink" title="Security Analysis"></a>Security Analysis</h3><p>We’ll prove the definition by <strong>hybrid argument.</strong></p>
+<p><font color=blue><u><b>Proof:</b></u></font> </p>
+<ul>
+<li>We know two oracles.<ul>
+<li>Left oracle: $c=(x,y=f_k(x)\oplus m_L)$</li>
+<li>Right oracle: $c=(x,y=f_k(x)\oplus m_R)$</li>
+</ul>
+</li>
+<li>The thing we <strong>want to prove</strong> is $D$ <u>gets $c$ and cannot distinguish with which oracle she is interacting.</u></li>
+<li>We want to <u>change the oracle a little bit</u> to <strong>define a sequence of hybrid distributions.</strong><br>Consider the ciphertext as  the distribution.<ul>
+<li>Hybrid 0: $D$ gets access to the Left oracle.<br>$c=(x,y=f_k(x)\oplus m_L)$</li>
+<li>Hybrid 1: Replace $f_k$ by a random function.<br>$c=(x,y=r_x\oplus m_L)$</li>
+<li>Hybrid 2: Replace $f_k$ by a random function.<br>$c=(x,y=r_x)$</li>
+<li>Hybrid 3: Replace $f_k$ by a random function (like Hybrid 1).<br>$c=(x,y=r_x\oplus m_R)$</li>
+<li>Hybrid 4: $D$ gets access to the Right oracle (like Hybrid 0).<br>$c=(x,y=f_k(x)\oplus m_R)$</li>
+</ul>
+</li>
+<li>The thing we <strong>want to prove</strong> is that <u>Hybrid 0 and Hybrid 4 are indistinguishable.</u></li>
+<li>Prove <strong>Hybrid 0 = Hybrid 1</strong> (and <strong>Hybrid 4 = Hybrid 3</strong>).<ul>
+<li>It can be proved by <strong>PRF security</strong>.</li>
+<li>The definition of PRF indicates $D$ cannot distinguish from the pseudorandom world and the random world.</li>
+</ul>
+</li>
+<li>Prove <strong>Hybrid 1 = Hybrid 2</strong> (and <strong>Hybrid 3 = Hybrid 2</strong>).<ul>
+<li>It can be proven by <strong>birthday paradox.</strong></li>
+<li>Suppose $D$ has asked the oracle for $q$ times and gets $q$ ciphertexts.<ul>
+<li>The oracle in Hybrid 2 only outputs the function value $r_x$ without $\oplus$ operation.<br>If $D$ gets two same ciphertexts, $D$ knows that she is interacting with the oracle in Hybrid 2.</li>
+<li>The oracle in Hybrid 1 is one-time pad.<br>If $D$ gets two ciphertexts with the same $x$ but different $y$, $D$ knows that she is interacting with the oracle in Hybrid 1.</li>
+</ul>
+</li>
+<li>The probability of $D$ <strong>distinguishing from</strong> Hybrid 1 and Hybrid 2 is up to the collision probability of $x$.<ul>
+<li>The domain size of $x$ is $2^l$ that $l$ is super-polynomially large in $n$.</li>
+<li>The probability of picking the same $x$ is at most $q^2/2^l$, which is <u>negligible</u>.<br>There are $q^2$ possible pairs to match any value in the domain size of $x$.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>The adjacent hybrid distributions are all indistinguishable, so Hybrid 0 and Hybrid 4 are indistinguishable.</li>
+<li>QED.</li>
+</ul>
+<h1 id="Theorem-of-PRF"><a href="#Theorem-of-PRF" class="headerlink" title="Theorem of PRF"></a>Theorem of PRF</h1><p>Finally, we can get into the theorem of PRF. </p>
+<p>(Tired but Happy ^ - ^)</p>
+<h2 id="PRG-Length-Extension"><a href="#PRG-Length-Extension" class="headerlink" title="PRG Length Extension"></a>PRG Length Extension</h2><p>Before start, let’s look back at PRG Length Extension.</p>
+<p><font color=blue><u><b><i>Theorem</i></b></u></font> </p>
+<p>Let $G:\{0,1\}^n \rightarrow \{0,1\}^{n+1}$ be a PRG.</p>
+<p>Then, for every polynomial $m(n)$, there is a PRG $G':\{0,1\}^n\rightarrow\{0,1\}^{m(n)}$.<br>Recall the construction of the last blog.</p>
+<p>Construction: $G(s)=G_0(s)||G_1(s)$ where $G_0(s)$ is 1 bit and $G_1(s)$ is $n$ bits.</p>
+<p>We <u>parse the output of PRG as 1 bit and $n$ bits</u>. The 1 bit is as the output and the $n$ bits are as the seed of next call.</p>
+<p>Write the process as a tree.</p>
+<img src="https://www.imgpp.com/s1/2022/07/08/Untitled-4.png" alt="PRG Length Extension" style="zoom:33%;" />
+
+<p>The <strong>problem</strong> is accessing the $i$-th output bit takes time <u>linear</u> in $\approx i$. </p>
+<img src="https://www.imgpp.com/s1/2022/07/08/Untitled-5.png" alt="Linear" style="zoom:25%;" />
+
+<h2 id="Goldreich-Goldwasser-Micali-PRF"><a href="#Goldreich-Goldwasser-Micali-PRF" class="headerlink" title="Goldreich-Goldwasser-Micali PRF"></a>Goldreich-Goldwasser-Micali PRF</h2> <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Theorem:</strong></p>
+ </div> <div class="message-body"> 
+
+<p>Let $G$ be a PRF.<br>Then, for every polynomials $l=l(n),m=m(n)$, there exists a PRF family $\mathcal{F}_l=\{f_s:\{0,1\}^l\rightarrow \{0,1\}^m\}_{s\{0,1\}^n}$.</p>
+<p><u>Note</u>: We will focus on $m=l$. The output length could be made smaller (by truncation) or larger (by expansion with a PRG).</p>
+ </div> </article> 
+
+<h3 id="Construction"><a href="#Construction" class="headerlink" title="Construction"></a>Construction</h3><p>Construction: Let $G(s)=G_0(s)||G_1(s)$ where $G_0(s)$ and $G_1(s)$ are both $n$ bits each.</p>
+<p>So $G:\{0,1\}^n\rightarrow \{0,1\}^{2n}$ is a PRG that stretches $n$ bits into $2n$ bits and <u>parses the output in half.</u></p>
+<p><u>Notation</u>: $G_0(s),G_1(s)$ are not functions in $s$. $G_0(s)$ represents the first $n$ bits of $G(s)$’s output and $G_1(s)$ represents the second $n$ bits of $G(s)$’s output.</p>
+<p>Write it as a tree as well.</p>
+<img src="https://www.imgpp.com/s1/2022/07/08/Untitled-6.png" alt="GGM tree" style="zoom:33%;" />
+
+<p>The depth is $l$ so there are $2^l$ leaves or paths.</p>
+<p>So each path/leaf labeled by $x\in\{0,1\}^l$ corresponds to $f_s(x)$.</p>
+<hr>
+<p>The pseudorandom function family $\mathcal{F}_l$ is defined by a collection of functions $f_s$ where:</p>
+<p>$$<br>f_s(x_1x_2\dots x_l)=G_{x_l}(G_{x_{l-1}}(\dots G_{x_1}(s)))<br>$$</p>
+<p>If $G:\{0,1\}\rightarrow \{0,1\}^2$ </p>
+<ul>
+<li>$f_s$ define $2^l$ presudorandom bits.</li>
+<li>The $x$-th bit can be computed using $l$ evaluations of the PRG $G$.<br>(as opposed to $x \approx 2^l$ evaluations as before)</li>
+</ul>
+<h2 id="Security-Analysis-of-GGM-PRF"><a href="#Security-Analysis-of-GGM-PRF" class="headerlink" title="Security Analysis of GGM PRF"></a>Security Analysis of GGM PRF</h2><h3 id="PRG-Repetition-Lemma"><a href="#PRG-Repetition-Lemma" class="headerlink" title="PRG Repetition Lemma"></a>PRG Repetition Lemma</h3><p>Before proving the security of GGM PRF, let’s introduce <strong>a PRG Repetition Lemma</strong>, which is the component of the following proof.</p>
+<p><font color=blue><u><b>Lemma:</b></u></font> </p>
+<p>Let $G$ be a PRG.</p>
+<p>Then, for every polynomials $L=L(n)$, the following two distributions are computationally indistinguishable:</p>
+<p>$$<br>(G(s_1),G(s_2),\dots,G(s_L)\approx (u_1,u_2,\dots,u_L)<br>$$</p>
+<p>This lemma can be proved easily by hybrid argument since the hybrid distributions are easy to construct.</p>
+<p>If there is a p.p.t. <u>distinguisher between the two distributions</u> with distinguishing advantage $\varepsilon$, then there is a p.p.t. <u>distinguisher for</u> $G$ with advantage $\ge \varepsilon/L$.</p>
+<p>By hybrid argument, we can <u>achieve the PRG reduction.</u></p>
+<h3 id="Step-1-Hybrid-Argument"><a href="#Step-1-Hybrid-Argument" class="headerlink" title="Step 1-Hybrid Argument"></a>Step 1-Hybrid Argument</h3><p>Prove it by contradiction.</p>
+<p>Assume that there is a p.p.t. $D$ and a poly. function $p$ s.t.<br>$|\operatorname{Pr}[f\leftarrow \mathcal{F}_l:D^f(1^n)=1]-\operatorname{Pr}[f\leftarrow ALL_l:D^f(1^n)=1]|\ge 1/p(n)$</p>
+<img src="https://www.imgpp.com/s1/2022/07/08/Untitled.png" alt="PRF" style="zoom:25%;" />
+
+<p>Under the <strong>assumption</strong>, we can <u>derive a contradiction to the security of PRG.</u></p>
+<p>The <strong>key idea</strong> is argument by <strong>levels</strong> of the tree. Very ingenious!</p>
+<p>For simplicity, we consider the PRG of GGM PRF is $G:\{0,1\}\rightarrow \{0,1\}^2$, so the GGM PRF generate $2^l$ pseudorandom bits.</p>
+<p>Consider the hybrid distributions of the $2^l$ bits generated by a tree.</p>
+<p><u><b>Hybrid 0 (The Pseudorandom World):</b></u> </p>
+<p>In the pseudorandom world, we consider the distribution of $2^l$ bits generated by a GGM tree as Hybrid 0.</p>
+<p>For each query $x$, the oracle responses with $b_x$ by $l$ evaluations of PRG.</p>
+<img src="https://www.imgpp.com/s1/2022/07/08/Untitled-8.png" alt="Hybrid 0" style="zoom:30%;" />
+
+<p><u><b>Hybrid 1:</b></u></p>
+<p>We can get Hybrid 1 by changing a little to the GGM tree in Hybrid 0.</p>
+<p>The <strong>difference</strong> is the <u>first level of the tree in Hybrid 1,</u> $s_0$ and $s_1$, are <strong>random</strong> while they are generated by PRG in Hybrid 0.</p>
+<img src="https://www.imgpp.com/s1/2022/07/08/Untitled-9.png" alt="Hybrid 1" style="zoom:30%;" />
+
+<p><u><b>Hybrid 2:</b></u></p>
+<p>We can get Hybrid 2 by changing Hybrid 1 a little.</p>
+<p>The <u>second level of tree in Hybrid 2</u>, $s_{00}, s_{01}, s_{10}, s_{11}$, are <strong>random</strong> while they are generated by PRG in Hybrid 1.</p>
+<img src="https://www.imgpp.com/s1/2022/07/08/Untitled-10.png" alt="Hybrid 2" style="zoom:30%;" />
+
+<p>…</p>
+<p><u><b>Hybrid $l$ (The Random World):</b></u> </p>
+<p>We can define a sequence of hybrids slowly by changing a level of tree each time.</p>
+<p>At last, we get the hybrid $l$, the random world, the $l$-th level of which are <strong>all random bits.</strong></p>
+<img src="https://www.imgpp.com/s1/2022/07/08/Untitled-11.png" alt="Hybrid l" style="zoom:30%;" />
+
+<p>These hybrids can be <strong>efficiently computable</strong> using <u>lazy evaluation.</u></p>
+<p>Lazy evaluation means that there is no need to evaluation all bits $b_1b_2\dots b_{2^l}$, the oracle only evaluates $b_x$ for each query $x$.</p>
+<hr>
+<p>Let $p_i=\operatorname{Pr}[f\leftarrow H_i:D^f(1^n)=1]$.</p>
+<p>We know $p_0-p_l\ge \varepsilon$.</p>
+<p>By a <u>hybrid argument</u>, there is some $i$ s.t. $p_i-p_{i+1}\ge \varepsilon/l$.</p>
+<h3 id="Step-2-Reduction"><a href="#Step-2-Reduction" class="headerlink" title="Step 2-Reduction"></a>Step 2-Reduction</h3><p>Now we’ll <strong>prove</strong> that if a distinguisher with advantage $\varepsilon/l$ <u>between hybrids</u> implies a distinguisher with advantage $\ge \varepsilon/ql$ <u>for the PRG</u>. (where $q$ is the number of queries that $D$ makes)</p>
+<p>Assume there is a p.p.t. $D$ distinguishing from Hybrid $i$ and Hybrid $i+1$ with advantage $\varepsilon/l$.</p>
+<img src="https://www.imgpp.com/s1/2022/07/08/Untitled-12.png" alt="Hybrid i and Hybrid i+1" style="zoom:33%;" />
+
+<p>We will construct <strong>a Repeated Repetition Breaker $D’$</strong> from the distinguisher $D$ so as to <u>get a PRG Breaker from the PRG Repetition Lemma.</u></p>
+<ul>
+<li>The <strong>challenge</strong> of $D’$ : She gets a tuple of $(y_1,y_2,\dots, y_q)$ and tries to guess <u>whether they are all pseudorandom or all random.</u><ul>
+<li>$q$ is the upper bound number of queries that $D$ makes and $q=q(n)$.</li>
+<li>$(y_1,y_2,\dots, y_q)$ are either all pseudorandom or all random.</li>
+<li>Suppose each $y_i$ are $2n$ bits.</li>
+</ul>
+</li>
+<li><strong>Construction</strong> of <u>Repeated PRG Breaker</u> $D’$<ol>
+<li>Parse each $y_i$ in half:  $y_i=(y_{i,L},y_{i,R})$.</li>
+<li>Construct a <strong>oracle</strong> by <u>putting  these $y_i$ into the $i$-th level of the tree in order.</u><br>It’s a GGM tree only starting from the $i$-th level.<ol>
+<li>If $(y_1,y_2,\dots, y_q)$ are all <strong>pseudorandom</strong>, this <u>oracle implies Hybrid $i$.</u><br>Each pair of $y_i$, $(y_{i,L},y_{i,R})$, actually has an implicit parent in the tree.<br>We don’t know it but it  exists.</li>
+<li>If $(y_1,y_2,\dots, y_q)$ are all <strong>random</strong>, this <u>oracle implies Hybrid $i+1$.</u></li>
+<li>This oracle can use lazy evaluation as well.<br>It only responses with $f(x)$ for the each coming query $x$.</li>
+</ol>
+</li>
+<li>Let the <strong>distinguisher</strong> $D$ <u>interact with the oracle we build.</u><br>$D$ can make at most $q$ queries.<ol>
+<li>If $D$ distinguishes it as Hybrid $i$, $D’$ outputs ‘Pseudorandom’.</li>
+<li>If $D$ distinguishes it as Hybrid $i+1$, $D’$ outputs ‘Random’.</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>$D’$ has advantage with $\varepsilon/l$ for <u>distinguishing repeated PRG.</u></li>
+<li>There is a <strong>distinguisher</strong>  with advantage $\varepsilon/lq$ <u>for PRG</u> from the PRG Repetition Lemma.</li>
+</ul>
+<h2 id="Nits-of-GGM-PRF"><a href="#Nits-of-GGM-PRF" class="headerlink" title="Nits of GGM PRF"></a>Nits of GGM PRF</h2><p>Although the construction of GGM PRF is elegant, there are some nits.</p>
+<ul>
+<li><p>Expensive: $l$ invocations of  a PRG.</p>
+</li>
+<li><p>Sequential: bit by bit, $l$ sequential invocations of a PRG.</p>
+</li>
+<li><p><strong>Loss</strong> in <u>security reduction:</u></p>
+<p>  break PRF with advantage $\varepsilon$ → break PRG with advantage $\varepsilon/ql$,</p>
+<p>  where $q$ is an arbitrary polynomial. $q =$  # queries of the PRF distinguisher.</p>
+</li>
+</ul>
+<p>So some new questions come into mind.</p>
+<p>Is there tighter reduction ?</p>
+<p>How to avoid the loss ?</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Cryptography-MIT6875」: Lecture 4</p><p><a href="https://f7ed.com/2022/07/07/mit6875-lec4/">https://f7ed.com/2022/07/07/mit6875-lec4/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2022-07-08</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2022-08-12</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Cryptography/">Cryptography, </a><a class="link-muted" rel="tag" href="/tags/MIT6875/">MIT6875, </a><a class="link-muted" rel="tag" href="/tags/PRF/">PRF, </a><a class="link-muted" rel="tag" href="/tags/Hybrid-Argument/">Hybrid Argument, </a><a class="link-muted" rel="tag" href="/tags/GGM-PRF/">GGM PRF </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2022/07/11/mit6875-lec5/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Cryptography-MIT6875」: Lecture 5</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2022/07/05/mit6875-lec3/"><span class="level-item">「Cryptography-MIT6875」: Lecture 3</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "5bbea521423cae660128c08a59f62a1e",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">71</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">139</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Recap"><span class="level-left"><span class="level-item">1</span><span class="level-item">Recap</span></span></a></li><li><a class="level is-mobile" href="#Agenda"><span class="level-left"><span class="level-item">2</span><span class="level-item">Agenda</span></span></a></li><li><a class="level is-mobile" href="#PRF"><span class="level-left"><span class="level-item">3</span><span class="level-item">PRF</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Definition"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">Definition</span></span></a></li><li><a class="level is-mobile" href="#The-Relation-in-PRG-and-PRF"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">The Relation in PRG and PRF</span></span></a></li><li><a class="level is-mobile" href="#Stateless-key-Encryption"><span class="level-left"><span class="level-item">3.3</span><span class="level-item">Stateless-key Encryption</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Security-of-Secret-Key-Enc-for-one-msg"><span class="level-left"><span class="level-item">3.3.1</span><span class="level-item">Security of Secret-Key Enc. (for one msg)</span></span></a></li><li><a class="level is-mobile" href="#Security-of-Secret-Ket-Enc-for-many-msgs"><span class="level-left"><span class="level-item">3.3.2</span><span class="level-item">Security of Secret-Ket Enc. (for many msgs)</span></span></a></li><li><a class="level is-mobile" href="#Security-Analysis"><span class="level-left"><span class="level-item">3.3.3</span><span class="level-item">Security Analysis</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Theorem-of-PRF"><span class="level-left"><span class="level-item">4</span><span class="level-item">Theorem of PRF</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#PRG-Length-Extension"><span class="level-left"><span class="level-item">4.1</span><span class="level-item">PRG Length Extension</span></span></a></li><li><a class="level is-mobile" href="#Goldreich-Goldwasser-Micali-PRF"><span class="level-left"><span class="level-item">4.2</span><span class="level-item">Goldreich-Goldwasser-Micali PRF</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Construction"><span class="level-left"><span class="level-item">4.2.1</span><span class="level-item">Construction</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Security-Analysis-of-GGM-PRF"><span class="level-left"><span class="level-item">4.3</span><span class="level-item">Security Analysis of GGM PRF</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#PRG-Repetition-Lemma"><span class="level-left"><span class="level-item">4.3.1</span><span class="level-item">PRG Repetition Lemma</span></span></a></li><li><a class="level is-mobile" href="#Step-1-Hybrid-Argument"><span class="level-left"><span class="level-item">4.3.2</span><span class="level-item">Step 1-Hybrid Argument</span></span></a></li><li><a class="level is-mobile" href="#Step-2-Reduction"><span class="level-left"><span class="level-item">4.3.3</span><span class="level-item">Step 2-Reduction</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Nits-of-GGM-PRF"><span class="level-left"><span class="level-item">4.4</span><span class="level-item">Nits of GGM PRF</span></span></a></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

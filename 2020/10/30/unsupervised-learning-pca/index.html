@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「机器学习-李宏毅」:Unsupervised-PCA - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="这篇文章详细讲解了无监督学习（Unsupervised learning）的PCA（主成分分析法）。 文章开篇从聚类（Clustering）引出Distributed Represention，其中粗略阐述了聚类中K-means和HAC（层次聚类）的思想。 文章的后半部分具体阐述了PCA的数学细节，PCA的去相关性性质，PCA的另一种解释角度（component的角度），PCA的不足等。"><meta property="og:type" content="blog"><meta property="og:title" content="「机器学习-李宏毅」:Unsupervised-PCA"><meta property="og:url" content="https://f7ed.com/2020/10/30/unsupervised-learning-pca/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="这篇文章详细讲解了无监督学习（Unsupervised learning）的PCA（主成分分析法）。 文章开篇从聚类（Clustering）引出Distributed Represention，其中粗略阐述了聚类中K-means和HAC（层次聚类）的思想。 文章的后半部分具体阐述了PCA的数学细节，PCA的去相关性性质，PCA的另一种解释角度（component的角度），PCA的不足等。"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/82937235_p0_master1200.jpg"><meta property="article:published_time" content="2020-10-30T16:00:00.000Z"><meta property="article:modified_time" content="2020-10-31T14:38:26.963Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Machine-Learning"><meta property="article:tag" content="open-classes"><meta property="article:tag" content="Unsupervised"><meta property="article:tag" content="PCA"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/82937235_p0_master1200.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2020/10/30/unsupervised-learning-pca/"},"headline":"「机器学习-李宏毅」:Unsupervised-PCA","image":["https://f7ed.com/gallery/thumbnails/82937235_p0_master1200.jpg"],"datePublished":"2020-10-30T16:00:00.000Z","dateModified":"2020-10-31T14:38:26.963Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"这篇文章详细讲解了无监督学习（Unsupervised learning）的PCA（主成分分析法）。 文章开篇从聚类（Clustering）引出Distributed Represention，其中粗略阐述了聚类中K-means和HAC（层次聚类）的思想。 文章的后半部分具体阐述了PCA的数学细节，PCA的去相关性性质，PCA的另一种解释角度（component的角度），PCA的不足等。"}</script><link rel="canonical" href="https://f7ed.com/2020/10/30/unsupervised-learning-pca/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「机器学习-李宏毅」:Unsupervised-PCA</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2020-10-30T16:00:00.000Z" title="2020-10-30T16:00:00.000Z">2020-10-31</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2020-10-31T14:38:26.963Z" title="2020-10-31T14:38:26.963Z">2020-10-31</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E6%9D%8E%E5%AE%8F%E6%AF%85/">机器学习-李宏毅</a></span><span class="level-item"><i class="far fa-clock"></i> 34 minutes read (About 5082 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>这篇文章详细讲解了无监督学习（Unsupervised learning）的PCA（主成分分析法）。</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><p>文章开篇从聚类（Clustering）引出Distributed Represention，其中粗略阐述了聚类中K-means和HAC（层次聚类）的思想。</p>
+<p>文章的后半部分具体阐述了PCA的数学细节，PCA的去相关性性质，PCA的另一种解释角度（component的角度），PCA的不足等。</p>
+<span id="more"></span>
+
+<h1 id="Unsupervised-Learning"><a href="#Unsupervised-Learning" class="headerlink" title="Unsupervised Learning"></a>Unsupervised Learning</h1><p>无监督学习分为两种：</p>
+<ul>
+<li><p>Dimension Reduction：化繁为简。</p>
+<p>function 只有input，能将高维、复杂的输入，抽象为低维的输出。</p>
+<p>如下图，能将3D的折叠图像，抽象为一个2D的表示（把他摊开）。</p>
+<img src="https://s1.ax1x.com/2020/10/31/BaoiAe.png" alt="BaodiAe.png" style="zoom:25%;" />
+</li>
+<li><p>Generation：无中生有。</p>
+<p>function 只有output。</p>
+<p>（后面的博客会提及）</p>
+</li>
+</ul>
+<h2 id="Dimension-Reduction"><a href="#Dimension-Reduction" class="headerlink" title="Dimension Reduction"></a>Dimension Reduction</h2><p>此前，在<a href="/2020/07/03/semi-supervised/" title="semi-supervised learning">semi-supervised learning</a>的最后，提及过better presentation的思想，Dimension Reduction 其实就是这样的思想：去芜存菁，化繁为简。</p>
+<p>比如，在MNIST中，一个数字的表示是28*28维度的向量（图如左），但大多28 *28维度的向量（图为右）都不是数字。</p>
+<img src="https://s1.ax1x.com/2020/10/31/BaopnK.png" alt="BaopnK.png" style="zoom:33%;" /> 
+
+<p>因此，在表达下图一众“3”的图像中，根本不需要28*28维的向量表示，1-D即可表示一张图（图片的旋转角度）。28 * 28的图像表示就像左边中老者的头发，1-D的表示就像老者的头，是对头发运动轨迹一种更简单的表达。</p>
+<img src="https://s1.ax1x.com/2020/10/31/Bao90O.png" alt="Bao90O.png" style="zoom:30%;" />
+
+<h2 id="Clustering"><a href="#Clustering" class="headerlink" title="Clustering"></a>Clustering</h2><p>在将Dimension Reduction之前，先将一种经典的无监督学习——clustering.</p>
+<p>clustering也是一种降维的表达，将复杂的向量空间抽象为简单的类别，用某一个类别来表示该数据点。</p>
+<p>这里主要讲述cluster的主要思想，算法细节可参考<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/34168766">其他资料</a> 。（待补充）</p>
+<h3 id="K-means"><a href="#K-means" class="headerlink" title="K-means"></a>K-means</h3><p>K-means的做法是：</p>
+<ol>
+<li><p>Clustering $X=\left\{x^{1}, \cdots, x^{n}, \cdots, x^{N}\right\}$ into K clusters.</p>
+<p>把所有data分为K个类，K的确定是empirical的，需要自己确定</p>
+</li>
+<li><p>Initialize cluster center $c^i, i=1,2,…,K$ .(K random $x^n$ from $X$)</p>
+<p>初始化K个类的中心数据点，建议从training set $X$ 中随机选K 个点作为初始点。</p>
+<p>不建议直接在向量空间中随机初始化K个中心点，因为很可能随机的中心点不属于任何一个cluster。</p>
+</li>
+<li><p>Repeat：根据中心点标记所属类，再更新新的中心点，重复直收敛。</p>
+<ol>
+<li><p>For all $x^n$ in $X$ : 标记所属类。</p>
+
+      $$
+      b_{i}^{n}\left\{\begin{array}{ll}1 & x^{n} \text { is most "close" to } c^{i} \\ 0 & \text { Otherwise }\end{array}\right.
+      $$
+      
+</li>
+<li><p>Updating all $c^i$ :   $c^{i}=\sum_{x^{n}} b_{i}^{n} x^{n} / \sum_{x^{n}} b_{i}^{n}$  (计算该类中心点)</p>
+</li>
+</ol>
+</li>
+</ol>
+<h3 id="HAC：Hierarchical-Agglomerative-Clustering-HAC"><a href="#HAC：Hierarchical-Agglomerative-Clustering-HAC" class="headerlink" title="HAC：Hierarchical Agglomerative Clustering(HAC)"></a>HAC：Hierarchical Agglomerative Clustering(HAC)</h3><p>另一种clustering的方法是层次聚类（Hierarchical Clustering），这里介绍Agglomerative（自下而上）的策略。</p>
+<img src="https://s1.ax1x.com/2020/10/31/BaIzX6.png" alt="BaIzX6.png" style="zoom:33%;" />
+
+<ol>
+<li><p>Build a tree.</p>
+<ol>
+<li>如上图中，计算当前两两数据点（点或组合）的相似度（欧几里得距离或其他）。</li>
+<li>选出最相近的两个合为一组（即连接在同一父子结点上，如最左边的两个）</li>
+<li>重复1-2直至最后合为root。</li>
+</ol>
+<p>该树中，越早分支的点集合，说明越不像。</p>
+</li>
+<li><p>Pick a threshold.</p>
+<p>选一个阈值，即从哪个地方开始划开，比如选上图中红色的线作为阈值，那么点集分为两个cluseter，蓝色、绿色同理。</p>
+</li>
+</ol>
+<p>HAC和K-means相比，HAC不直接决定cluster的数目，而是通过决定threshold的值间接决定cluster的数目。</p>
+<h2 id="Distributed-Representation"><a href="#Distributed-Representation" class="headerlink" title="Distributed Representation"></a>Distributed Representation</h2><p>Cluster：an object must belong to one cluster.</p>
+<p>在做聚类时，一个数据点必须标注为某一具体类别。这往往会丢失很多信息，比如一个人可能是70%的外向，30%的内敛，如果做clustering，就将这个人直接归为外向，这样的表示过于粗糙。</p>
+<p>因此仍用vector来表示这个人，如下图。</p>
+<img src="https://s1.ax1x.com/2020/10/31/BaIv11.png" alt="BaIv11.png" style="zoom:33%;" /> 
+
+<p>Distributed Representation（也叫Dimension Reduction）就是：一个高维的vector通过function，得到一个低维的vector。</p>
+<img src="https://s1.ax1x.com/2020/10/31/BaIOh9.png" alt="BaIOh9.png" style="zoom:33%;" />
+
+<p>Distributed的方法有常见的两种：</p>
+<ul>
+<li><p>Feature selection：</p>
+<p>如下图数据点的分布，可以直接选择feature $x_2$ .</p>
+<img src="https://s1.ax1x.com/2020/10/31/BaILtJ.png" alt="BaIdLtJ.png" style="zoom:33%;" /> 
+
+<p>但这种方法往往只能处理2-D的情况，对于下图这种3-D情况往往不好做特征选择。</p>
+<img src="https://s1.ax1x.com/2020/10/31/Ba70p9.png" alt="Ba70pd9.png" style="zoom:50%;" /> 
+</li>
+<li><p>Principle component analysis（PCA）</p>
+<p>另一种方法就是著名的PCA，主成分分析法。</p>
+<p>PCA中，这个function就是一个简单的linear function（$W$），通过 $z=Wx$ ，将高维的 $x$ 转化为低维的 $z$ .</p>
+</li>
+</ul>
+<h1 id="PCA：Principle-Component-Analysis"><a href="#PCA：Principle-Component-Analysis" class="headerlink" title="PCA：Principle Component Analysis"></a>PCA：Principle Component Analysis</h1><p>PCA的参考资料见Bishop, Chapter12.</p>
+<p>PCA就是要找 $z=Wx$ 中的 $W$ .</p>
+<h2 id="Main-Idea"><a href="#Main-Idea" class="headerlink" title="Main Idea"></a>Main Idea</h2><h3 id="Reduce-1-D"><a href="#Reduce-1-D" class="headerlink" title="Reduce 1-D"></a>Reduce 1-D</h3><p>如果将dimension reduce to 1-D，那么可以得出 $z_1 = w^1\cdot x$ .</p>
+<p>$w^1$ 是vector，$x$ 是vector，做内积。</p>
+<p>如下图，内积即投影，将所有的点 $x$ 投影到 $w^1$ 方向上，然后得到对应的 $z_1$  值。</p>
+<img src="https://s1.ax1x.com/2020/10/31/BaIjpR.png" alt="BaIjpR.png" style="zoom:33%;" /> 
+
+<p>而对于得到的一系列 $z_1$ 值，我们希望 $z_1$ 的variance越大越好。</p>
+<p>因为 $z_1$ 的分布越大，用 $z_1$ 来刻画数据，才能更好的区分数据点。</p>
+<p>如下图，如果 $w^1$ 的方向是small variance的方向，那么这些点会集中在一起，而large variance方向，$z_1$ 能更好的刻画数据。</p>
+<img src="https://s1.ax1x.com/2020/10/31/BaIH7F.png" alt="BadIH7F.png" style="zoom:33%;" />
+
+<p>$z_1$ 的数学表达是： $ \operatorname{Var}\left(z_{1}\right)=\frac{1}{N} \sum_{z_{1}}\left(z_{1}-\overline{z_{1}}\right)^{2} \quad \left\|w^{1}\right\|_{2}=1$  (后文解释为什么要 $w^1$ 的长度为1)</p>
+<h3 id="Reduce-2-D"><a href="#Reduce-2-D" class="headerlink" title="Reduce 2-D"></a>Reduce 2-D</h3><p>同理，如果将dimension reduce to 2-D .</p>
+<p>$z=Wx$ 即</p>
+
+$$
+\left\{ \begin{array}{11}z_1=w^1\cdot x \\ z_2=w^2 \cdot x  \end{array} \right. ,\quad W=\begin{bmatrix}(w^1)^T \\ (w^2)^T \end{bmatrix}
+$$
+
+
+<ul>
+<li><p>将所有点 $x$ 投影到 $w^1$ 方向，得到对应的 $z_1$ ，且让 $z_1$ 的分布尽可能的大：</p>
+
+  $$
+  \operatorname{Var}\left(z_{1}\right)=\frac{1}{N} \sum_{z_{1}}\left(z_{1}-\overline{z_{1}}\right)^{2} ,\quad \left\|w^{1}\right\|_{2}=1
+  $$
+  
+</li>
+<li><p>将所有点投影到 $w^2$ 方向，得到对应的 $z_2$ ，同样让 $z_2$ 的分布也尽可能大，再加一个约束条件，让 $w^2$ 和 $w^1$ 正交（后文会具体解释为什么）</p>
+
+  $$
+  \operatorname{Var}\left(z_{2}\right)=\frac{1}{N} \sum_{z_{2}}\left(z_{2}-\overline{z_{2}}\right)^{2} ,\quad \left\|w^{2}\right\|_{2}=1 ,\quad w^1\cdot w^2=0
+  $$
+  
+
+<p>因此矩阵 $W$ 是Orthogonal matrix (正交矩阵)。</p>
+</li>
+</ul>
+<h2 id="Detail-Warning-of-Math"><a href="#Detail-Warning-of-Math" class="headerlink" title="Detail[Warning of Math"></a><font color=#f00>Detail[Warning of Math</font></h2><p><strong>想跳过math部分的，可以直接看Conclusion。</strong> </p>
+<p>1-D中：</p>
+<p>Goal：find $w^1$ to  maximum $(w^1)^T S w^1$  s.t.$(w^1)^Tw^1=1$</p>
+<p><strong>结论：$w^1$ 就是协方差矩阵 $S$ 最大特征值 $\lambda_1 $  对应的特征向量。 s.t.$(w^1)^Tw^1=1$</strong> </p>
+<p>2-D中：</p>
+<p>Goal：find $w^2$ to maximum $(w^2)^TSw^2 $  s.t. $(w^2)^Tw^2=1, (w^2)^Tw^1=0$ </p>
+<p><strong>结论：$w^2$ 就是协方差矩阵$S$ 第二大特征值 $\lambda_2 $   对应的特征向量。 s.t.$(w^2)^Tw^2=1$</strong>  </p>
+<p>k-D中：</p>
+<p><strong>结论：$w$ 就是协方差矩阵 $S$ 前 $k$ 大的特征值对应的特征向量。s.t. $W$ 是正交矩阵。</strong></p>
+<h3 id="1-D"><a href="#1-D" class="headerlink" title="1-D"></a>1-D</h3><p><strong>Goal：Find $w^1$  to maximum the variance of $z_1$ .</strong> </p>
+<ul>
+<li> $\operatorname{Var}\left(z_{1}\right)=\frac{1}{N} \sum_{z_{1}}\left(z_{1}-\overline{z_{1}}\right)^{2}$  
+
+<ul>
+<li> $z_1=w^1\cdot x  ,\quad \overline{z_{1}}=\frac{1}{N} \sum_{z_{1}}=\frac{1}{N} \sum w^{1} \cdot x=w^{1} \cdot \frac{1}{N} \sum x=w^{1} \cdot \bar{x}$  
+</li>
+</ul>
+</li>
+<li>   $\operatorname{Var}\left(z_{1}\right)=\frac{1}{N} \sum_{z_{1}}\left(z_{1}-\overline{z_{1}}\right)^{2}=(w^1)^T\operatorname{Cov}(x)w^1$  
+
+<ul>
+<li>  $=\frac{1}{N} \sum_{x}\left(w^{1} \cdot x-w^{1} \cdot \bar{x}\right)^{2} $ 
+</li>
+<li>  $=\frac{1}{N} \sum\left(w^{1} \cdot(x-\bar{x})\right)^{2}$ 
+
+<ul>
+<li><p>$a,b$ 是vector：</p>
+ $(a\cdot b)^2=(a^Tb)^2=a^Tba^Tb$ 
+</li>
+<li><p>$a^Tb$ 是scalar:</p>
+ $(a\cdot b)^2  = (a^Tb)^2=a^Tba^Tb =a^Tb(a^Tb)^T=a^Tbb^Ta$ 
+</li>
+</ul>
+</li>
+<li> $=\frac{1}{N} \sum\left(w^{1}\right)^{T}(x-\bar{x})(x-\bar{x})^{T} w^{1}$ 
+</li>
+<li> $ = \left(w^{1}\right)^{T}\sum\frac{1}{N}(x-\bar{x})(x-\bar{x})^{T} \ w^{1}$ 
+</li>
+<li> $=(w^1)^T\operatorname{Cov}(x)w^1$ 
+</li>
+</ul>
+</li>
+<li><p>令 $S=\operatorname{Cov}(x)$ </p>
+</li>
+</ul>
+<p>之前遗留的两个问题：</p>
+<ol>
+<li>$\left|w^1\right|_2=1$ ?</li>
+<li>$w^1\cdot w^2=1$ ?</li>
+</ol>
+<p>现在来看第一个问题，为什么要 $\left|w^1\right|_2=1$ ？</p>
+<p>现在的目标，变成了 maximum $(w^1)^T S w^1$ ，如果不限制 $\left|w^1\right|_2$ ，让 $\left|w^1\right|_2$ 无穷大，那么 $(w^1)^T S w^1$ 的值也会无穷大，问题无解了。</p>
+<hr>
+<p><strong>Goal：maximum $(w^1)^T S w^1$  s.t. $(w^1)^Tw^1=1$</strong></p>
+<ul>
+<li><p>Lagrange multiplier[挖坑] 求解多元变量在有限制条件下的驻点。</p>
+<p>构造拉格朗日函数： $g\left(w^{1}\right)=\left(w^{1}\right)^{T} S w^{1}-\alpha\left(\left(w^{1}\right)^{T} w^{1}-1\right)$   ，$\alpha\neq 0$ 为拉格朗日乘数</p>
+<ul>
+<li>$\nabla_{w^1}g=0$ 的值为驻点（会单独写一篇博客来讲拉格朗日乘数）</li>
+<li>$\frac{\partial g}{\partial \alpha}=0$ 为限制函数</li>
+</ul>
+</li>
+<li><p>对矩阵微分：详情见<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Matrix_calculus#Derivatives_with_vectors">wiki</a> </p>
+<ul>
+<li><p>scalar-by-vector(scalar对vector微分)</p>
+<img src="https://s1.ax1x.com/2020/10/31/BaIIXV.png" alt="BaIIddXV.png" style="zoom:67%;" />
+</li>
+<li><p>$S$ 是对称矩阵，不是 $w^1$ 的函数，结果用 $w^1$ 表达：$2Sw^1-2\alpha w^1=0$ </p>
+</li>
+</ul>
+</li>
+<li><p>maximum: $(w^1)^T S w^1=\alpha (w^1)^Tw^1=\alpha$ </p>
+</li>
+</ul>
+<p>*<em>Goal：find $w^1$to maximum $\alpha$   *</em>    </p>
+<ul>
+<li><p>$\alpha$ 满足等式：$Sw^1=\alpha w^1$ </p>
+</li>
+<li><p>$\alpha$ 是 $S$ 的特征向量，$w^1$ 是 $S$ 对应于特征值 $\alpha$  的特征向量。</p>
+<ul>
+<li>关于特征值和特征向量的知识参考：参考下面线代知识</li>
+</ul>
+</li>
+<li><p>$w^1$ is the eigenvector(特征向量) of the covarivance matrix S corresponding to the largest eigenvalue $\lambda_1$ . </p>
+<p><strong>结论：$w^1$ 就是协方差矩阵最大特征值对应的特征向量。</strong> </p>
+</li>
+</ul>
+<hr>
+<blockquote>
+<p><strong>梦回线代</strong>QWQ（自己线代学的太差啦 啊这！</p>
+<ol>
+<li><p>特征向量，特征值定义：</p>
+<p>$A$ 是n阶方阵，如果存在数 $\lambda$ 和n维非零向量 $\alpha$ ，满足 $A\alpha=\lambda \alpha$ ,</p>
+<p>则称 $\lambda$ 为方阵 $A$ 的一个特征值，$\alpha$ 为方阵 $A$ 对应于特征值 $\lambda$ 的一个特征向量。</p>
+</li>
+<li><p>求解特征向量和特征值：</p>
+<p>$A\alpha -\lambda \alpha=(A-\lambda I)\alpha=0$ </p>
+<p>齐次方程有非零解的充要条件是特征方程 $det(A-\lambda I)=0$ （行列式为0）</p>
+<ul>
+<li>根据特征方程先求解出 $\lambda$ 的所有值。</li>
+<li>再根将 $\lambda$ 代入齐次方程，求解齐次方程的解 $\alpha$ ，即为对应 $\lambda$ 的特征向量。</li>
+</ul>
+</li>
+</ol>
+</blockquote>
+<h3 id="2-D"><a href="#2-D" class="headerlink" title="2-D"></a>2-D</h3><p><strong>Goal：find $w^2$ to maximum $(w^2)^TSw^2 $  s.t. $(w^2)^Tw^2=1, (w^2)^Tw^1=0$</strong>  </p>
+<ul>
+<li>构造拉格朗日函数： $g\left(w^{2}\right)=\left(w^{2}\right)^{T} S w^{2}-\alpha\left(\left(w^{2}\right)^{T} w^{2}-1\right)-\beta\left(\left(w^{2}\right)^{T} w^{1}-0\right)$ </li>
+<li>对 $w^2$ 求微分，所求点满足等式： $S w^{2}-\alpha w^{2}-\beta w^{1}=0$ <ul>
+<li>左乘 $(w^1) ^T$： $(w^1)^TSw^2-\alpha (w^1)^Tw^2-\beta(w^1)^Tw^1=0$ </li>
+<li>已有： $(w^1)^Tw^2=0, (w^1)^Tw^1=1$  </li>
+<li>证明：$ (w^1)^TSw^2=0$ <ul>
+<li>$\because (w^1)^TSw^2$ 是scalar</li>
+<li> $\therefore (w^1)^TSw^2=((w^1)^TSw^2)^T=(w^2)^TS^Tw^1$  </li>
+<li>$\because S^T=S$ (协方差矩阵是对称矩阵)</li>
+<li>$\because Sw^1=\lambda_1 w^1$ </li>
+<li>$\therefore (w^1)^TSw^2=(w^2)^TSw^1=\lambda_1(w^2)^Tw^1=0$  </li>
+</ul>
+</li>
+<li> $(w^1)^TSw^2-\alpha (w^1)^Tw^2-\beta(w^1)^Tw^1=0-\alpha\cdot 0-\beta \cdot 1=0$ </li>
+<li>$\therefore \beta=0$  </li>
+</ul>
+</li>
+<li>$w^2$ 满足等式：$S w^{2}-\alpha w^{2}=0$ </li>
+<li>和1-D的情况相同：find $w^2$ maximum $(w^2)^TSw^2$ <ul>
+<li>$(w^2)^TSw^2=\alpha$ </li>
+<li>$w^2$  is the eigenvector(特征向量) of the covarivance matrix S corresponding to the largest eigenvalue $\lambda_2$ .</li>
+</ul>
+</li>
+<li>OVER!</li>
+</ul>
+<h3 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h3><p>最后解决之前的Q2：$(w^1)^Tw^2=0$ ?</p>
+<ul>
+<li><p>先说明一下$S$ 的性质：</p>
+<p>是对称矩阵，对应不同特征值对应的特征向量都是正交的。</p>
+<p>（参考1，2）</p>
+<p>也是半正定矩阵，其特征值都是非负的。</p>
+<p>（参考4，5，6）</p>
+</li>
+<li><p>其次关于 $W$ 的性质 $ W=\begin{bmatrix}(w^1)^T \\ (w^2)^T \\ ...\end{bmatrix}$ ,易得 $W$ 是orthogonal matrix(正交矩阵)。</p>
+</li>
+<li><p>所以这是一个约束条件，能让PCA的最优化问题转化为求其特征值的问题。</p>
+</li>
+<li><p>（具体见下一小节：PCA-decorrelation）</p>
+<p>其次 $z=Wx$ ，也因为 $W$ 的正交性质，让 $z$ 的各维度（特征）decorrelation，去掉相关性，降维后的特征相互独立，方便后面generative model的假设。</p>
+</li>
+</ul>
+<blockquote>
+<ol>
+<li><p>$S=Cov(x)$ 为实对称矩阵。</p>
+</li>
+<li><p>实对称矩阵的性质：$A$ 是一个实对称矩阵，对于于 $A$ 的不同特征值的特征向量彼此正交。</p>
+</li>
+<li><p>正交矩阵的性质：$W^TW=WW^T=I$ </p>
+</li>
+<li><p>$Var(z)=(w^1)^T S w^1\geq 0$ ，方差一定大于等于0 。</p>
+</li>
+<li><p>半正定矩阵的定义：</p>
+<p>实对称矩阵 $A$ ，对任意非零实向量 $X$ ，如果二次型 $f(X)=X^TAX\geq0$ ，</p>
+<p>则有实对称矩阵 $A$ 是半正定矩阵。</p>
+</li>
+<li><p>半正定矩阵的性质：半正定矩阵的特征值都是非负的。</p>
+</li>
+</ol>
+</blockquote>
+<hr>
+<p>1-D中：</p>
+<p>Goal：find $w^1$ to  maximum $(w^1)^T S w^1$  s.t.$(w^1)^Tw^1=1$</p>
+<p><strong>结论：$w^1$ 就是协方差矩阵 $S$ 最大特征值 $\lambda_1 $  对应的特征向量。 s.t.$(w^1)^Tw^1=1$</strong> </p>
+<p>2-D中：</p>
+<p>Goal：find $w^2$ to maximum $(w^2)^TSw^2 $  s.t. $(w^2)^Tw^2=1, (w^2)^Tw^1=0$ </p>
+<p><strong>结论：$w^2$ 就是协方差矩阵$S$ 第二大特征值 $\lambda_2 $   对应的特征向量。 s.t.$(w^2)^Tw^2=1$</strong>  </p>
+<p>k-D中：</p>
+<p><strong>结论：$w$ 就是协方差矩阵 $S$ 前 $k$ 大的特征值对应的特征向量。s.t. $W$ 是正交矩阵。</strong> </p>
+<h2 id="PCA-decorrelation"><a href="#PCA-decorrelation" class="headerlink" title="PCA-decorrelation"></a>PCA-decorrelation</h2><p>$z=Wx$ </p>
+<p>通过PCA找到的 $W$ ，$x$ 得到新的presentation $z$ ，如下图。</p>
+<img src="https://s1.ax1x.com/2020/10/31/BaITmT.png" alt="BaIdTmT.png" style="zoom:40%;" />
+
+<p>可见，经过PCA后，original data变为decorrelated data，各维度（feature）是去相关性的，即各维度是独立的，方便generative model的假设（比如Gaussian distribution).</p>
+<p> $z$ 是docorrelated，即 $Cov(z)=D$ 是diagonal matrix(对角矩阵)</p>
+<p>证明：$Cov(z)=D$ is diagonal matrix</p>
+<ul>
+<li> $W=\begin{bmatrix}(w^1)^T \\ (w^2)^T \\ ...\end{bmatrix}$ ，$S=\operatorname{Cov}(x)$ 
+</li>
+<li> $\operatorname{Cov}(z)=\frac{1}{N} \sum(z-\bar{z})(z-\bar{z})^{T}=W S W^{T}$ </li>
+<li> $=W S\left[\begin{array}{lll}w^{1} & \cdots & w^{K}\end{array}\right]=W\left[\begin{array}{lll}S{w}^{1} & \cdots & S w^{K}\end{array}\right]$ </li>
+<li> $=W\left[\lambda_{1} w^{1} \quad \cdots \quad \lambda_{K} w^{K}\right]=\left[\lambda_{1} W w^{1} \quad \cdots \quad \lambda_{K} W w^{K}\right]$   ($\lambda$ is scalar) </li>
+<li> $=\left[\begin{array}{lll}\lambda_{1} e_{1} & \cdots & \lambda_{K} e_{K}\end{array}\right]=D$ ($W$ is orthogonal matrix) 
+
+</li>
+</ul>
+<h2 id="PCA-Another-Point-of-View"><a href="#PCA-Another-Point-of-View" class="headerlink" title="PCA-Another Point of View"></a>PCA-Another Point of View</h2><h3 id="Main-Idea-Component"><a href="#Main-Idea-Component" class="headerlink" title="Main Idea: Component"></a>Main Idea: Component</h3><p>PCA看作是一些basic component的组成，如下图，手写数字都是一些基本笔画组成的，记做  $\{u^1,u^2,u^3,...\}$ </p>
+<img src="https://s1.ax1x.com/2020/10/31/BaI4lq.png" alt="BaId4lq.png" style="zoom:25%;" />
+
+<p>因此，下图的”7”的组成为 $\{u^1,u^3,u^5\}$ </p>
+<img src="https://s1.ax1x.com/2020/10/31/BaIhpn.png" alt="BadIhpn.png" style="zoom:25%;" />
+
+<p>所以原28*28 vector $x$ 表示的图像能近似表示为：</p>
+
+$$
+x \approx c_{1} u^{1}+c_{2} u^{2}+\cdots+c_{K} u^{K}+\bar{x}
+$$
+
+
+<p>其中  $\{u^1,u^2,u^3,...\}$ 是compoment的vector表示， $\{c^1,c^2,c^3,...\}$ 是component的系数，$\bar{x}$ 是所有images的平均值。</p>
+<p>因此 $\begin{bmatrix}c_1 \\c_2 \\... \\ c_k \end{bmatrix}$ 也能表示一个数字图像。</p>
+<p>现在问题是找到这些component $\{u^1,u^2,u^3,...\}$ , 再得到 他的线形表出 $\begin{bmatrix}c_1 \\c_2 \\... \\ c_k \end{bmatrix}$ 就是我们想得到的better presentation.</p>
+<h3 id="Detail"><a href="#Detail" class="headerlink" title="Detail"></a>Detail</h3><p>要满足：$x \approx c_{1} u^{1}+c_{2} u^{2}+\cdots+c_{K} u^{K}+\bar{x}$  </p>
+<p>即，$x -\bar{x}\approx c_{1} u^{1}+c_{2} u^{2}+\cdots+c_{K} u^{K}$ ，等式两边的误差要尽量小。</p>
+<p>问题变成：找 $\{u^1,u^2,u^3,...\}$ minimize the reconstruction error = $\|(x-\bar{x})-\hat{x}\|_2$ .</p>
+<p>损失函数： $L=\min _{\left\{u^{1}, \ldots, u^{K}\right\}} \sum\left\|(x-\bar{x})-\left(\sum_{k=1}^{K} c_{k} u^{k}\right)\right\|_{2}$ </p>
+<p>而求解PCA的过程就是在minimize损失函数 $L$ ，PCA中求解出的  $\{w^1,w^2,...,w^K\}$ 就是这里的component  $\{u^1,u^2,...,u^K\}$ .(Proof 见Bisho, Chapter 12.1.2)</p>
+<p>*<em>Goal:  minimize the reconstruction error = $\|(x-\bar{x})-\hat{x}\|_2$ *</em>  </p>
+<ul>
+<li><p>$x -\bar{x}\approx c_{1} u^{1}+c_{2} u^{2}+\cdots+c_{K} u^{K}$ </p>
+</li>
+<li><p>每个sample:  $\left\{ \begin{matrix} x^{1}-\bar{x} \approx c_{1}^{1} u^{1}+c_{2}^{1} u^{2}+\cdots \\ x^{2}-\bar{x} \approx c_{1}^{2} u^{1}+c_{2}^{2} u^{2}+\cdots \\x^{3}-\bar{x} \approx c_{1}^{3} u^{1}+c_{2}^{3} u^{2}+\cdots \\ ...\end{matrix} \right.$  </p>
+<ul>
+<li><p>下图中 $X=x-\bar{x}$ 矩阵的第一列都和上面的 $x^1-\bar{x}$ 对应：</p>
+<img src="https://s1.ax1x.com/2020/10/31/BaIWfs.png" alt="BaIWfds.png" style="zoom:25%;" /> 
+</li>
+<li><p>而上面的 $c_{1}^{1} u^{1}+c_{2}^{1} u^{2}+\cdots$ 和下图的component矩阵乘系数矩阵的第一列对应：</p>
+<img src="https://s1.ax1x.com/2020/10/31/BaIRYj.png" alt="BaIRYj.png" style="zoom:25%;" /> 
+</li>
+</ul>
+</li>
+<li><p>因此，是要让下图矩阵的结果 minimize error：</p>
+<img src="https://s1.ax1x.com/2020/10/31/Ba7dfJ.png" alt="Ba7dfJ.png" style="zoom:40%;" /> 
+</li>
+<li><p>如何求解: SVD矩阵分解-其实就是最大近似分解（挖坑）</p>
+<p>SVD能将一个任意的矩阵，分解为下面三个矩阵的乘积。</p>
+<img src="https://s1.ax1x.com/2020/10/31/BaIym8.png" alt="BaIym8.png" style="zoom:30%;" />
+
+<p>$X = U\Sigma V$ </p>
+<ul>
+<li>$U,V$ 都是orthogonal matrix，$\Sigma$ 是diagonal matrix。</li>
+<li>组成$U$ (M*K) 的K个列向量是 $XX^T$ 矩阵的前K大特征值对应的特征向量。</li>
+<li>组成 $V$ (K*N)的K个行向量是 $X^TX$ 矩阵的前K大特征值对应的特征向量。</li>
+<li>$XX^T$ 和 $X^TX$ 的特征值相同</li>
+<li>$\Sigma$ 的对角值 $\sigma_i=\sqrt{\lambda_i}$ </li>
+</ul>
+</li>
+<li><p>解：$U$ 矩阵作为 component矩阵， $\Sigma V$ 乘在一起作为系数矩阵。</p>
+</li>
+</ul>
+<hr>
+ $U=\{u^1,u^2,u^3,...\}$ 矩阵是$XX^T$ 的特征向量组成正交矩阵。
+
+<p>而PCA的解 $W^T=\{w^1,w^2,...,w^K\}$ 也是特征向量组成的正交矩阵。</p>
+<p><strong>所以和PCA的关系：$U$ 矩阵是 $XX^T=Cov(x)$ 的特征向量，所以$U$ 矩阵就是PCA的解。</strong></p>
+<h3 id="PCA-NN：Autoencoder"><a href="#PCA-NN：Autoencoder" class="headerlink" title="PCA-NN：Autoencoder"></a>PCA-NN：Autoencoder</h3><p>上文说到求解PCA的解 $\{w^1,w^2,...,w^K\}$ 就是在最小化restruction error $x -\bar{x}\approx \sum_{k=1}^K c_kw^k$ .</p>
+<p>两者的联系就是PCA的解 $\{w^1,w^2,...,w^K\}$ 就是component $\{u^1,u^2,u^3,...\}$ ,且PCA的表示是 $z$  对应这里的 $c_k$  (第k个image的表示）.</p>
+<p>PCA视角： $z=c_k=(x-\bar{x})\cdot w^k$  </p>
+<p>PCA looks like a neural network with one hidden layer(linear activation function)。</p>
+<p>把PCA视角看作一个NN，如下图，其hidden layer的激活函数是一个简单的线性激活函数。</p>
+<p><img src="https://s1.ax1x.com/2020/10/31/BaIBlt.png" alt="BaIdBlt.png" style="zoom:25%;" /><img src="https://s1.ax1x.com/2020/10/31/BaI0SI.png" alt="BaI0dSI.png" style="zoom:25%;" /></p>
+<p>再看component视角： $\hat{x}=\sum_{k=1}^K c_kw^k\approx x-\bar{x}$ </p>
+<p><img src="https://s1.ax1x.com/2020/10/31/BaID6P.png" alt="BaIdD6P.png" style="zoom:25%;" /><img src="https://s1.ax1x.com/2020/10/31/BaIJeO.png" alt="BaIdJeO.png" style="zoom:25%;" /></p>
+<p>PCA就构成了下面的NN，hidden layer可以是deep，这就是autoencoder(后面的博客会再详细讲)。</p>
+<img src="https://s1.ax1x.com/2020/10/31/BaIdfA.png" alt="BaIdfA.png" style="zoom:30%;" />
+
+<p>用Gradient Descent对输入输出做minimize error，hidden layer的输出 $c$ 就是我们想要的编码（降维后的编码）。 </p>
+<p>Q：用PCA求出的结果和用Gradient Descent训练NN的结果一样吗？</p>
+<p>A：当然不一样，PCA的 $w$ 都是正交的，而NN的结果是gradient descent迭代出来的，并且该结果还会于初值有关。</p>
+<p>Q：有了PCA，为什么还要用NN呢？</p>
+<p>A：因为PCA只能处理linear的情况，对前文那种高维的非线形的无法处理，而NN可以是deep的，能较好处理非线形的情况。</p>
+<h2 id="tips-how-many-components"><a href="#tips-how-many-components" class="headerlink" title="tips: how many components?"></a>tips: how many components?</h2><p>比如在对Pokemon进行PCA时，有六个features，如何确定principle component的数目？</p>
+<p>往往在实际操作中，会对每个component计算一个ratio，如图中的公式：</p>
+<img src="https://s1.ax1x.com/2020/10/31/BaIUFH.png" alt="BaIUFH.png" style="zoom:25%;" /> 
+
+<p>因为每一个component对应一个eigenvector，每个eigenvector对应一个eigenvalue，而这个eigenvalue的值代表了在这个component的维度的variance有多大，越大当然能更好的表示。</p>
+<p>因此计算eigenvalue的ratio，来找出分布较大的component作为主成分。</p>
+<h2 id="More-About-PCA"><a href="#More-About-PCA" class="headerlink" title="More About PCA"></a>More About PCA</h2><p>如果对MNIST做PCA分析，结果如下图，会发现下面eigen-digits这些并不像数字的某个组成部分：</p>
+<img src="https://s1.ax1x.com/2020/10/31/Ba7ym6.png" alt="Ba7dym6.png" style="zoom:35%;" />
+
+<p>同样，对face做PCA分析，结果下图：</p>
+<img src="https://s1.ax1x.com/2020/10/31/Ba7BlR.png" alt="Ba7BlR.png" style="zoom:35%;" />
+
+<p>为什么呢？</p>
+<p>在MNIST中，一张image的表示如下图：</p>
+<img src="https://s1.ax1x.com/2020/10/31/BaIYwD.png" alt="BaIYwD.png" style="zoom:33%;" /> 
+
+<p>其中，$\alpha$ 可以是任意实数，那么就有正有负，所以PCA的解包含了一些真正component的adding up and subtracting，所以MNIST的解不像这些数字的一部分。</p>
+<p>如果想得到的解看起来像真正的component，可以规定图像只能是加，即 $\alpha$ 都是非负的。</p>
+<ul>
+<li>Non-negative matrix factorization(NMF)<ul>
+<li>Forcing $\alpha$ be non-negative: additive combination</li>
+<li>Forcing $w$ be non-negative: components more like “parts of digits”</li>
+</ul>
+</li>
+</ul>
+<h2 id="Weakness-of-PCA"><a href="#Weakness-of-PCA" class="headerlink" title="Weakness of PCA"></a>Weakness of PCA</h2><ol>
+<li><p>PCA是unsupervised，因此可能不能区分本来是两个类别的东西。</p>
+<img src="https://s1.ax1x.com/2020/10/31/BaItTe.png" alt="BaItTe.png" style="zoom:33%;" /> 
+
+<p>如图，PCA的结果可能是上图的维度方向，但如果引入labeled data，更好的表达应该按照下图LDA的维度方向。</p>
+<ul>
+<li>LDA (Linear Discriminant Analysis) 是一种supervised的分析方法。</li>
+</ul>
+</li>
+<li><p>PCA是Linear的，前文已经提及过，除了可以用NN的方式也有很多其他的non-linear的解法。</p>
+<img src="https://s1.ax1x.com/2020/10/31/BaIaYd.png" alt="BaIaYd.png" style="zoom:45%;" />
+
+</li>
+</ol>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li><p>HAC的算法细节待补充完善：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/34168766">https://zhuanlan.zhihu.com/p/34168766</a></p>
+</li>
+<li><p>PCA: Bishop, Chapter12. </p>
+</li>
+<li><p>线代知识：特征值、特征向量、实对称矩阵等：</p>
+</li>
+<li><p>拉格朗日乘数：Bishop, Appendix E</p>
+</li>
+<li><p>矩阵微分：<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Matrix_calculus#Derivatives_with_vectors">https://en.wikipedia.org/wiki/Matrix_calculus#Derivatives_with_vectors</a></p>
+</li>
+<li><p>Proof-PCA的过程就是在minimize损失函数 $L$ :Bisho, Chapter 12.1.2</p>
+</li>
+<li><p>SVD：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/pinard/p/6251584.html">https://www.cnblogs.com/pinard/p/6251584.html</a> </p>
+<p><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=rYz83XPxiZo">https://www.youtube.com/watch?v=rYz83XPxiZo</a></p>
+</li>
+<li><p>NMF：Non-negative matrix factorization</p>
+</li>
+<li><p>LDA：Linear Discriminant Analysis</p>
+</li>
+</ol>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「机器学习-李宏毅」:Unsupervised-PCA</p><p><a href="https://f7ed.com/2020/10/30/unsupervised-learning-pca/">https://f7ed.com/2020/10/30/unsupervised-learning-pca/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2020-10-31</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2020-10-31</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Machine-Learning/">Machine-Learning, </a><a class="link-muted" rel="tag" href="/tags/open-classes/">open-classes, </a><a class="link-muted" rel="tag" href="/tags/Unsupervised/">Unsupervised, </a><a class="link-muted" rel="tag" href="/tags/PCA/">PCA </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/11/02/solidity-basic/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「区块链」：Solidity-basic</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2020/10/20/pytorch-tensors/"><span class="level-item">「PyTorch」：2-Tensors Explained And Operations</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "6cb3d3ff32f6a8f80ee9c14703df7856",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">71</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">139</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Unsupervised-Learning"><span class="level-left"><span class="level-item">1</span><span class="level-item">Unsupervised Learning</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Dimension-Reduction"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">Dimension Reduction</span></span></a></li><li><a class="level is-mobile" href="#Clustering"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">Clustering</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#K-means"><span class="level-left"><span class="level-item">1.2.1</span><span class="level-item">K-means</span></span></a></li><li><a class="level is-mobile" href="#HAC：Hierarchical-Agglomerative-Clustering-HAC"><span class="level-left"><span class="level-item">1.2.2</span><span class="level-item">HAC：Hierarchical Agglomerative Clustering(HAC)</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Distributed-Representation"><span class="level-left"><span class="level-item">1.3</span><span class="level-item">Distributed Representation</span></span></a></li></ul></li><li><a class="level is-mobile" href="#PCA：Principle-Component-Analysis"><span class="level-left"><span class="level-item">2</span><span class="level-item">PCA：Principle Component Analysis</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Main-Idea"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">Main Idea</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Reduce-1-D"><span class="level-left"><span class="level-item">2.1.1</span><span class="level-item">Reduce 1-D</span></span></a></li><li><a class="level is-mobile" href="#Reduce-2-D"><span class="level-left"><span class="level-item">2.1.2</span><span class="level-item">Reduce 2-D</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Detail-Warning-of-Math"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">Detail[Warning of Math</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#1-D"><span class="level-left"><span class="level-item">2.2.1</span><span class="level-item">1-D</span></span></a></li><li><a class="level is-mobile" href="#2-D"><span class="level-left"><span class="level-item">2.2.2</span><span class="level-item">2-D</span></span></a></li><li><a class="level is-mobile" href="#Conclusion"><span class="level-left"><span class="level-item">2.2.3</span><span class="level-item">Conclusion</span></span></a></li></ul></li><li><a class="level is-mobile" href="#PCA-decorrelation"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">PCA-decorrelation</span></span></a></li><li><a class="level is-mobile" href="#PCA-Another-Point-of-View"><span class="level-left"><span class="level-item">2.4</span><span class="level-item">PCA-Another Point of View</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Main-Idea-Component"><span class="level-left"><span class="level-item">2.4.1</span><span class="level-item">Main Idea: Component</span></span></a></li><li><a class="level is-mobile" href="#Detail"><span class="level-left"><span class="level-item">2.4.2</span><span class="level-item">Detail</span></span></a></li><li><a class="level is-mobile" href="#PCA-NN：Autoencoder"><span class="level-left"><span class="level-item">2.4.3</span><span class="level-item">PCA-NN：Autoencoder</span></span></a></li></ul></li><li><a class="level is-mobile" href="#tips-how-many-components"><span class="level-left"><span class="level-item">2.5</span><span class="level-item">tips: how many components?</span></span></a></li><li><a class="level is-mobile" href="#More-About-PCA"><span class="level-left"><span class="level-item">2.6</span><span class="level-item">More About PCA</span></span></a></li><li><a class="level is-mobile" href="#Weakness-of-PCA"><span class="level-left"><span class="level-item">2.7</span><span class="level-item">Weakness of PCA</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Reference"><span class="level-left"><span class="level-item">3</span><span class="level-item">Reference</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

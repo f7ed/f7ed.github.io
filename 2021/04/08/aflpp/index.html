@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Paper Reading」：AFL++：Combine Incremental Steps of Fuzzing Research - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="今天给大家分享的论文是一篇基于AFL的工作：AFL++：Combine Incremental Steps of Fuzzing Research，发表在USENIX Workshop。分享时的slides"><meta property="og:type" content="blog"><meta property="og:title" content="「Paper Reading」：AFL++：Combine Incremental Steps of Fuzzing Research"><meta property="og:url" content="https://f7ed.com/2021/04/08/aflpp/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="今天给大家分享的论文是一篇基于AFL的工作：AFL++：Combine Incremental Steps of Fuzzing Research，发表在USENIX Workshop。分享时的slides"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/dsfafs.png"><meta property="article:published_time" content="2021-04-08T16:00:00.000Z"><meta property="article:modified_time" content="2021-04-09T09:44:28.371Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Paper"><meta property="article:tag" content="fuzz"><meta property="article:tag" content="AFL"><meta property="article:tag" content="AFL++"><meta property="article:tag" content="MOpt"><meta property="article:tag" content="RedQueen"><meta property="article:tag" content="AFLFast"><meta property="article:tag" content="AFLSmart"><meta property="article:tag" content="LAF-Intel"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/dsfafs.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2021/04/08/aflpp/"},"headline":"「Paper Reading」：AFL++：Combine Incremental Steps of Fuzzing Research","image":["https://f7ed.com/gallery/thumbnails/dsfafs.png"],"datePublished":"2021-04-08T16:00:00.000Z","dateModified":"2021-04-09T09:44:28.371Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"今天给大家分享的论文是一篇基于AFL的工作：AFL++：Combine Incremental Steps of Fuzzing Research，发表在USENIX Workshop。分享时的slides"}</script><link rel="canonical" href="https://f7ed.com/2021/04/08/aflpp/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Paper Reading」：AFL++：Combine Incremental Steps of Fuzzing Research</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2021-04-08T16:00:00.000Z" title="2021-04-08T16:00:00.000Z">2021-04-09</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2021-04-09T09:44:28.371Z" title="2021-04-09T09:44:28.371Z">2021-04-09</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Paper/">Paper</a></span><span class="level-item"><i class="far fa-clock"></i> 31 minutes read (About 4631 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>今天给大家分享的论文是一篇基于AFL的工作：AFL++：Combine Incremental Steps of Fuzzing Research，发表在USENIX Workshop。分享时的<a target="_blank" rel="noopener" href="https://www.kdocs.cn/l/cuo67y1vfOwL">slides</a>  </p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><span id="more"></span>
+
+
+
+<p>目录</p>
+<ul>
+<li><p><a href="#Introduction">Introduction</a></p>
+</li>
+<li><p><a href="#State-of-the-Art">State-of-the-Art</a></p>
+<ul>
+<li><a href="#AFL">AFL</a> </li>
+<li><a href="#Smart-Scheduling">Smart Scheduling</a><ul>
+<li><a href="#AFLFast">AFLFast</a></li>
+<li><a href="#MOpt">MOpt</a> </li>
+</ul>
+</li>
+<li><a href="#Bypassing-Roadblocks">Bypassing Roadblocks</a><ul>
+<li><a href="#LAF-Intel">LAF-Intel</a></li>
+<li><a href="#RedQueen">RedQueen</a> </li>
+</ul>
+</li>
+<li><a href="#Mutate-Structure-Inputs-AFLSmart">Mutate Structured Inputs: AFLSmart</a></li>
+</ul>
+</li>
+<li><p><a href="#AFL++">AFL++</a></p>
+</li>
+<li><p><a href="#Evaluation">Evaluation</a> </p>
+</li>
+</ul>
+<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>Fuzzing已经成为软件测试强有力的工具，通过大量的非预期的输入，检测软件的运行状态，以发现软件的隐藏性漏洞。</p>
+<p>而AFL是最具盛名的fuzzing工具，基于AFL的研究也层出不穷，但这些技术往往是正交式、独立地发展。</p>
+<p>因此：</p>
+<ol>
+<li>将这些前沿新颖的fuzzing技术结合起来是一件很困难的事情</li>
+<li>而评估这些不同维度的fuzzing技术也是一件很困难的事</li>
+</ol>
+<p>AFL++这个工作就致力于解决这个问题：</p>
+<ol>
+<li>AFL++提供了一个可用的fuzzing工具，结合了许多前沿fuzzing技术</li>
+<li>AFL++还提供了一种新颖的可自定义的变异API（Custom Mutator API），研究人员能够轻松将自己设计的Mutator应用到AFL++上，或和其他Mutators结合起来。</li>
+<li>这篇论文还评估了许多结合起来的fuzzing技术组合，评估结果体现了fuzzing技术的target-dependency.</li>
+</ol>
+<h1 id="State-of-the-Art"><a href="#State-of-the-Art" class="headerlink" title="State-of-the-Art"></a>State-of-the-Art</h1><p>在正式介绍AFL++ 之前，很有必要介绍一下afl++结合的其他fuzzing技术。</p>
+<p>除了AFL的主要特点，afl++主要结合了三方面的技术，分别是：</p>
+<p>调度上的。包括AFLFast的种子调度和MOpt的变异调度。</p>
+<p>绕过fuzzing中的一些roadblocks，包括LAF- Intel和Red Queen。</p>
+<p>针对一些复杂的结构化输入的变异。</p>
+<h2 id="AFL"><a href="#AFL" class="headerlink" title="AFL"></a>AFL</h2><p>首先介绍一下AFL的工作原理和主要特征。</p>
+<p>AFL是一种基于覆盖率反馈（coverage- guided）的fuzz工具。</p>
+<p>AFL的工作流程如图所示：</p>
+<img src="https://z3.ax1x.com/2021/04/09/cUSNqA.png" alt="cUSNqA.png" style="zoom:67%;" />
+
+<ol>
+<li>编译时对源码进行插桩，以记录代码覆盖率（Code Coverage）</li>
+<li>初始化一些输入文件，加入到输入队列（queue）</li>
+<li>在队列中按照一定策略选择种子（seed），并进行大量的突变（mutation），得到大量的变异文件</li>
+<li>如果该变异文件触发了新的执行路径，则将其保存下来，加入到队列中。</li>
+<li>goto 2</li>
+</ol>
+<p>上述过程会一直进行下去，其中触发的crash会被记录下来，以便后面分析程序漏洞。</p>
+<h3 id="Coverage-Guided-Feedback"><a href="#Coverage-Guided-Feedback" class="headerlink" title="Coverage Guided Feedback"></a>Coverage Guided Feedback</h3><p>AFL是一种使用边覆盖率作为反馈的灰盒fuzzer。</p>
+<p>什么是边覆盖率呢？</p>
+<p>在介绍边覆盖率之前，先介绍一下块覆盖率：</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjrnI.png" alt="cNjrnI.png" style="zoom:90%;" />
+
+<p>如上图，将一个程序划分为一个一个的程序块，一个程序块中的指令要么都执行，要么都不执行。</p>
+<p>将上述程序拖到IDA中，得到下图，因此可以用程序块之间的跳转表示边。所以</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNvCE6.png" alt="cNvCE6.png" style="zoom:60%;" />
+
+<p>A -&gt; B -&gt; C -&gt; D -&gt; E (tuples: AB, BC, CD, DE) </p>
+<p>A -&gt; B -&gt; D -&gt; C -&gt; E (tuples: AB, BD, DC, CE)</p>
+<p>这两条执行路径的覆盖率不同。</p>
+<p>实现上，就是给每一个块分配一个编译随机值，通过上一个块和当前块的运算的值来表示该边，再进行统计。</p>
+<h3 id="Mutation"><a href="#Mutation" class="headerlink" title="Mutation"></a>Mutation</h3><p>AFL中的Mutation主要分为两种，一种是<strong>deterministic stage</strong>，从下表的变异中选择一个mutation进行连续变异。</p>
+<img src="https://z3.ax1x.com/2021/04/09/cUS38O.png" alt="cUS38O.png" style="zoom:0%;" />
+
+<p>而<strong>havoc stage</strong> 则是每次选择一堆变异，工作作用在seed上。</p>
+<h3 id="Fork-Server"><a href="#Fork-Server" class="headerlink" title="Fork Server"></a>Fork Server</h3><p>由于AFL会大量运行目标程序，因此为了减少fuzzer的执行开销，AFL使用了一种forkserver的技术。</p>
+<p>forkserver的工作原理如下图所示:</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjBjA.png" alt="cNjBjA.png" style="zoom:80%;" />
+
+<p>当fuzzer在执行目标程序前，会先执行fork()命令，得到一个子进程。</p>
+<p>子进程再通过execv()指令执行目标程序，而execv()命令有一个很特别的地方，他会用这个目标程序的映像覆盖掉子进程的映像。</p>
+<p>因此，此时的fuzzer fork()出的子进程就变成了插过桩的目标程序，也就是forkserver。</p>
+<blockquote>
+<p>The exec() family of functions replaces the current process image with a new process image.</p>
+</blockquote>
+<p>当fuzzer想要执行目标程序时，就和forkserver通信，将fork目标程序的任务交给forkserver，这样就极大的提高了fuzzer的执行效率。</p>
+<h3 id="Persistent-Mode"><a href="#Persistent-Mode" class="headerlink" title="Persistent Mode"></a>Persistent Mode</h3><p>AFL另一个提高效率的功能是Persistent Mode。</p>
+<p>使用Persistent Mode，只需要对程序做一点小小的改动，即对程序patch一个循环，就像这样：</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjw1H.png" alt="cNjw1H.png" style="zoom:50%;" />
+
+<p>Persistent Mode允许单个进程重复输入，极大减少了fork的开销。</p>
+<h2 id="Smart-Scheduling"><a href="#Smart-Scheduling" class="headerlink" title="Smart Scheduling"></a>Smart Scheduling</h2><h3 id="AFLFast"><a href="#AFLFast" class="headerlink" title="AFLFast"></a>AFLFast</h3><p>基于AFL的另一个改进领域是调度问题，一个是种子调度，如何选种子的问题；另一个是变异调度，如何选mutation的问题。</p>
+<p>AFLFast主要是从种子调度的方向改进AFL。</p>
+<p>AFLFast观察到种子大多数生成的输入都经历了相同的高频路径，因此想要设计一些策略能够focus on一些低频路径。</p>
+<p>因此，AFLFast设计了两种策略：</p>
+<ul>
+<li><p>Search Strategy：关于在队列中如何选种子的问题，决定种子挑选顺序。</p>
+</li>
+<li><p>Power Schedule：关于选出的种子可以被fuzz多少次，即可以生成多少变异文件，而这个数量被定义为种子的energy。</p>
+<blockquote>
+<p>seed’s energy: the amount of generated inputs from each seed</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="AFL-1"><a href="#AFL-1" class="headerlink" title="AFL"></a>AFL</h4><p>其实在AFL中也有相应的策略，我们先来看<strong>AFL中的种子策略</strong>是这样的：</p>
+<ul>
+<li><p>如何挑选种子：</p>
+<p>在AFL中，<code>update_bitmap_score</code> 函数中维护了一个变量<code>fav_factor</code> ，这个值越小意味值种子越favored，而这个值其实是由程序的执行时间(exec_us)和种子的长度(len)决定的。</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjd9e.png" alt="cNjd9e.png" style="zoom:57%;" />
+</li>
+<li><p>如何给种子分配energy：</p>
+<p>在AFL中，<code>calculate_score</code> 函数中维护了一个变量<code>perf_score</code> ，这个值越大意味着会给种子分配更多的energy，这个种子就有更多的机会被fuzz，而这个值主要由执行时间(exec_us)、程序的执行路(bitmap_size)、发现该种子的困难度(handicap)以及种子的深度(depth)共同决定的。</p>
+<img src="https://z3.ax1x.com/2021/04/09/cUSaVI.png" alt="cUSaVI.png" style="zoom:50%;" />
+
+<p>其中handicap，困难度，可以这样来理解，这个值越大，说明发现这个种子经过了很长轮数，来之不易，所以希望能更focus on在这些来之不易的种子上。</p>
+</li>
+</ul>
+<h4 id="AFLFast-1"><a href="#AFLFast-1" class="headerlink" title="AFLFast"></a>AFLFast</h4><p>而<strong>AFLFast</strong>中，不管是决定如何挑选种子，还是觉得如何给种子分配energy，AFLFast都还考虑了另外两个变量。</p>
+<p>对每个种子，定义两个变量：</p>
+<p>一个是<code>f(i)</code> ，表示该种子被fuzz的总次数，也叫做频率。</p>
+<p>另一个是<code>s(i)</code> ，表示该种子在队列挑选中，被挑选了多少次。</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjcAf.png" alt="cNjcAf.png" style="zoom:57%;" />
+
+<h4 id="AFLFast-Power-Schedule"><a href="#AFLFast-Power-Schedule" class="headerlink" title="AFLFast-Power Schedule"></a>AFLFast-Power Schedule</h4><p>这里主要介绍一下AFLFast的Power Schedule：</p>
+<p>AFLFast提供了6中Power Schedule：</p>
+<p>定义p(i)为分配的energy。</p>
+<ol>
+<li><p>EXPLOIT：p(i) = AFL</p>
+<p>EXPLOIT模式下的power schedule，就是之前提到的AFL的原生策略。</p>
+</li>
+<li><p>EXPLORE：p(i) = AFL / const</p>
+<p>EXPLORE模式下，对AFL中计算出的energy除以了一个常数。</p>
+<p>看这样的一个例子：</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjyHP.png" alt="cNjydHP.png" style="zoom:77%;" />
+
+<p>程序需要依次匹配到这些字符，才可以找到crash。</p>
+<p>如果规定每个种子的energy是一个常数，即p = $2^{16}$ ，那总共分配 $2^{18}$ 的energy才能找到crash。</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNj24S.png" alt="cNj24S.png" style="zoom:70%;" />
+
+<p>但如果把这个种子的转移过程用马尔可夫链建模，可以发现如果从<code>b***</code> 转移到<code>ba**</code> ，fuzz的转移概率为 $2^{-10}$ （从4个字符中选择一个字节，每个字节有 $2^{8}$ 中情况）</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjgN8.png" alt="cNjgN8.png" style="zoom:75%;" />
+
+<p>因此，可以得到从<code>i</code> 种子转移到<code>j</code> 种子需要的energy的期望是 $E[X_{ij}]=\frac{1}{p_{ij}}$  </p>
+<p>那么找到<code>bad!</code> 状态，所需要的总energy的期望和为 : $E[X_{01}]+E[X_{12}]+E[X_{23}]+E[X_{34}]=4 \cdot 2^{10}=4k$  </p>
+<p>因此，我们总是分配所需期望energy更多的值，所以在AFLFast模式，会对energy除以一个常数。</p>
+</li>
+</ol>
+<p>剩下这四种策略都是从不同的方式抑制高频边被fuzz。</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjW9g.png" alt="cNjW9g.png" style="zoom:47%;" />
+
+<h3 id="MOpt"><a href="#MOpt" class="headerlink" title="MOpt"></a>MOpt</h3><p>与种子调度相对的是变异调度，MOpt这个工作就是从变异调度的角度提升fuzz的效率。</p>
+<p>MOpt工作的主要贡献有：</p>
+<p>首先是观察到：很多有效的变异如bitflip，执行的时间却很少。</p>
+<p>论文中统计了在deterministic stage不同变异产生的interesting test cases的数量，发现bitlip表现优异。</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjf3Q.png" alt="cNjf3Q.png" style="zoom:67%;" />
+
+<p>但从变异执行时间的角度，发现这些变异效率高的变异，执行时间比较短。</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjhcj.png" alt="cNjhcj.png" style="zoom:67%;" />
+
+<p>所以MOpt的motivation是：希望能花更多的时间在那些变异效率高的变异上。</p>
+<h4 id="PSO"><a href="#PSO" class="headerlink" title="PSO"></a>PSO</h4><p>MOpt使用粒子群优化算法来对问题建模。</p>
+<p>定义粒子（particle），即变异（mutation）。粒子的位置，就是该变异被选择的概率。</p>
+<p>每一个粒子群（swarm），则是所有mutations的概率分布。</p>
+<p>而MOpt与原始PSO算法不同，MOpt使用的是多个群（multiple swarms），每一个群都是一个概率分布。</p>
+<p>在MOpt的工作流程中，主要有两个核心模块。</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNj4js.png" alt="cNj4js.png" style="zoom:67%;" />
+
+<p>一个是Pilot模块，另一个是Core模块。</p>
+<p>Pilot模块：评估每一个粒子群，也就是该mutations的概率分布的fuzz效率。</p>
+<p>Core模块：使用Pilot模块评估出的效率最高的mutation策略 来fuzz。</p>
+<h2 id="Bypassing-Roadblocks"><a href="#Bypassing-Roadblocks" class="headerlink" title="Bypassing Roadblocks"></a>Bypassing Roadblocks</h2><p>fuzzing中有时会遇到一些roadblocks。</p>
+<h3 id="LAF-Intel"><a href="#LAF-Intel" class="headerlink" title="LAF- Intel"></a>LAF- Intel</h3><p>LAF-Intel解决的fuzzing中遇到的一些困难比较语句，如下图：</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjIun.png" alt="cNjIun.png" style="zoom:50%;" />
+
+<p>即使当输入为0xabad1dee时，已经非常接近正确答案了，fuzzer也会认为他是错误的。</p>
+<p>因此LAF- Intel的思路是，把这些比较难的、比较一连串字符的比较划分为 多个单字节的比较。</p>
+<p>这样可以让程序块的划分粒度更细，当你每匹配到一个字节时，就被认为是interesting，被保存到队列中，以后可以继续fuzz，这样，fuzzer就可以一步一步的解决这个roadblock。</p>
+<p>另外，LAF-Intel是基于LLVM架构的，所以LAF- Intel实现了三种Pass：</p>
+<ul>
+<li>The split-compares-pass：划分为单字节比较，并全部转换为&lt;, &gt;, ==, !=和无符号数的比较。</li>
+<li>The compare-transform-pass：重写了strcmp和memcmp，将其全部转换为单字节比较。</li>
+<li>The split-switches-pass：将switch比较转换为单字节比较的if串。</li>
+</ul>
+<h3 id="RedQueen"><a href="#RedQueen" class="headerlink" title="RedQueen"></a>RedQueen</h3><p>RedQueen解决的roadblocks：</p>
+<ul>
+<li><p>magic number：和上文LAF-Intel解决的roadblocks类似。</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjoBq.png" alt="cNjoBq.png" style="zoom:50%;" />
+</li>
+<li><p>nested checksum：而校验和/嵌套校验和的情况就像下图所示：</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjTH0.png" alt="cNjTH0.png" style="zoom:50%;" />
+
+<p>代码如下图所绘：</p>
+<img src="https://z3.ax1x.com/2021/04/09/cUStrd.png" alt="cUStrd.png" style="zoom:57%;" />
+
+
+
+</li>
+</ul>
+<p>RedQueen这篇工作的贡献是：</p>
+<p>首先他观察到种子的输入，有时是和程序的运行状态直接相关的，这种关联定义为Input-to-State联系。</p>
+<p>比如下图：</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjHEV.png" alt="cNjHEV.png" style="zoom:50%;" />
+
+<p>hook住cmp指令，运行时，观察到eax的值为<code>VALU</code> ，与之比较的值为<code>ABCD</code>（都是小端序）。</p>
+<p>而VALU在输入中也有出现，所以这里观察到的VALU大概率就是输入的VALU，如果能将输入的VALU换成ABCD，就有较大可能绕过这个roadblock。</p>
+<p>RedQueen就是利用这样的Input-to-State的关系来解决这些roadblocks。</p>
+<h4 id="Magic-Bytes"><a href="#Magic-Bytes" class="headerlink" title="Magic Bytes"></a>Magic Bytes</h4><p>解决Magic Bytes的方法就是上文提到的那样，希望能找到一系列的可替换对。</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjHEV.png" alt="cNjHEV.png" style="zoom:50%;" />
+
+<p>具体流程为：</p>
+<ol>
+<li>跟踪：将所有的cmp指令hook住，尝试运行一下，把指令比较的操作数都提取出来。</li>
+<li>变化：对比较指令的操作数做变异操作，比如加一或减一的操作，因为从该条指令并不能得到源码中的比较关系，源码的比较逻辑可能是大于、小于等。</li>
+<li>编码：对得到的替换对进行编码操作，如小端序、hex、base-64等，像刚刚的例子就是小端序的编码。</li>
+<li>应用：将得到的这些替换对&lt; pattern -&gt; repl &gt;应用到输入中，即在输入中找pattern，替换为repl，试运行。</li>
+</ol>
+<p>在执行上述流程之前，RedQueen执行了一个操作，该操作极大提高了绕过的效率。</p>
+<p>如果替换对为(0x00, 0x04)，并且输入文件像下面左图这样：</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjbNT.png" alt="cNjbNT.png" style="zoom:67%;" />
+
+<p>输入文件中出现大量的0x00，就像产生了碰撞一样，其实很多位置并不和那条程序指令相关，这样就会花费大量时间。</p>
+<p>如果输入是像上图右边这样的，比较colorful，那RedQueen的效率就会很高。</p>
+<p>所以RedQueen在进行绕过之前，会对输入做染色（Colorization）的操作，在保证种子执行路径不变的情况下，增大输入的熵值。</p>
+<h4 id="Nested-Checksum"><a href="#Nested-Checksum" class="headerlink" title="Nested Checksum"></a>Nested Checksum</h4><p>而对checksum的绕过，这其实是一件很难的事情，因此RedQueen会选择先忽略掉这些困难，后面再来修正。</p>
+<p>具体操作：</p>
+<ol>
+<li><p>对输入进行染色</p>
+</li>
+<li><p>根据指定条件，识别这些像checksum比较的指令，hook住。</p>
+</li>
+<li><p>然后就用<code>cmp al, al</code> patch原程序，这样就让这些checksum的判断一定为正。</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjq4U.png" alt="cNjq4U.png" style="zoom:50%;" />
+
+<p>但这样的patch就会带来false positive，即这些输入的执行路径可能并不是这样的。</p>
+</li>
+<li><p>RedQueen就会在之后进行输入验证，并修复他们。</p>
+</li>
+<li><p>在fix阶段，其实就是用magic bytes的方法，对checksum的位置进行替换。</p>
+<p>不过如果对于嵌套的校验和指令，就需要按照拓扑序（Topological Sort），一个一个的fix。</p>
+</li>
+</ol>
+<h2 id="Mutate-Structure-Inputs-AFLSmart"><a href="#Mutate-Structure-Inputs-AFLSmart" class="headerlink" title="Mutate Structure Inputs:AFLSmart"></a>Mutate Structure Inputs:AFLSmart</h2><p>对于输入复杂的、结构性强的程序，fuzzer通常会生成大量的无效输入。</p>
+<p>因此AFLSmart将AFL和Peach结合起来，AFLSmart的输入为Peach pits格式，一种xml文件。</p>
+<p>AFLSmart 将种子都表示为Peach pits格式，这样，就可以基于这些块进行变异，而不需要基于比特级的 变异。</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjjgJ.png" alt="cNjjgJ.png" style="zoom:67%;" />
+
+<h1 id="AFL-2"><a href="#AFL-2" class="headerlink" title="AFL++"></a>AFL++</h1><p>AFL++就将上述提到的诸多fuzzing技术都结合在一起，并提供了一种可供扩展的API。</p>
+<h2 id="Seed-Scheduling"><a href="#Seed-Scheduling" class="headerlink" title="Seed Scheduling"></a>Seed Scheduling</h2><p>AFL++的Seed Scheduling就是基于AFLFast的种子调度。</p>
+<p>AFL++的Power Schedules除了AFLFast提到的6种，还有另外两种，Mmopt和Rare。</p>
+<p>Mmopt主要关注那些最新发现的种子</p>
+<p>而Rare主要关注那些具有罕见边的种子。</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjX34.png" alt="cNjX34.png" style="zoom:57%;" />
+
+<h2 id="Mutators"><a href="#Mutators" class="headerlink" title="Mutators"></a>Mutators</h2><p>AFL++集成了许多mutator，包括RedQueen的Input-to-State mutator，包括Mopt mutator。</p>
+<p>因此，AFL++就像一个框架，提供了一个自定义的mutator接口规范，实现这些接口，就可以将自己的mutator缝合到AFL++上，或者将不同的mutator缝合在一起。</p>
+<p>AFL++除了提供了mutator的接口规范，还提供了trimming的借口规范。</p>
+<h4 id="Input-To-State-Mutator"><a href="#Input-To-State-Mutator" class="headerlink" title="Input-To-State Mutator"></a>Input-To-State Mutator</h4><p>这个mutator是基于RedQueen的input-to-state.</p>
+<p>这里主要介绍他和RedQueen不同的地方：</p>
+<ul>
+<li>Colorization<ul>
+<li>RedQueen在染色时是保持程序执行路径不变，即hash of bitmap不变。</li>
+<li>而AFL++除了保持程序的执行路径不变，还对程序的执行时间做了一定控制，规定了程序的执行时间下界为2x slowdown</li>
+</ul>
+</li>
+<li>Bypass Comparison<ul>
+<li>AFL++采用的是一种probabilistic fuzzing。即如果这个roadblock，使用替换的方法，或者修复的方法失败了，那fuzzer下一次就会以较小概率尝试绕过他。（当下解决不了的困难，先放一放zzzz）</li>
+<li>不过其实RedQueen中也有相应的设计，RedQueen是使用的虚拟机断点hook cmp指令。因此，如果这个断电被hit的次数比较少，就将这个断点去掉。</li>
+</ul>
+</li>
+<li>CmpLog Instrumentation<ul>
+<li>RedQueen中采用的是虚拟机断点hook的cmp指令，当断点被hit时，再提取指令操作数。</li>
+<li>而AFL++则是使用的一种共享表，每一个指令都记录他的前256次执行的操作数。</li>
+</ul>
+</li>
+</ul>
+<h3 id="MOpt-1"><a href="#MOpt-1" class="headerlink" title="MOpt"></a>MOpt</h3><p>AFL++中也缝合了MOpt的Pilot和Core模块。</p>
+<p>并且可以和Input-to-State结合。</p>
+<h2 id="Instrumentation"><a href="#Instrumentation" class="headerlink" title="Instrumentation"></a>Instrumentation</h2><p>在插桩上，AFL++首先解决了边hit count溢出的问题。</p>
+<p>因为在AFL中，边只会记录到255。</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjOCF.png" alt="cNjOCF.png" style="zoom:50%;" />
+
+<p>有两种方法可以解决：</p>
+<ol>
+<li>NeverZero，加一个进位标志。NeverZero可以提高fuzzer的表现性能。</li>
+<li>Saturated Counters：当计数超过255时，就停在255。这个做法，不推荐，反而会让fuzzer的性能变差。</li>
+</ol>
+<hr>
+<p>除了使用NeverZero，AFL++还使用了Ngram优化边覆盖率的统计。</p>
+<p>AFL原生的统计边覆盖率的代码是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cur_location = &lt;COMPILE_TIME_RANDOM&gt;; </span><br><span class="line">shared_mem[cur_location ^ prev_location]++; </span><br><span class="line">prev_location = cur_location &gt;&gt; 1;</span><br></pre></td></tr></table></figure>
+
+<p>AFL只考虑了上一个基本块和当前基本块，这样的计算速度更快，但会带来更多的碰撞。</p>
+<p>而Ngram则是考虑当前基本块和前N-1个基本块表示该边，这样能部分碰撞，实验结果也表明Ngram能提高实验的性能。</p>
+<p>AFL++实现了多种后端的插桩，具体实现的区别如下：</p>
+<img src="https://z3.ax1x.com/2021/04/09/cNjzuR.png" alt="cNjzuR.png" style="zoom:50%;" />
+
+<h1 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h1><p>略，具体可见<a target="_blank" rel="noopener" href="https://www.kdocs.cn/l/cuo67y1vfOwL">slides</a>  。</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li><p>AFL：<a target="_blank" rel="noopener" href="https://afl-1.readthedocs.io/en/latest/">https://afl-1.readthedocs.io/en/latest/</a></p>
+</li>
+<li><p>AFLFast: <a target="_blank" rel="noopener" href="https://mboehme.github.io/paper/CCS16.pdf">https://mboehme.github.io/paper/CCS16.pdf</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/mboehme/aflfast">https://github.com/mboehme/aflfast</a></p>
+</li>
+<li><p>RedQueen:<a target="_blank" rel="noopener" href="https://react-h2020.eu/m/filer_public/6d/86/6d869f98-f544-49cc-8221-b380c593888f/ndss19-redqueen.pdf">https://react-h2020.eu/m/filer_public/6d/86/6d869f98-f544-49cc-8221-b380c593888f/ndss19-redqueen.pdf</a></p>
+<p><a target="_blank" rel="noopener" href="https://hexgolems.com/talks/redqueen.pdf">https://hexgolems.com/talks/redqueen.pdf</a></p>
+</li>
+<li><p>MOpt:<a target="_blank" rel="noopener" href="https://www.usenix.org/system/files/sec19-lyu.pdf">https://www.usenix.org/system/files/sec19-lyu.pdf</a></p>
+</li>
+<li><p>AFLSmart: <a target="_blank" rel="noopener" href="https://thuanpv.github.io/publications/TSE19_aflsmart.pdf">https://thuanpv.github.io/publications/TSE19_aflsmart.pdf</a></p>
+</li>
+<li><p>AFL++:<a target="_blank" rel="noopener" href="https://aflplus.plus/papers/">https://aflplus.plus/papers/</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/AFLplusplus/AFLplusplus">https://github.com/AFLplusplus/AFLplusplus</a></p>
+</li>
+</ol>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Paper Reading」：AFL++：Combine Incremental Steps of Fuzzing Research</p><p><a href="https://f7ed.com/2021/04/08/aflpp/">https://f7ed.com/2021/04/08/aflpp/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2021-04-09</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-04-09</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Paper/">Paper, </a><a class="link-muted" rel="tag" href="/tags/fuzz/">fuzz, </a><a class="link-muted" rel="tag" href="/tags/AFL/">AFL, </a><a class="link-muted" rel="tag" href="/tags/AFL/">AFL++, </a><a class="link-muted" rel="tag" href="/tags/MOpt/">MOpt, </a><a class="link-muted" rel="tag" href="/tags/RedQueen/">RedQueen, </a><a class="link-muted" rel="tag" href="/tags/AFLFast/">AFLFast, </a><a class="link-muted" rel="tag" href="/tags/AFLSmart/">AFLSmart, </a><a class="link-muted" rel="tag" href="/tags/LAF-Intel/">LAF-Intel </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2021/07/02/MPC1-Yaos-protocol/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「MPC-Mike Rosulek 」：Overview of Secure Computation and Yao&#039;s Protocol</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2021/02/27/pytorch-nn-design/"><span class="level-item">「PyTorch」：4-Neural Network Design</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "d1359ccdee5b8d2237911e0e5f655e06",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">71</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">139</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Introduction"><span class="level-left"><span class="level-item">1</span><span class="level-item">Introduction</span></span></a></li><li><a class="level is-mobile" href="#State-of-the-Art"><span class="level-left"><span class="level-item">2</span><span class="level-item">State-of-the-Art</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#AFL"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">AFL</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Coverage-Guided-Feedback"><span class="level-left"><span class="level-item">2.1.1</span><span class="level-item">Coverage Guided Feedback</span></span></a></li><li><a class="level is-mobile" href="#Mutation"><span class="level-left"><span class="level-item">2.1.2</span><span class="level-item">Mutation</span></span></a></li><li><a class="level is-mobile" href="#Fork-Server"><span class="level-left"><span class="level-item">2.1.3</span><span class="level-item">Fork Server</span></span></a></li><li><a class="level is-mobile" href="#Persistent-Mode"><span class="level-left"><span class="level-item">2.1.4</span><span class="level-item">Persistent Mode</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Smart-Scheduling"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">Smart Scheduling</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#AFLFast"><span class="level-left"><span class="level-item">2.2.1</span><span class="level-item">AFLFast</span></span></a></li><li><a class="level is-mobile" href="#MOpt"><span class="level-left"><span class="level-item">2.2.2</span><span class="level-item">MOpt</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Bypassing-Roadblocks"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">Bypassing Roadblocks</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#LAF-Intel"><span class="level-left"><span class="level-item">2.3.1</span><span class="level-item">LAF- Intel</span></span></a></li><li><a class="level is-mobile" href="#RedQueen"><span class="level-left"><span class="level-item">2.3.2</span><span class="level-item">RedQueen</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Mutate-Structure-Inputs-AFLSmart"><span class="level-left"><span class="level-item">2.4</span><span class="level-item">Mutate Structure Inputs:AFLSmart</span></span></a></li></ul></li><li><a class="level is-mobile" href="#AFL-2"><span class="level-left"><span class="level-item">3</span><span class="level-item">AFL++</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Seed-Scheduling"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">Seed Scheduling</span></span></a></li><li><a class="level is-mobile" href="#Mutators"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">Mutators</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#MOpt-1"><span class="level-left"><span class="level-item">3.2.1</span><span class="level-item">MOpt</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Instrumentation"><span class="level-left"><span class="level-item">3.3</span><span class="level-item">Instrumentation</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Evaluation"><span class="level-left"><span class="level-item">4</span><span class="level-item">Evaluation</span></span></a></li><li><a class="level is-mobile" href="#Reference"><span class="level-left"><span class="level-item">5</span><span class="level-item">Reference</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Cryptography-MIT6875」: Lecture 6 - Number Theory - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^        The motif of this blog is Number Theory,"><meta property="og:type" content="blog"><meta property="og:title" content="「Cryptography-MIT6875」: Lecture 6 - Number Theory"><meta property="og:url" content="https://f7ed.com/2022/07/13/mit6875-lec6/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^        The motif of this blog is Number Theory,"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/mit6875-lec6-thumbnial.png"><meta property="article:published_time" content="2022-07-13T16:00:00.000Z"><meta property="article:modified_time" content="2022-08-12T04:31:58.262Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Prime"><meta property="article:tag" content="Number Theory"><meta property="article:tag" content="Multiplicative Group"><meta property="article:tag" content="Generators"><meta property="article:tag" content="Diffie-Hellman Assumptions"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/mit6875-lec6-thumbnial.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2022/07/13/mit6875-lec6/"},"headline":"「Cryptography-MIT6875」: Lecture 6 - Number Theory","image":["https://f7ed.com/gallery/thumbnails/mit6875-lec6-thumbnial.png"],"datePublished":"2022-07-13T16:00:00.000Z","dateModified":"2022-08-12T04:31:58.262Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^        The motif of this blog is Number Theory,"}</script><link rel="canonical" href="https://f7ed.com/2022/07/13/mit6875-lec6/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Cryptography-MIT6875」: Lecture 6 - Number Theory</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2022-07-13T16:00:00.000Z" title="2022-07-13T16:00:00.000Z">2022-07-14</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2022-08-12T04:31:58.262Z" title="2022-08-12T04:31:58.262Z">2022-08-12</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Cryptography-MIT6875/">Cryptography-MIT6875</a></span><span class="level-item"><i class="far fa-clock"></i> 25 minutes read (About 3784 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><article class="message message-immersive is-info">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="message-body">
+<i class="fas fa-info-circle mr-2"></i>
+In this <a href="/categories/Cryptography-MIT6875">series</a>, I will learn MIT 6.875, <strong>Foundations of Cryptography</strong>, lectured by <strong>Vinod Vaikuntanathan</strong>.
+<br>Any corrections and advice are welcome. ^ - ^
+</div>
+</article>
+
+ <article class="message message-immersive is-warning"> <div class="message-body"> <i class="fas fa-exclamation-triangle mr-2"></i> The motif of this blog is <strong>Number Theory</strong>, including the second half of Lecture 5 and the Lecture 6. 
+
+<p>It’s an excellent opportunity to learn Number Theory in manner of English. </p>
+<p>An important point in this blog is that we <strong>focus more on the statements</strong>, which is useful in later lectures, rather than the proof.</p>
+<p>About 70% of the content in this blog is originally and literally from the lecture notes. I just organize and refine it according to the logic of the professor’s narration since the <a href="/files/numbertheory.pdf">lecture note</a> is awesome.</p>
+<p>The rest is my own understanding and derivation of some theorems. And I will be learning Number Theory and completing the omitted proof.</p>
+<p>So this blog will be updated continuously.</p>
+ </div> </article> 
+
+<p><strong>Topics covered:</strong></p>
+<ul>
+<li>Groups,  Order of a group and the Order of an element, Cyclic Groups.</li>
+<li>The Multiplicative Group $\mathbb{Z}_N^*$ and $\mathbb{Z}_P^*$ for a prime $P$.</li>
+<li>Generators of $\mathbb{Z}_P^*$.</li>
+<li>Primes, Primality Testing.</li>
+<li>The Discrete Logarithm (DLOG) problem and a candidate OWF.</li>
+<li>Diffie-Hellman assumptions: DDH and CDH.</li>
+</ul>
+<span id="more"></span>
+
+<h1 id="Groups"><a href="#Groups" class="headerlink" title="Groups"></a>Groups</h1><p>An <strong>Abelian group</strong> $\mathbb{G}=(S,\star)$ is a set $S$ together with a operation $\star :S\times S\rightarrow S$ which satisfies</p>
+<ul>
+<li><strong>Identity</strong>: There is an element $\mathcal{I}\in S$ such that for $a\in S$, $a\star \mathcal{I}=\mathcal{I}\star a=a$.</li>
+<li><strong>Inverse</strong>: For every $a\in S$, there is an element $b\in S$ such that $a\star b =b\star a=\mathcal{I}$.</li>
+<li><strong>Associativity</strong>: For every $a,b,c\in S$, $a\star (b\star c)=(a\star b)\star c$.</li>
+<li><strong>Commutativity</strong>: For every $a,b\in S$, $a\star b=b\star a$.</li>
+</ul>
+<h2 id="Order-of-a-group-and-the-order-of-an-element"><a href="#Order-of-a-group-and-the-order-of-an-element" class="headerlink" title="Order of a group and the order of an element"></a>Order of a group and the order of an element</h2><ul>
+<li><strong>The order of a group</strong> is <u>the number of elements in it</u>, namely $|S|$.</li>
+<li><strong>The order of an element</strong> $g\in S$ is <u>the minimal number of times</u> one has to <u>perform the group operation on $g$ to get to the identity element</u> $\mathcal{I}$.<br>That is,  $\mathrm{ord}(g)=\min_{i>0}\{g^i=\mathcal{I}\}$. </li>
+</ul>
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Theorem 1 (Lagrange’s Theorem):</strong></p>
+ </div> <div class="message-body"> 
+
+<p>The order of any element divides the order of the group.</p>
+ </div> </article> 
+
+<h2 id="Generator-of-a-Group"><a href="#Generator-of-a-Group" class="headerlink" title="Generator of a Group"></a>Generator of a Group</h2><p>A <strong>generator</strong> of a group $\mathbb{G}$ is <u>an element of order</u> $|\mathbb{G}|$. In other words,</p>
+
+$$
+\mathbb{G}=\{g,g^2,\dots,g^{|\mathbb{G}|}=\mathcal{I}\}
+$$
+
+
+
+<h2 id="Cyclic-group"><a href="#Cyclic-group" class="headerlink" title="Cyclic group"></a>Cyclic group</h2><p>A group $\mathbb{G}$ is called <strong>cyclic</strong> <u>if it has a generator.</u></p>
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Theorem 2:</strong></p>
+ </div> <div class="message-body"> 
+
+<p>Every group whose order is a <u>prime number</u> is <strong>cyclic</strong>.<br>Moreover, <u>every element other than the identity</u> is a <strong>generator</strong>.</p>
+ </div> </article> 
+
+<p><strong>Proof</strong>[2]</p>
+<h2 id="Discrete-Logarithms"><a href="#Discrete-Logarithms" class="headerlink" title="Discrete Logarithms"></a>Discrete Logarithms</h2><p>Let $\mathbb{G}$ be a cyclic group. We know that $\mathbb{G}$ has a generator $g$, and that every $h\in \mathbb{G}$ can be written as $h=g^x$ for a <strong>unique</strong>  $x\in\{1,2,\dots,|\mathbb{G}|\}$. </p>
+<p>We write </p>
+<p>$$<br>x=\operatorname{dlog}_g(h)<br>$$</p>
+<p>to denote the fact that $x$ is the <strong>discrete logarithm</strong> of $h$ to the base $g$.</p>
+<hr>
+<p>We will <strong>look for groups</strong> where <u>computing the group operation is easy</u> (namely, polynomial time) but <u>computing discrete logarithms is hard</u> (namely, exponential or sub-exponential time).</p>
+<p>Our source for such groups will come from number theory.</p>
+<p>Discrete logarithms in $\mathbb{Z}_N$ are, for better or worse, easy.</p>
+<h1 id="Baby-Computational-Number-Theory"><a href="#Baby-Computational-Number-Theory" class="headerlink" title="Baby (Computational) Number Theory"></a>Baby (Computational) Number Theory</h1><p>The complexity of basic operations with numbers. $n$ denotes the input length for each of these operations.</p>
+<img src="https://s1.ax1x.com/2022/07/15/jhldBt.png" alt="Complexity of Basic operations" style="zoom:37%;" />
+
+<p><strong>Greatest Common Divisors:</strong></p>
+<p>The <strong>greatest common divisor</strong> (gcd) of positive integers $a$ and $b$ is <u>the largest positive integer $d$ that divides both $a$ and $b$.</u></p>
+<p>$a$ and $b$ are <strong>relatively prime</strong> if their gcd is 1.</p>
+<h1 id="The-Multiplicative-Group-mathbb-Z-N"><a href="#The-Multiplicative-Group-mathbb-Z-N" class="headerlink" title="The Multiplicative Group $\mathbb{Z}_N^*$"></a>The Multiplicative Group $\mathbb{Z}_N^*$</h1><p>The <strong>multiplicative group</strong> of numbers mod $N$, denoted $\mathbb{Z}_N^*$, consists of the set</p>
+
+$$
+S=\{1\le a< N:\operatorname{gcd}(a,N)=1\}
+$$
+
+
+
+<p><u>with multiplication mod $N$</u> being the <strong>operation</strong>.</p>
+<hr>
+<p><strong>Some further facts about</strong>  $\mathbb{Z}_N^*$</p>
+<ul>
+<li><p>The <strong>order</strong> of $\mathbb{Z}_N^*$, the number of <u>positive integers smaller than</u> $N$ that are <u>relatively prime to it</u>, is called the <strong>Euler totient function</strong> of $N$ denoted $\varphi(N)$.</p>
+</li>
+<li><p>$\varphi(p)=p-1$ if $p$ is prime.</p>
+</li>
+<li><p>$\varphi(p^k)=p^k-p^{k-1}$ if $p$ is prime.</p>
+</li>
+<li><p>$\varphi(pq)=\varphi(p)\varphi(q)$ if $\operatorname{gcd}(p,q)=1$.</p>
+</li>
+<li><p>If $N=\prod _i p_i^{\alpha_i}$ is the prime factorization of $N$, then  $\varphi(N)=\prod_i p_i^{\alpha_i-1}(pi-1)$.  </p>
+</li>
+</ul>
+<h1 id="The-Multiplicative-Group-mathbb-Z-p"><a href="#The-Multiplicative-Group-mathbb-Z-p" class="headerlink" title="The Multiplicative Group $\mathbb{Z}_p^*$"></a>The Multiplicative Group $\mathbb{Z}_p^*$</h1> $\mathbb{Z}_p^*$  is Cyclic. 
+
+<p>The following theorem is a very important property of $\mathbb{Z}_p^*$ when $P$ is prime.</p>
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Theorem 4 :</strong></p>
+ </div> <div class="message-body"> 
+
+<p>If $P$ is prime, then $\mathbb{Z}_p^*$ is a cyclic group.</p>
+ </div> </article> 
+
+<p><strong>Proof</strong>[2]</p>
+ <article class="message message-immersive is-danger"> <div class="message-body"> <i class="fas fa-bug mr-2"></i> <u>Note:</u> 
+
+<p>It is very tempting to prove this theorem by appealing the <strong>Theorem 2</strong> which <u>says that every group with prime order is cyclic.</u>  Be careful, and note that the <strong>order</strong> of $\mathbb{Z}_p^*$ is $P-1$, which is <u>decidedly not prime.</u></p>
+ </div> </article> 
+
+<p>There are several followup questions.</p>
+<ul>
+<li><u>How many</u> generators are there for $\mathbb{Z}_p^*$ ?</li>
+<li><u>How to tell (efficiency)</u> if a given element $g$ is a generator ?</li>
+<li><u>How to sample</u> a random generator for $\mathbb{Z}_p^*$ ?</li>
+</ul>
+<h2 id=""><a href="#" class="headerlink" title=""></a>  $\mathbb{Z}_p^{*}$ and  $\mathbb{Z}_{P-1}$ </h2><p>Before proceeding further, let us note the following structural fact about $\mathbb{Z}_P^*$.</p>
+<p>There are two groups are <strong>isomorphic</strong> with an isomorphism $\phi$ that maps $x\in\mathbb{Z}_{P-1}$ to $g^x\in \mathbb{Z}_P^*$. [isomorphic: 同构的]</p>
+<p>In particular, consider $\phi(x)=g^x \pmod P$.</p>
+<p>We have $\phi(x+y)=\phi(x)\cdot \phi(y)$.</p>
+<p>The isomorphism is <strong>efficiently computable</strong> <u>in the forward direction</u> (exponentiation, using the repeated squaring algorithm) but <strong>not known to be efficiently computable</strong> <u>in the reverse direction.</u></p>
+<p>For example, consider $\mathbb{Z}_7^*$ and $\mathbb{Z}_6$:</p>
+<ul>
+<li>$\mathbb{Z}_7^* = \{1,2,3,4,5,6\}$ and there is a  generator $g=5$. 
+You can get $\{g,g^2,g^3,g^4,g^5,g^6\} =\{5, 4,6,2,3,1\}$.<br>When you <u>perform the multiplication</u> on $g$, you will <strong>wrap around</strong> the group.<br>That’s an intuitive reason why discrete logarithm is hard in $\mathbb{Z}_p^*$.</li>
+<li>$\mathbb{Z}_6=\{1,2,3,4,5,6\}$ and the generator $g=1$. 
+The group operation in $\mathbb{Z}_6$ is addition.<br>You can get $\{g,g^2,g^3,g^4,g^5,g^6\}=\{1,2,3,4,5,6\}$.<br>When you perform the addition on $g$, you <strong>just walk along</strong> the group.</li>
+<li>We can know that there is a one-to-one mapping $\phi$  from $\mathbb{Z}_6$ to $\mathbb{Z}_7^*$, that is $\mathbb{Z}_6\cong \mathbb{Z}_7^*$ . </li>
+</ul>
+<hr>
+<p>Here is another quick application of this isomorphism:</p>
+<p><font color=blue><u><b>Lemma :</b></u></font> </p>
+<p>Let $P$ be an odd prime.</p>
+<p>If $g$ is a generator of $\mathbb{Z}_P^*$, then so is $g^x$ as long as $x$ and $P-1$ are <u>relatively prime.</u></p>
+<p><font color=blue><u><b>Proof:</b></u></font> </p>
+<article class="message message-immersive is-warning">  <div class="message-body">  <i class="fas fa-exclamation-triangle mr-2"></i> The following proof is my <strong>own deduction</strong> since the proof is omitted in the lecture.  <br> <strong>Corrections and advice are welcome.</strong>  </div>  </article>
+
+<p>There is a generator $g’$ in  $\mathbb{Z}_{P-1}$corresponding to $g$ in $\mathbb{Z}_P^*$ from the isomorphism $\mathbb{Z}_P^*\cong \mathbb{Z}_{P-1}$. </p>
+<p>$x$ and $P-1$ are relatively prime, and there are two statements.</p>
+<p>In group $\mathbb{Z}_P^*$, if $g$ is a generator, then $g^x$ is a generator.</p>
+<p>In group $\mathbb{Z}_{P-1}$, if $g’$ is a generator, then $xg’$ is a generator.</p>
+<p>From the <strong>isomorphism</strong>, we  can turn the question in $\mathbb{Z}_P^*$ to a relative question in $\mathbb{Z}_{P-1}$.  </p>
+<p>It’s easy to <strong>prove</strong> that if $x$ is a generator   in $\mathbb{Z}_{P-1}$ (which can iterate all elements), then $ax$ is also a generator in $\mathbb{Z}_{P-1}$ (which can also iterate all elements) where $\operatorname{gcd}(a, P-1)=1$. </p>
+<ul>
+<li>The main idea is to suppose for a <strong>contradiction</strong> that there are two different $x_1$ and $x_2$,i.e. $x_1\ne x_2 \pmod{P-1}$, satisfying $ax_1=ax_2 \pmod{P-1}$.</li>
+<li>Then we know $P-1\mid a(x_1-x_2)$.</li>
+<li>From $\operatorname{gcd}(a, P-1)=1$, we know $P-1\mid x_1-x_2$.</li>
+<li>So $x_1= x_2 \pmod{P-1}$. (contradiction)</li>
+<li>QED.</li>
+</ul>
+<hr>
+<p>As a <strong>corollary</strong>, we immediately derive the fact <u>that $\phi(P-1)$ elements</u>  of $\mathbb{Z}_p^*$ are  <strong>generators</strong>.</p>
+<h2 id="mathbb-Z-p-has-lots-of-generators"><a href="#mathbb-Z-p-has-lots-of-generators" class="headerlink" title="$\mathbb{Z}_p^*$  has lots of generators"></a>$\mathbb{Z}_p^*$  has lots of generators</h2><p>For the first question, $\mathbb{Z}_p^*$ has lots of generators.</p>
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Theorem 5:</strong></p>
+ </div> <div class="message-body"> 
+
+<p>The number of generators in $\mathbb{Z}_p^*$ is $\varphi(P-1)$.</p>
+ </div> </article> 
+
+<p>But <u>how large</u> is $\varphi(P-1)$ asymptotically? This is answered by the following classical theorem.</p>
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Theorem 6:</strong></p>
+ </div> <div class="message-body"> 
+
+<p>For every integer $N$, $\varphi(N)=\Omega(N/\log \log N)$.</p>
+ </div> </article> 
+
+<p>In other words, if you <u>pick a random element</u> of  $\mathbb{Z}_p^*$,  you will see a generator <strong>with probability</strong></p>
+<p>$$<br>\varphi(P-1)/(P-1)=\Omega(1/\log\log P)<br>$$</p>
+<p><u>which is polynomial</u> in $1/\log P$. So, reasonably <strong>often</strong>.[asymptotical: 渐进的]</p>
+<blockquote>
+<p><strong>Difference between Big $\mathcal{O}$ and Big $\Omega$:</strong><br>Big $\mathcal{O}$ and Big $\Omega$ function are used in computer science to <u>describe the performance or complexity of an algorithm.</u></p>
+<ul>
+<li>Big $\mathcal{O}$  is used to describe <u>the worst case</u> running time for an algorithm.</li>
+<li>But, Big $\Omega$ notation, on the other hand, is used to describe <u>the best case</u> running time for a given algorithm.</li>
+</ul>
+</blockquote>
+<p>If you want to get a generator in  $\mathbb{Z}_p^*$,  you will <strong>hit a generator very quickly</strong> just <u>keeping picking random</u> in  $\mathbb{Z}_p^*$. </p>
+<p>Then it comes to the second question.</p>
+<h2 id="How-to-tell-a-generator-of-mathbb-Z-p"><a href="#How-to-tell-a-generator-of-mathbb-Z-p" class="headerlink" title="How to tell a generator of $\mathbb{Z}_p^*$ ?"></a>How to tell a generator of $\mathbb{Z}_p^*$ ?</h2><p>The answer is that you <strong>can tell in poly. time</strong> whether $g\in \mathbb{Z}_p^*$ is a generator <u>given the factorization of $P-1$.</u></p>
+<h3 id="Given-the-factorization-of-P-1​"><a href="#Given-the-factorization-of-P-1​" class="headerlink" title="Given the factorization of P-1​"></a>Given the factorization of P-1​</h3><p>At first, we know that a generator is an element of order $P-1$, so it’s easy to check whether $g^{P-1}=1 \pmod P$.</p>
+<p>Then we need to <strong>check</strong> if there is <u>some smaller power</u> of $g$ that equals $1$ since the order is the minimal power.</p>
+<p>However, there are <u>a large number of divisors</u> of $P-1$, roughly $P^{1/\log \log P}$ which is <strong>not polynomial</strong> (in $\log P$).</p>
+<p>It turns out, you <strong>do not</strong> need to <u>check all divisors,</u> <strong>but rather</strong> <u>only the terminal divisors</u> (or, the maximal factors less than $P-1$).</p>
+<p>If $P-1=\prod_i q_i^{\alpha_i}$, the t<strong>erminal divisors</strong> are $(P-1)/q_i$ for each $i$.</p>
+<p><strong>For example:</strong></p>
+<ul>
+<li>If $P-1=p_1^2p_2^3p_3^2$.</li>
+<li>Suppose $g=p_1^2p_2^3$,  then $g^{p_1^2p_2^3}=1$.<br>You can get some powers of $g^{p_1^2p_2^3}$ that equals $1$.<br>And the power to $g^{p_1^2p_2^3}$ is <u>the multiplication to the exponent</u> $p_1^2p_2^3$.<ul>
+<li>You can get $g^{p_1^2p_2^3p_3}=1$ which is <u>smaller power</u> than $P-1$.</li>
+<li>You can also get $g^{p_1^2p_2^3p_3^2}=1$ which is useless since $P-1=p_1^2p_2^3p_3^2$.</li>
+<li>So you only <u>hit one terminal divisor</u>, that is $(P-1)/p_3$.</li>
+</ul>
+</li>
+<li>Suppose $g=p_1p_2^2p_3$, then $g^{p_1p_2^2p_3}=1$.<br>Similarly, you can get some powers of $g^{p_1p_2^2p_3}$ that equals $1$.<ul>
+<li>You can get $g^{p_1p_2^3p_3^2}=1$ by power $p_2p_3$.<br>You hit one terminal divisor $(P-1)/p_1$.</li>
+<li>You can get $g^{p_1^2p_2^2p_3^2}=1$ by power $p_1p_3$.<br>You hit one terminal divisor $(P-1)/p_2$.</li>
+<li>You can get $g^{p_1^2p_2^3p_3}=1$ by power $p_1p_2$.<br>You hit one terminal divisor $(P-1)/p_3$.</li>
+<li>So you <u>can hit 3 terminal divisors.</u></li>
+</ul>
+</li>
+<li>The <strong>conclusion</strong> is that <u>if there is a smaller power</u> of $g$ that equals 1, then you <strong>can definitely</strong> <u>hit some powers of terminal divisor</u> that equals 1, which are maximal factors of $P-1$. So you can <strong>only check all the terminal divisiors</strong>.</li>
+</ul>
+<p><font color=blue><u><b><i>Algorithm: </i></b></u></font> </p>
+<p>The following <strong>algorithm</strong> works on $g$ and <u>the prime factorization</u> of $P-1$.</p>
+<ul>
+<li>For each $i$, check if $g^{(P-1)/q_i}\overset{?}= 1\pmod P$.</li>
+<li>If yes for <strong>any</strong> $i$, say “not a generator”.</li>
+<li>Otherwise, say “generator”.</li>
+</ul>
+<h3 id="Given-only-g​-and-​P​"><a href="#Given-only-g​-and-​P​" class="headerlink" title="Given only g​ and ​P​"></a>Given only g​ and ​P​</h3><p>That’s nice.</p>
+<p>But can one tell if $g$ is a generator <u>given only $g$ and $P$ ?</u><br>(as <u>opposed to the prime factorization</u> of $P-1$ which is in general hard to compute)</p>
+<p>We don’t know, so there are some ways around it.</p>
+<p><font color=blue><u><b><i>Solution 1: </i></b></u></font> </p>
+<p>Pick a random $P$ <u>together with its prime factorization</u> of $P-1$.</p>
+<p>This, it turns out, can be done due to a clever algorithm of Kalai [6].</p>
+<p><font color=blue><u><b><i>Solution 2: </i></b></u></font> </p>
+<p>Pick $P=2Q+1$ where $Q$ is prime. </p>
+<p>Such primes like $P$ are called <strong>safe primes</strong>, and $Q$ is called a <strong>Sophie-Germain prime</strong> after the famous mathematicians. </p>
+<p>While there are infinitely many primes, it has only been <strong>conjectured</strong> that <u>there are infinitely many Sophie-Germain primes</u>. This remains <strong>unproven</strong>.</p>
+<p>Moreover, the <strong>Sophie-Germain primes</strong> are considered <u>as the hardest class of primes for discrete logarithms.</u></p>
+<hr>
+<p>Solution 2 is what people typically use in practice. </p>
+<p><strong>In practice</strong>, you <u>just pick a random prime</u> as $Q$ and <strong>check</strong> whether $P=2Q+1$ is a prime.</p>
+<p>It’s efficient <strong>as long as</strong> the <u>Sophie-Germain primes are in dense distribution.</u></p>
+<p>The above solution 2 brings about new questions.</p>
+<p>How to sample a random prime and how to test primality ?</p>
+<h2 id="Primes"><a href="#Primes" class="headerlink" title="Primes"></a>Primes</h2><p>There are some questions about primes.</p>
+<ul>
+<li><u>How many</u> primes of $n$-bit length ?</li>
+<li><u>How to test</u> primality ?</li>
+<li><u>How to sample</u> a $n$-bit random prime ?</li>
+</ul>
+<h3 id="How-many-primes"><a href="#How-many-primes" class="headerlink" title="How many primes"></a>How many primes</h3><p>The <strong>prime number theorem</strong> tells us that <u>there are sufficiently many prime numbers.</u></p>
+<p>In particular, letting $\pi(N)$ denote <u>the number of prime numbers less than</u> $N$, we know that $\pi(N)=\Omega(N/\log N)$.</p>
+<p>Thus, if you <u>pick a random number smaller than</u> $N$, <strong>with probability</strong> $1/\log N$ (which is $1$/<strong>polynomial</strong> in bit-length $n$ in question) you have a prime number at hand.</p>
+<h3 id="Primality-Testing"><a href="#Primality-Testing" class="headerlink" title="Primality Testing"></a>Primality Testing</h3><p>How to recognize that a given number is prime ?</p>
+<p>This has been the subject of extensive research in computational number theory with many polynomial-time algorithms, culminating with the <strong>deterministic polynomial-time primality testing algorithm</strong> of Agrawal, Kayal and  Saxena[1] (a.k.a. AKS) in 2002.</p>
+<h3 id="Sample-a-prime"><a href="#Sample-a-prime" class="headerlink" title="Sample a prime"></a>Sample a prime</h3><p>How to sample a $n$-bit random prime ?</p>
+<p>The above two facts put together tell us how to <u>generate a random $n$-bit prime number.</u></p>
+<ol>
+<li>Just <u>pick a random number less than</u> $2^n$.</li>
+<li>And <u>test</u> if it is prime.</li>
+</ol>
+<p>In expected $n$ iterations of this procedure, you will find a $n$-bit prime number, even a random prime number.</p>
+<h1 id="One-way-Functions"><a href="#One-way-Functions" class="headerlink" title="One-way Functions"></a>One-way Functions</h1><p>One-way function is the atom of cryptography.</p>
+<p>A one-function is a function $f$ that is <u>easy to compute but hard to invert</u> on average.</p>
+<p>How to define a one-way function ?</p>
+<p><font color=blue><u><b>Take 1 (Wrong): </b></u></font> </p>
+<p>For every p.p.t. algorithm $A$ and <u>every chosen</u> $x$,there is a negligible function $\mu$, s.t.<br>$$<br>\operatorname{Pr}[A(f(x))=x]&lt;\mu(n)<br>$$<br>It is hard for $A$ to <u>guess the inverse</u> of $f(x)$ <u>for every chosen</u> $x$.</p>
+<p>It seems right.</p>
+<p>How about the function $f(x)=0$ which maps any $x$ to $0$ ?</p>
+<p>The probability of <u>guessing the inverse of $0$ is negligible</u> if the domain size of $x$ is sufficiently large. Because it is essentially <u>random</u>.</p>
+<p>But $f(x)=0$ is <strong>not</strong> one-way function obviously.</p>
+<p><font color=blue><u><b>Take 2: </b></u></font> </p>
+<p>For every p.p.t. algorithm $A$ and every chosen $x$, there is a negligible function $\mu$,s.t.<br>$$<br>\operatorname{Pr}[A(f(x))\in \tilde{f}(f(x))]&lt;\mu(n)<br>$$<br>where $\tilde{f}$ is <u>the inverse function.</u></p>
+<p>The <strong>difference</strong> of the new definition is that $A$ is trying to <u>guess some possible inverses</u> of $f(x)$ rather than the exactly chosen $x$.</p>
+<p>In this definition, $f(x)=0$ is not one-way function.</p>
+<h2 id="Candidate-DLOG"><a href="#Candidate-DLOG" class="headerlink" title="Candidate: DLOG"></a>Candidate: DLOG</h2><p>Let us present an informal one-way function <strong>candidate</strong>.</p>
+<p>$$<br>f(P,g,x)=(P,g,g^x \pmod P)<br>$$</p>
+<p>Computing this function <u>can be done in time polynomial</u> in the input length.</p>
+<p>However, <strong>inverting</strong> is the <u>discrete logarithm problem</u> which is conjectured to be hard.</p>
+<p>Defined formally below.</p>
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Discrete Log Assumption (DLOG):</strong></p>
+ </div> <div class="message-body"> 
+
+<p>For a random $n$-bit prime $P$ and random generator $g$ of $\mathbb{Z}_P^*$, and a random $x\in \mathbb{Z}_{P-1}$, there is <strong>no polynomial</strong> (in $n$) time algorithm that computes $x$ given $P,g,g^x \pmod P$.</p>
+<p><u>Shorthand:</u></p>
+<ul>
+<li>Easy: $P,g,x\rightarrow g^x$</li>
+<li>Hard: $P,g,g^x\rightarrow x$</li>
+</ul>
+ </div> </article> 
+
+<p>In fact, this is not only a one-way function, but can also <u>be made into a family of one-way permutations.</u></p>
+<p>More on that later, we will see that <strong>one-way permutations</strong> can be used to build <strong>pseudorandom generators</strong>; and as we saw already, <strong>pseudorandom generators</strong> can be sued to build <strong>pseudorandom functions</strong> and stateless secret-key encryption and authentication. </p>
+<p>We can do all the crypto we saw so far <u>based on the hardness of the discrete logarithm problem.</u></p>
+<p>Route: OWF→PRG→PRF.</p>
+<p>However,  going via this route may <u>not be the most efficient.</u></p>
+<p>So, we will look at related problems and try to <strong>build more efficient PRGs and PRFs.</strong></p>
+<h2 id="The-Diffie-Hellman-Assumptions"><a href="#The-Diffie-Hellman-Assumptions" class="headerlink" title="The Diffie-Hellman Assumptions"></a>The Diffie-Hellman Assumptions</h2><p>There is another route to <u>build PRGs and PRFs efficiently</u>, that is <strong>Diffie-Hellman Assumptions.</strong></p>
+<p>Route: DH→PRG.</p>
+<p>Route: DH→PRF.</p>
+<p>Given $g^x$ and $g^y\mod P$, you can <strong>easily</strong> compute $g^{x+y}=g^x\cdot g^y \pmod P$. But it is <strong>hard</strong> to compute $g^{xy}\pmod P$.</p>
+<p>If you can compute discrete logarithms, then you can compute $x$ from $g^x$, and raise $g^y$ to $x$ to get $(g^y)^x=g^{xy} \pmod P$.</p>
+<p>But discrete log is hard, so this isn’t an efficient way to solve the problem.</p>
+<h3 id="CDH-Assumption"><a href="#CDH-Assumption" class="headerlink" title="CDH Assumption"></a>CDH Assumption</h3><p>The problem, called the <strong>computational Diffie-Hellman (CDH)</strong> problem, appears to be <strong>computationally hard</strong>, in fact <u>as hard as computing discrete logarithms!</u></p>
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Computational Diffie-Hellman Assumption (CDH):</strong></p>
+ </div> <div class="message-body"> 
+
+<p>For a random $n$-bit prime $P$ and random generator $g$ of $\mathbb{Z}_P^*$, and random $x,y\in \mathbb{Z}_{P-1}$, there is <strong>no polynomial</strong> (in $n$) time algorithm that computes $g^{xy}\pmod P$ given $P,g,g^x\pmod P,g^y\pmod P$.</p>
+<p><u>Shorthand:</u></p>
+<ul>
+<li>Easy: $P,g,g^x,g^y\rightarrow g^{x+y}$</li>
+<li>Hard: $P,g,g^x,g^y\rightarrow g^{xy}$</li>
+</ul>
+ </div> </article> 
+
+<p>Moreover, it appears <strong>hard</strong> to even <u>tell if you are given the right answer or not!</u></p>
+<h3 id="DDH-Assumption"><a href="#DDH-Assumption" class="headerlink" title="DDH Assumption"></a>DDH Assumption</h3><p><font color="red">But this requires some care to formalize.</font> </p>
+<p>At first, one <strong>may</strong> think that given $P,g,g^x,g^y$, it is <strong>hard to distinguish</strong> between the right answer $g^{xy} \pmod P$ versus a random number $u \mod P$.</p>
+<p>Let us call the assumption that this <strong>decisional problem</strong> is hard the <strong>decisional Diffie-Hellman (DDH) assumption.</strong></p>
+<p><font color=blue><u><b>Decisional Diffie-Hellman Assumption (first take):</b></u></font> </p>
+<p>For a random $n$-bit prime $P$ and random generator $g$ of $\mathbb{Z}_P^*$, and random $x,y\in \mathbb{Z}_{P-1}$ and a random number $u\in \mathbb{Z}_P^*$, there is <strong>no polynomial</strong> (in $n$) time algorithm that <u>distinguishes</u> between $(P,g,g^x\pmod P, g^y \pmod P, g^{xy} \pmod P)$ and $(P,g,g^x\pmod P,g^y \pmod P, u\pmod P)$.</p>
+<p>However, the assumption turns out to be <font color="red">false.</font> </p>
+<h3 id="DDH-is-False-in-mathbb-Z-P"><a href="#DDH-is-False-in-mathbb-Z-P" class="headerlink" title="DDH is False in $\mathbb{Z}_P^*$"></a>DDH is False in $\mathbb{Z}_P^*$</h3><p>However, the DDH assumption is false in $\mathbb{Z}_P^*$.</p>
+<p>It seems awfully strong on first look.</p>
+<p>It says not only it is hard to compute $g^{xy}$ from $g^x$ and $g^y$, but also that <u>not even a single bit of</u> $g^{xy}$ can be computed (with any polynomial advantage beyond trivial guessing).</p>
+<p>However, there are <u>some information about $g^{xy}$ indeed dose leak from $g^x$ and $g^y$.</u></p>
+<hr>
+<p>Before that, let us take a quick detour in <strong>Quadratic Residues.</strong></p>
+<p>$$<br>h=g^2 \pmod P<br>$$</p>
+<p>Some facts about Quadratic Residues: </p>
+<ul>
+<li>$h$ is a QR if $h=g^2\pmod P$.</li>
+<li>1/2 of $\mathbb{Z}_P^*$ are QR.</li>
+<li>We <strong>can tell efficiently</strong> if $h$ is a QR by evaluating $h^{(P-1)/2}\overset{?}=1 \pmod P$.</li>
+<li>$h=g^x$ is a QR <strong>if and only if</strong> $x$ is <u>even</u>.</li>
+</ul>
+<hr>
+<p>Use the facts of quadratic residue in $\mathbb{Z}_P^*$, we know the following statements are equivalent.</p>
+<ul>
+<li>$g^{xy}$ is a QR.</li>
+<li>iff $xy$ is even.</li>
+<li>iff $x$ is even or $y$ is even.</li>
+<li>iff $g^x$ is a QR or $g^y$ is a QR.</li>
+</ul>
+<p>Now, we can <strong>distinguish</strong> between $(P,g,g^x,g^y,g^{xy})$ and $(P,g,g^x,g^y,u)$.</p>
+<p> $g^{xy}$ is a quadratic residue <u>with probability</u> $3/4$  while $u$ is a quadratic residue <u>with probability</u> $1/2$.</p>
+<p>So the advantage for distinguishing is $1/4$.</p>
+<p>Thus, we <font color="red">need to refine our assumption.</font> </p>
+<p>Looking at the <strong>core reason</strong> behind the above attack, we see that <u>there is a 1/2 chance</u> that $g^x$ <u>falls into a subgroup</u> (the subgroup of <strong>quadratic residues</strong>, to be precise) and once that happens<u>, $g^{xy}$ is also in the subgroup</u> no matter what $y$ is.</p>
+<p>These properties are furthermore detectable in polynomial-time which led us to attack.</p>
+<p>A <strong>solution</strong> is to work with <strong>subgroup of $\mathbb{Z}_P^*$ of prime order.</strong></p>
+<p>In particular, we will take $P=2Q+1$ to <u>be a safe prime</u> and <u>work with</u> $\mathcal{QR}_P$, <strong>the subgroup of quadratic residues</strong> in $\mathbb{Z}_P^*$.</p>
+<p>$\mathcal{QR}_P$ has <strong>order</strong> $(P-1)/2=Q$ which <u>is indeed prime!</u></p>
+<p>By virtue of this, <u>every non-identity element</u> of $\mathcal{QR}_P$ is its <strong>generator</strong> w.r.t. theorem 2.</p>
+<p>With this change, we can state the <strong>following DDH assumption</strong> which <u>is widely believed to be true.</u></p>
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Decisional Diffie-Hellman Assumption (final):</strong></p>
+ </div> <div class="message-body"> 
+
+<p>Let $P=2Q+1$ be a random $n$-bit <strong>safe prime</strong> and let $\mathcal{QR}_P$ denote the <strong>subgroup of quadratic residues</strong> in $\mathbb{Z}_P^*$.</p>
+<p>For a random generator $g$ of $\mathcal{QR}_P$, and random $x,y\in \mathbb{Z}_Q$ and a random number $u\in \mathcal{QR}_P$, there is no polynomial (in $n$) that distinguishes between $(P,g,g^x\pmod P,g^y \pmod P, g^{xy}\pmod P)$ and $(P,g,g^x\pmod P, g^y \pmod P,u\pmod P)$.</p>
+<p><u>Shorthand:</u></p>
+<ul>
+<li>Hard: distinguish between $(P,g,g^x,g^y,g^{xy})$ and $(P,g,g^x,g^y,u)$.</li>
+</ul>
+ </div> </article> 
+
+<p>We know DLOG→CDH→DDH but no implications are known in the reverse directions.</p>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><p>[1] M. Agrawal, N. Kayal, and N. Saxena. Primes is in p. Annals of mathematics, pages 781–793, 2004.</p>
+<p>[2] D. Angluin. Lecture notes on the complexity of some problems est number theory. 1982.</p>
+<p>[6] A. Kalai. Generating random factored numbers, easily. Journal of Cryptology, 16(4):287–289, 2003.</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Cryptography-MIT6875」: Lecture 6 - Number Theory</p><p><a href="https://f7ed.com/2022/07/13/mit6875-lec6/">https://f7ed.com/2022/07/13/mit6875-lec6/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2022-07-14</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2022-08-12</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Prime/">Prime, </a><a class="link-muted" rel="tag" href="/tags/Number-Theory/">Number Theory, </a><a class="link-muted" rel="tag" href="/tags/Multiplicative-Group/">Multiplicative Group, </a><a class="link-muted" rel="tag" href="/tags/Generators/">Generators, </a><a class="link-muted" rel="tag" href="/tags/Diffie-Hellman-Assumptions/">Diffie-Hellman Assumptions </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2022/07/19/mit6875-lec7/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Cryptography-MIT6875」: Lecture 7</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2022/07/11/mit6875-lec5/"><span class="level-item">「Cryptography-MIT6875」: Lecture 5</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "72399a21a042958a48098f474bb8c52a",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">71</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">139</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Groups"><span class="level-left"><span class="level-item">1</span><span class="level-item">Groups</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Order-of-a-group-and-the-order-of-an-element"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">Order of a group and the order of an element</span></span></a></li><li><a class="level is-mobile" href="#Generator-of-a-Group"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">Generator of a Group</span></span></a></li><li><a class="level is-mobile" href="#Cyclic-group"><span class="level-left"><span class="level-item">1.3</span><span class="level-item">Cyclic group</span></span></a></li><li><a class="level is-mobile" href="#Discrete-Logarithms"><span class="level-left"><span class="level-item">1.4</span><span class="level-item">Discrete Logarithms</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Baby-Computational-Number-Theory"><span class="level-left"><span class="level-item">2</span><span class="level-item">Baby (Computational) Number Theory</span></span></a></li><li><a class="level is-mobile" href="#The-Multiplicative-Group-mathbb-Z-N"><span class="level-left"><span class="level-item">3</span><span class="level-item">The Multiplicative Group $\mathbb{Z}_N^*$</span></span></a></li><li><a class="level is-mobile" href="#The-Multiplicative-Group-mathbb-Z-p"><span class="level-left"><span class="level-item">4</span><span class="level-item">The Multiplicative Group $\mathbb{Z}_p^*$</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#"><span class="level-left"><span class="level-item">4.1</span><span class="level-item">  $\mathbb{Z}_p^{*}$ and  $\mathbb{Z}_{P-1}$ </span></span></a></li><li><a class="level is-mobile" href="#mathbb-Z-p-has-lots-of-generators"><span class="level-left"><span class="level-item">4.2</span><span class="level-item">$\mathbb{Z}_p^*$  has lots of generators</span></span></a></li><li><a class="level is-mobile" href="#How-to-tell-a-generator-of-mathbb-Z-p"><span class="level-left"><span class="level-item">4.3</span><span class="level-item">How to tell a generator of $\mathbb{Z}_p^*$ ?</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Given-the-factorization-of-P-1​"><span class="level-left"><span class="level-item">4.3.1</span><span class="level-item">Given the factorization of P-1​</span></span></a></li><li><a class="level is-mobile" href="#Given-only-g​-and-​P​"><span class="level-left"><span class="level-item">4.3.2</span><span class="level-item">Given only g​ and ​P​</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Primes"><span class="level-left"><span class="level-item">4.4</span><span class="level-item">Primes</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#How-many-primes"><span class="level-left"><span class="level-item">4.4.1</span><span class="level-item">How many primes</span></span></a></li><li><a class="level is-mobile" href="#Primality-Testing"><span class="level-left"><span class="level-item">4.4.2</span><span class="level-item">Primality Testing</span></span></a></li><li><a class="level is-mobile" href="#Sample-a-prime"><span class="level-left"><span class="level-item">4.4.3</span><span class="level-item">Sample a prime</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#One-way-Functions"><span class="level-left"><span class="level-item">5</span><span class="level-item">One-way Functions</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Candidate-DLOG"><span class="level-left"><span class="level-item">5.1</span><span class="level-item">Candidate: DLOG</span></span></a></li><li><a class="level is-mobile" href="#The-Diffie-Hellman-Assumptions"><span class="level-left"><span class="level-item">5.2</span><span class="level-item">The Diffie-Hellman Assumptions</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#CDH-Assumption"><span class="level-left"><span class="level-item">5.2.1</span><span class="level-item">CDH Assumption</span></span></a></li><li><a class="level is-mobile" href="#DDH-Assumption"><span class="level-left"><span class="level-item">5.2.2</span><span class="level-item">DDH Assumption</span></span></a></li><li><a class="level is-mobile" href="#DDH-is-False-in-mathbb-Z-P"><span class="level-left"><span class="level-item">5.2.3</span><span class="level-item">DDH is False in $\mathbb{Z}_P^*$</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#References"><span class="level-left"><span class="level-item">6</span><span class="level-item">References</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

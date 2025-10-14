@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Cryptography-MIT6875」: Lecture 8 - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^      Topics Covered:    Public-key Encryption an"><meta property="og:type" content="blog"><meta property="og:title" content="「Cryptography-MIT6875」: Lecture 8"><meta property="og:url" content="https://f7ed.com/2022/07/22/mit6875-lec8/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^      Topics Covered:    Public-key Encryption an"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/mit6875-lec8-thumbnial.png"><meta property="article:published_time" content="2022-07-22T16:00:00.000Z"><meta property="article:modified_time" content="2022-08-12T04:33:27.686Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Public-key Encryption"><meta property="article:tag" content="IND-Secure"><meta property="article:tag" content="IND-CPA"><meta property="article:tag" content="Trapdoor Permutations"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/mit6875-lec8-thumbnial.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2022/07/22/mit6875-lec8/"},"headline":"「Cryptography-MIT6875」: Lecture 8","image":["https://f7ed.com/gallery/thumbnails/mit6875-lec8-thumbnial.png"],"datePublished":"2022-07-22T16:00:00.000Z","dateModified":"2022-08-12T04:33:27.686Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^      Topics Covered:    Public-key Encryption an"}</script><link rel="canonical" href="https://f7ed.com/2022/07/22/mit6875-lec8/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Cryptography-MIT6875」: Lecture 8</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2022-07-22T16:00:00.000Z" title="2022-07-22T16:00:00.000Z">2022-07-23</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2022-08-12T04:33:27.686Z" title="2022-08-12T04:33:27.686Z">2022-08-12</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Cryptography-MIT6875/">Cryptography-MIT6875</a></span><span class="level-item"><i class="far fa-clock"></i> 16 minutes read (About 2393 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><article class="message message-immersive is-info">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="message-body">
+<i class="fas fa-info-circle mr-2"></i>
+In this <a href="/categories/Cryptography-MIT6875">series</a>, I will learn MIT 6.875, <strong>Foundations of Cryptography</strong>, lectured by <strong>Vinod Vaikuntanathan</strong>.
+<br>Any corrections and advice are welcome. ^ - ^
+</div>
+</article>
+
+
+
+<p><font color=blue><u><b>Topics Covered: </b></u></font> </p>
+<ul>
+<li>Public-key Encryption and Key exchange.</li>
+<li>Definitions: IND-Security (IND-CPA)</li>
+<li>Trapdoor permutations.</li>
+</ul>
+<span id="more"></span>
+
+<h1 id="Key-Agreement-Problem"><a href="#Key-Agreement-Problem" class="headerlink" title="Key Agreement Problem"></a>Key Agreement Problem</h1><p>There is a remaining problem in secret-key encryption (or symmetric encryption), the <strong>Key Agreement Problem.</strong></p>
+<p>How did Alice and Bob get the same $sk$ to begin with ?</p>
+<img src="https://s1.ax1x.com/2022/07/23/jXf2Ax.png" alt="secret-key encryption" style="zoom:33%;" />
+
+<p>Can Alice and Bob, who never previously met, <u>exchange messages securely ?</u></p>
+<h2 id="Merkle’s-1974"><a href="#Merkle’s-1974" class="headerlink" title="Merkle’s [1974]"></a>Merkle’s [1974]</h2><p>The Merkle’s idea is based on <u>one-way function.</u></p>
+<p>Assume that $H:[n^2]\rightarrow [n^2]$ is an <strong>injective</strong> OWF. (or one-to-one).</p>
+ <article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i> <b>Injective Function:</b>
+<p>In mathematics, an <strong>injective function</strong> (also known as <strong>injection</strong>, or <strong>one-to-one function</strong>) is a function $f$ that maps distinct elements to distinct elements.</p>
+<ul>
+<li><p>That is, $f(x_1) = f(x_2)$ implies $x_1 = x_2$.</p>
+</li>
+<li><p>Equivalently, $x_1\ne x_2$ implies $f(x_1) \ne f(x_2)$ in the equivalent contrapositive statement.</p>
+</li>
+</ul>
+ </div> </article> 
+
+<ol>
+<li>Alice picks $n$ random numbers $x_1,\dots,x_n$</li>
+<li>Bob picks $n$ random numbers $y_1,\dots, y_n$</li>
+</ol>
+<img src="https://s1.ax1x.com/2022/07/23/jXfrjJ.png" alt="Merkle's" style="zoom:33%;" />
+
+<ol start="3">
+<li><p>There is a <u>common number</u> since <strong>birthday paradox.</strong><br>That says $x_i=y_j$ with high probability.</p>
+<img src="https://s1.ax1x.com/2022/07/23/jXfyu9.png" alt="Merkle's" style="zoom:33%;" />
+</li>
+<li><p>Alice and Bob can <u>detect it in time $\mathcal{O}(n)$,</u> and they set it as their shared key.</p>
+</li>
+</ol>
+<hr>
+<p>How long dose it take Eve, <strong>the adversary</strong> to <u>compute the shared key ?</u></p>
+<p>She <u>knows $i$ and $j$</u> since she can see the ciphertexts in the channel, but <u>she needs to inver the OWF.</u></p>
+<p>Assuming the OWF is very strong, that is $\Omega(n^2)$.</p>
+<p>But the Merkle’s only <u>protects against quadratic-time Eves</u> although it’s still an excellent idea.</p>
+<h1 id="Fascinating-History"><a href="#Fascinating-History" class="headerlink" title="Fascinating History"></a>Fascinating History</h1><p>The Public-key Encryption has a fascinating history.</p>
+<ul>
+<li><strong>Merkle (1974)</strong>:<br>“Secure Communications Over Insecure Channels.”<ul>
+<li>Only protects against <u>quadratic-time adversary.</u></li>
+</ul>
+</li>
+<li><strong>Diffie &amp; Hellman (1976</strong>):<br>“New Direction in Cryptography”<ul>
+<li><strong>Turing Award 2015.</strong></li>
+<li>Marked the birth of public-key cryptography.</li>
+<li>Invented the <u>Diffie-Hellman key exchange.</u><br>(conjectured to be <u>secure against all poly-time attackers</u> unlike Merkle)</li>
+<li>Used to this day (e.g., TLS 1.3) albeit with different groups than what DH had in mind.</li>
+</ul>
+</li>
+<li><strong>Rivest, Shamir &amp; Adleman (1987)</strong>:<br>“A Method for Obtaining Digital Signatures and Public-Key Cryptosystems”<ul>
+<li><strong>Turing Award 2002.</strong></li>
+<li>Invented the <u>RSA trapdoor permutation</u>, <u>public-key encryption</u> and <u>digital signatures.</u></li>
+<li>RSA Signatures used to this day (e.g., TLS 1.3) in essentially the original form it was invented.</li>
+</ul>
+</li>
+<li><strong>Goldwasser &amp; Micali (1982):</strong><br>“Probabilistic Encryption”<ul>
+<li>Turning Award 2012.</li>
+<li>Defined what is now the gold-standard of security of public-key encryption<br>(two equivalent definitions: <u>indistinguishability and semantic security)</u></li>
+<li>GM-encryption: based on the <u>difficulty of the quadratic residuosity problem</u>, the <u>first homomorphic encryption.</u></li>
+</ul>
+</li>
+</ul>
+<h1 id="Public-Key-Encryption"><a href="#Public-Key-Encryption" class="headerlink" title="Public-Key Encryption"></a>Public-Key Encryption</h1><p>It’s also called Asymmetric Encryption.</p>
+<p>The goal is :</p>
+<ul>
+<li><strong>Anyone</strong> can encrypt to Bob</li>
+<li>Bob, and <strong>only Bob</strong> can decrypt.</li>
+</ul>
+<h2 id="Public-key-Encryption-Scheme"><a href="#Public-key-Encryption-Scheme" class="headerlink" title="Public-key Encryption Scheme"></a>Public-key Encryption Scheme</h2><p>The <u>public encryption scheme</u> works as follows:</p>
+<img src="https://s1.ax1x.com/2022/07/23/jXfB3F.png" alt="Public-key Encryption" style="zoom:33%;" />
+
+<ol>
+<li>Bob generate a pair of keys, a public key $pk$, and a private (or secret) key $sk$.</li>
+<li>Bob “<strong>publishes</strong>” $pk$ and keeps $sk$ to himself.</li>
+<li>Alice encrypts $m$ to Bob using $pk$.</li>
+<li>Bob decrypts using $sk$.</li>
+</ol>
+<p>Hence, there are a triple of <strong>PPT algorithms</strong> $(Gen, Enc, Dec)$ s.t.</p>
+<ul>
+<li>$Gen(1^n)\rightarrow (pk,sk)$: </li>
+</ul>
+<p><strong>PPT Key generation algorithm</strong> generates a public-private key pair.</p>
+<ul>
+<li>$Enc(pk,m)\rightarrow c$:</li>
+</ul>
+<p><strong>Encryption algorithm</strong> uses the public key to encrypt message $m$.</p>
+<ul>
+<li>$Dec(sk,c)\rightarrow m$:</li>
+</ul>
+<p><strong>Decryption algorithm</strong> uses the private key to decrypt ciphertext $c$.</p>
+<p><strong>Correctness</strong>:<br>For all $pk,sk,m$: $Dec(sk,Enc(pk,m))=m$.</p>
+<h2 id="Define-the-Adversary"><a href="#Define-the-Adversary" class="headerlink" title="Define the Adversary"></a>Define the Adversary</h2><p>But how to define security ?</p>
+<img src="https://s1.ax1x.com/2022/07/23/jXfDc4.png" alt="The Adversary" style="zoom:33%;" />
+
+<p>What dose <strong>Eve know ?</strong></p>
+<ul>
+<li>Eve <u>knows Bob’s public key</u> $pk$</li>
+<li>Eve <u>sees polynomially many ciphertext</u>s $c_1,c_2,\dots$ of messages $m_1,m_2,\dots$</li>
+</ul>
+<p>So the <strong>challenge</strong> is that Eve should <strong>not</strong> get <u>any partial information about the set of messages.</u></p>
+<h2 id="IND-Security-IND-CPA"><a href="#IND-Security-IND-CPA" class="headerlink" title="IND-Security (IND-CPA)"></a>IND-Security (IND-CPA)</h2><p>We define the Indistinguishability Security, or Indistinguishability-CPA.</p>
+<blockquote>
+<p>CPA is the abbreviation of <strong>Chosen Plaintext Attack.</strong><br>That is, the adversary has the <strong>power</strong> of <u>obtaining the encryption of arbitrary message of his choice.</u></p>
+</blockquote>
+<p>We give the definition by a game, which is actually the same as the Turning Test.</p>
+<h3 id="Many-Message-Security"><a href="#Many-Message-Security" class="headerlink" title="Many Message Security"></a>Many Message Security</h3><p><strong>Define the Game:</strong></p>
+<ol>
+<li>The <strong>Challenger</strong> generates a pair of key $(pk, sk)$ and publishes the $pk$.</li>
+<li><strong>Eve</strong> sends two vectors of message, $\vec{m_0}$ and $\vec{m_1}$s.t. $|m_0^i|=|m_1^i|$ for all $i$.<br>(A <strong>important restrict</strong> is $|m_0^i|=|m_1^i|$ for all $i$, or there is a length attack.)</li>
+<li>The challenger samples $b$ from ${0,1}$ and <u>encrypts all the messages  in vector</u> $\vec{m_b}$ using $pk$.<br>And send the sequence of the ciphertext to Eve.</li>
+<li>Eve guesses <u>which vector of message is encrypted</u> and output $b’$.</li>
+<li>Eve wins if $b’=b$.</li>
+</ol>
+<img src="https://s1.ax1x.com/2022/07/23/jXf09U.png" alt="IND-Security(many message)" style="zoom:40%;" />
+
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>IND-security Definition (Many-message) (unachievable):</strong></p>
+ </div> <div class="message-body"> 
+
+<p>The encryption scheme is <strong>IND-secure</strong> if no PPT EVE can win in this game with probability better than $1/2 + \text{negl}(n)$.</p>
+<hr>
+<p>Or written <u>in more traditional (and cumbersome) notation</u> as below.<br>For all PPT pair of algorithms $(M,A)$, there is a negligible function $\mu$ s.t.:[cumbersome:笨重的；不方便的]<br>$$<br>\operatorname{Pr}\left[\begin{array}{c} (pk,sk)\gets Gen(1^n); \ (\vec {m_o},\vec{m_1},state)\gets M(pk) s.t. |m_0^i|=|m_1^i|; \ \vec{c}\gets Enc(pk,\vec{m_b}) :A(state,\vec{c})=b\end{array}\right]  \le  \frac{1}{2} +\mu(n)<br>$$</p>
+ </div> </article> 
+
+<p>Yet the definition is <strong>unachievable</strong>. There is a simple way to win the game.</p>
+<p>You can construct two vector of message in which one is composed of the same message and the other is composed of the different message.</p>
+<p>Hence, it has to <strong>be randomized.</strong></p>
+<hr>
+<p>In <a href="/2022/06/30/mit6875-lec1/" title="[Lecture 1]">[Lecture 1]</a>, we gave two security definitions in <u>Symmetric-key Encryption</u>, <strong>Shannon’s Perfect Secrecy</strong> and <strong>Perfect Indistinguishability.</strong></p>
+<p>Similarly, <u>in Asymmetric-key Encryption</u>, there is an alternative definition, <strong>Semantic Security</strong>, corresponding to the <strong>Indistinguishability Security.</strong></p>
+<p>The <strong>Semantic Security</strong> is <u>the computational analog</u> of <strong>Shannon’s Shannon’s Perfect Secrecy,</strong> and it turns to be <strong>equivalent</strong> to Indistinguishability Security.</p>
+<p>i.e. Semantic Security = IND-Security. But the proof is more complex.</p>
+<p>We will stick to IND-security as it’s easy to work with.</p>
+<h3 id="One-Message-Security"><a href="#One-Message-Security" class="headerlink" title="One Message Security"></a>One Message Security</h3><p>It’s cumbersome to define with many messages.</p>
+<p>Actually, the definition <u>can be simplified to One Message Security.</u></p>
+<p>The only difference is that Eve <strong>can only see one ciphertext</strong> rather than a sequence of ciphertexts in the game.</p>
+<p><strong>Define the Game:</strong></p>
+<ol>
+<li>The <strong>Challenger</strong> generates a pair of key $(pk, sk)$ and publishes the $pk$.</li>
+<li><strong>Eve</strong> send two <strong>single messages</strong>, $m_0$ and $m_1$s.t. $|m_0|=|m_1|$.</li>
+<li>The challenger sample $b$ from ${0,1}$ and encrypt the message $m_b$ using $pk$.<br>And send the ciphertext to Eve.</li>
+<li>Eve guesses <u>which message is encrypted</u> and output $b’$.</li>
+<li>Eve wins if $b’=b$.</li>
+</ol>
+<img src="https://s1.ax1x.com/2022/07/23/jXf6BR.png" alt="IND-Security (one messagle)" style="zoom:40%;" />
+
+<p><strong>One-message IND-security Definition (unachievable):</strong></p>
+<p>The encryption scheme is <strong>single-message-IND-secure</strong> if no PPT EVE can win in this game with probability better than $1/2 + \text{negl}(n)$.</p>
+<p>Similarly, it’s <strong>unachievable</strong>. </p>
+<p>In public-key encryption, Eve knows the $pk$ as well. So she has the <strong>power</strong> of <u>generating any ciphertext for arbitrary message of her choice</u>, which is the meaning of <strong>CPA</strong>.</p>
+<p>When she gets the ciphertext from the Challenger, she can easily distinguish it.</p>
+<p>Because she can generate the ciphertexts of $m_0$ and $m_1$ using $pk$.</p>
+<p>Hence, <strong>only in public-key encryption</strong>, the <u>many message security implies one message security.</u> </p>
+<p>It <strong>dose not work</strong> with secret-key encryption.</p>
+<p><strong>Theorem:</strong></p>
+<p>A <strong>public-key encryption</strong> scheme is IND-secure <strong>iff</strong> it is single-message IND-secure.</p>
+<p>The proof is the simple use of Hybrid Argument.</p>
+<hr>
+<p>We’ll show four constructions in following blogs.</p>
+<ol>
+<li><strong>Trapdoor Permutations (RSA)</strong></li>
+<li>Quadratic Residuosity/Goldwasser-Micali</li>
+<li>Diffie-Hellman/El Gamal</li>
+<li>Learning with Errors/Regev</li>
+</ol>
+<p>In this blog, we introduce the Trapdoor Permutations.</p>
+<h1 id="Trapdoor-Functions"><a href="#Trapdoor-Functions" class="headerlink" title="Trapdoor Functions"></a>Trapdoor Functions</h1><p>We know one-way function (family) is easy to compute but hard to invert.</p>
+<p>But <strong>Trapdoor One-way Function</strong> (family) is <u>easy to invert given a trapdoor.</u></p>
+<p>Besides, it’s <strong>Trapdoor One-way Permutation</strong> when <u>domain = range.</u></p>
+<img src="https://s1.ax1x.com/2022/07/23/jXfcH1.png" alt="Trapdoor OWF" style="zoom:33%;" />
+
+<h2 id="Definition"><a href="#Definition" class="headerlink" title="Definition"></a>Definition</h2><p><strong>Definition:</strong></p>
+<p>A function (family) $\mathcal{F=\{F_n\}}_{n\in\mathbb{N}}$ where each $\mathcal{F_n}$ is itself a collection of functions $\mathcal{F_n}=\{F_i:\{0,1\}^n\rightarrow \{0,1\}^{m(n)}\}_{i\in I_n}$ is a trapdoor one-way function family if</p>
+<ul>
+<li><p>Easy to <strong>sample</strong> function index with a trapdoor.<br>There is a PPT algorithm $Gen(1^n)$ that outputs <u>a function index</u> $i\in I_n$ together <u>with a trapdoor</u> $t_i$.</p>
+</li>
+<li><p>Easy to <strong>compute</strong> $F_i(x)$ given $i$ and $x$.</p>
+</li>
+<li><p>Easy to <strong>compute an inverse</strong> of $F_i(x)$ given $t_i$.</p>
+</li>
+<li><p>It is <strong>one-way.</strong><br>That is, for every p.p.t. $A$, there is a negligible function $\mu$ s.t.</p>
+
+  $$
+    \operatorname{Pr}\left[\begin{array}{c}(i, t) \leftarrow \operatorname{Gen}\left(1^{n}\right) ; x \leftarrow\{0,1\}^{n} ; y=F_{i}(x) ; \\ A\left(1^{n}, i, y\right)=x^{\prime}: y=F_{i}\left(x^{\prime}\right)\end{array}\right] \leq \mu(n)
+  $$
+  
+  
+
+</li>
+</ul>
+<h2 id="Public-key-Encryption-Construction"><a href="#Public-key-Encryption-Construction" class="headerlink" title="Public-key Encryption Construction"></a>Public-key Encryption Construction</h2><p>We can construct <strong>IND-Secure Public-key Encryption</strong> from <u>Trapdoor Permutations.</u></p>
+<p>There are three p.p.t. algorithms.</p>
+<p><strong>Not IND-Secure (without randomization):</strong></p>
+<ul>
+<li>$Gen(1^n)$: Sample function index $i$ with a trapdoor $t_i$.<br>The <strong>public key</strong> is $i$ and the <strong>private key</strong> is $t_i$.</li>
+<li>$Enc(pk=i,m)$: Output $c=F_i(m)$ as the ciphertext.</li>
+<li>$Dec(sk=t_i,c)$: Output $F_i^{-1}(c)$ computed using the private key $t_i$.</li>
+</ul>
+<p>However, it is <strong>NOT</strong> IND-secure  since it <u>could reveal partial information</u> about $m$.</p>
+<p>IND-Security is <strong>unachievable</strong> <u>without randomization</u> as we mentioned before in the IND-security definition. </p>
+<p>In last lecture <a href="/2022/07/20/mit6875-lec7/" title="[(Lecture 7)]">[(Lecture 7)]</a>, we introduced <strong>GL Theorem</strong> that <u>every one-way function has a hardcore bit</u> . Besides, we showed <u>one-way permutation implies PRG</u>.</p>
+<p>(In fact, one-way function implies PRG as well.)</p>
+<p>Hence, we can construct a PRG from the trapdoor permutation, which is pseudorandom.</p>
+<p><strong>IND-Secure (with PRG from trapdoor permutations):</strong></p>
+<ul>
+<li>$Gen(1^n)$: Sample function index $i$ with a trapdoor $t_i$.<br>The <strong>public key</strong> is $i$ and the <strong>private key</strong> is $t_i$.</li>
+<li>$Enc(pk=i,m)$ where $m$ is a <u>bit</u>.<ul>
+<li>Pick a <strong>random</strong> $r$.</li>
+<li>Output $c=(F_i(r),HCB(r)\oplus m)$ as the ciphertext.</li>
+</ul>
+</li>
+<li>$Dec(sk=t_i,c)$:<ul>
+<li>Recover $r$ using the private key $t_i$.</li>
+<li>Decrypt $m$ using $HCB(r)$.</li>
+</ul>
+</li>
+</ul>
+<p><u>Notation</u>: If the message is $k$-bit, it has to run the encryption $k$ times, <u>each of which is encrypting one bit.</u></p>
+<p>This public-key encryption is <strong>IND-secure.</strong></p>
+<p>It looks familiar with the stateless secret-key encryption with PRF.</p>
+ <article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i> “Stateless Secret-key Encryption with PRF:” in Lecture 4
+
+<ul>
+<li><p>$Gen(1^n)$: Generate a random $n$-bit key $k$ that defines  $f_k:\{0,1\}^l\rightarrow \{0,1\}^m$. <br>The domain size of $f_k$, $2^l$, had better be super-polynomially large in $n$.</p>
+</li>
+<li><p>$Enc(k,m)$: Pick a random $x$ and let the ciphertext $c$ be the pair $(x,y=f_k(x)\oplus m)$.<br>It’s a polynomial time to evaluate $f_k(x)$ since $f_k$ are random accessible.</p>
+</li>
+<li><p>$Dec(k,c=(x,y))$: Output $f_k(x)\oplus y$.</p>
+</li>
+</ul>
+ </div> </article> 
+
+<p>The proof is by hybrid argument. </p>
+<p>(It is also familiar with the proof of secret-key encryption using PRF in Lecture 4.)</p>
+<p><strong>Proof:</strong></p>
+<article class="message message-immersive is-warning">  <div class="message-body">  <i class="fas fa-exclamation-triangle mr-2"></i> The following proof is my <strong>own deduction</strong> since the proof is omitted in the lecture.  <br> <strong>Corrections and advice are welcome.</strong>  </div>  </article>
+
+<ul>
+<li>From the <u>(One-message) IND-Security definition,</u><br>we <strong>want to prove</strong> the following two ciphertexts are <u>indistinguishable</u>.<ul>
+<li>ciphertext of $m_0$: $c=(F_i(r),HCB(r)\oplus m_0)$</li>
+<li>ciphertext of $m_1$: $c=(F_i(r),HCB(r)\oplus m_1)$</li>
+</ul>
+</li>
+<li>We <strong>define</strong> a <u>sequence of hybrid distributions</u> by changing the ciphertext a little bit.<br>Consider the ciphertext as the distribution.<br>Direction: Hybrid 0 → Hybrid 3 ← Hybrid6<ul>
+<li><strong>Hybrid 0</strong>: $D$ gets the ciphertext of $m_0$<br>$c=(F_i(r),HCB(r)\oplus m_0)$</li>
+<li>Hybrid 1: replace with <u>the hardcore bit</u><br>$c=(F_i(r),HCB(r))$</li>
+<li>Hybrid 2: replace with <u>a random bit</u> $r_b$<br>$c=(F_i(r),r_b)$</li>
+<li>Hybrid 3: replace with <u>a random</u> $r_x$ s.t. $|r_x|=|F_i(r)|$<br>$c=(r_x,r_b)$</li>
+<li>Hybrid 4: replace with a random bit $r_b$ (like Hybrid 2)<br>$c=(F_i(r),r_b)$</li>
+<li>Hybrid 5: replace with the hardcore bit (like Hybrid 1)<br>$c=(F_i(r),HCB(r))$</li>
+<li><strong>Hybrid 6</strong>:  $D$ gets the ciphertext of $m_1$<br>$c=(F_i(r),HCB(r)\oplus m_1)$</li>
+</ul>
+</li>
+<li>The thing we <strong>want to prove</strong> is that <u>Hybrid 0 and Hybrid 6 are indistinguishable.</u></li>
+<li>Prove <strong>Hybrid 0 = Hybrid 1</strong> (and Hybrid 6 = Hybrid 5) by <u>birthday paradox.</u><br>The probability of $D$ distinguishing from Hybrid 0 and Hybrid 1 is up to the collision probability of $r$.</li>
+<li>Prove <strong>Hybrid 1 = Hybrid 2</strong> (and Hybrid 5 = Hybrid 4) <u>by HCB security.</u><br>The probability of $D$ distinguishing from Hybrid 1 and Hybrid 2 is determined by the <u>advantage of computing</u> the $HCB(r)$ from $F_i(r)$, which is negligible.</li>
+<li>Prove <strong>Hybrid 2 = Hybrid 3</strong> ( and Hybrid 4 = Hybrid 3) by <u>birthday paradox.</u><br>The probability of $D$ distinguishing from Hybrid 0 and Hybrid 1 is up to the collision probability of $r$.</li>
+<li>QED.</li>
+</ul>
+<h2 id="Trapdoor-Permutation-Candidates"><a href="#Trapdoor-Permutation-Candidates" class="headerlink" title="Trapdoor Permutation Candidates"></a>Trapdoor Permutation Candidates</h2><p>Trapdoor Permutations are <u>exceedingly rare.</u></p>
+<p>There are two candidates. (both need factoring to be hard)</p>
+<ul>
+<li>The RSA (Rivest-Shamir-Adleman) Function.</li>
+<li>The Rabin/Blum-Williams Function</li>
+</ul>
+<p>This blog only show the RSA Trapdoor Permutation.</p>
+<h3 id="RSA-Trapdoor-Permutation"><a href="#RSA-Trapdoor-Permutation" class="headerlink" title="RSA Trapdoor Permutation"></a>RSA Trapdoor Permutation</h3><p>Let’s review some number theory from Lecture 6.</p>
+<p>Let $N=pq$ be a product of two large primes.</p>
+<p><strong>Facts:</strong>  $\mathbb{Z}_N^* =\{a\in \mathbb{Z}_N^*:\operatorname{gcd}(a,N)=1\}$ is a group. </p>
+<ul>
+<li>group operation is multiplication mod $N$.</li>
+<li>inverses exist and are easy to compute.</li>
+<li>the order of the group is $\phi(N)=(p-1)(q-1)$</li>
+</ul>
+<p>Let $e$ be an integer with $\operatorname{gcd}(e,\phi(N))=1$. </p>
+<p>Then, the map $F_{N,e}(x)=x^e\mod N$ is a trapdoor permutation.</p>
+<p>The <strong>key fact</strong> is given $d$ such that $ed=1 \mod \phi(N)$, then it is easy to compute $x$ given $x^e$.</p>
+<hr>
+<p>This gives us the <strong>RSA trapdoor permutation collection</strong>  $\{F_{N,e}:\operatorname{gcd}(e,N)=1\}$. </p>
+<ul>
+<li><u>Function index</u> is $(N,e)$</li>
+<li><u>Trapdoor for inversion</u> is $d=e^{-1} \mod \phi(N)$</li>
+</ul>
+<p>The hardness of inversion without trapdoor = <strong>RSA assumption:</strong> </p>
+<p>Given $N,e$ (as above) and $x^e\mod N$, hard to compute $x$.</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Cryptography-MIT6875」: Lecture 8</p><p><a href="https://f7ed.com/2022/07/22/mit6875-lec8/">https://f7ed.com/2022/07/22/mit6875-lec8/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2022-07-23</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2022-08-12</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Public-key-Encryption/">Public-key Encryption, </a><a class="link-muted" rel="tag" href="/tags/IND-Secure/">IND-Secure, </a><a class="link-muted" rel="tag" href="/tags/IND-CPA/">IND-CPA, </a><a class="link-muted" rel="tag" href="/tags/Trapdoor-Permutations/">Trapdoor Permutations </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2022/07/26/mit6875-lec9/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Cryptography-MIT6875」: Lecture 9</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2022/07/19/mit6875-lec7/"><span class="level-item">「Cryptography-MIT6875」: Lecture 7</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "e5d346c1bd8500c92a07a7991d0948fb",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">71</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">139</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Key-Agreement-Problem"><span class="level-left"><span class="level-item">1</span><span class="level-item">Key Agreement Problem</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Merkle’s-1974"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">Merkle’s [1974]</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Fascinating-History"><span class="level-left"><span class="level-item">2</span><span class="level-item">Fascinating History</span></span></a></li><li><a class="level is-mobile" href="#Public-Key-Encryption"><span class="level-left"><span class="level-item">3</span><span class="level-item">Public-Key Encryption</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Public-key-Encryption-Scheme"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">Public-key Encryption Scheme</span></span></a></li><li><a class="level is-mobile" href="#Define-the-Adversary"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">Define the Adversary</span></span></a></li><li><a class="level is-mobile" href="#IND-Security-IND-CPA"><span class="level-left"><span class="level-item">3.3</span><span class="level-item">IND-Security (IND-CPA)</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Many-Message-Security"><span class="level-left"><span class="level-item">3.3.1</span><span class="level-item">Many Message Security</span></span></a></li><li><a class="level is-mobile" href="#One-Message-Security"><span class="level-left"><span class="level-item">3.3.2</span><span class="level-item">One Message Security</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Trapdoor-Functions"><span class="level-left"><span class="level-item">4</span><span class="level-item">Trapdoor Functions</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Definition"><span class="level-left"><span class="level-item">4.1</span><span class="level-item">Definition</span></span></a></li><li><a class="level is-mobile" href="#Public-key-Encryption-Construction"><span class="level-left"><span class="level-item">4.2</span><span class="level-item">Public-key Encryption Construction</span></span></a></li><li><a class="level is-mobile" href="#Trapdoor-Permutation-Candidates"><span class="level-left"><span class="level-item">4.3</span><span class="level-item">Trapdoor Permutation Candidates</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#RSA-Trapdoor-Permutation"><span class="level-left"><span class="level-item">4.3.1</span><span class="level-item">RSA Trapdoor Permutation</span></span></a></li></ul></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

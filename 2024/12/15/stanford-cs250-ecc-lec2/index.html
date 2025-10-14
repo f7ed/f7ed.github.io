@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Algebraic ECCs」: Lec2 Linear Codes and Finite Fields - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="In this series, I will be learning Algebraic Error Correcting Codes, lectured by Mary Wootters. The lecture videos are available here. Feedback and sugguestions are always welcome! ^ - ^   Topi"><meta property="og:type" content="blog"><meta property="og:title" content="「Algebraic ECCs」: Lec2 Linear Codes and Finite Fields"><meta property="og:url" content="https://f7ed.com/2024/12/15/stanford-cs250-ecc-lec2/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="In this series, I will be learning Algebraic Error Correcting Codes, lectured by Mary Wootters. The lecture videos are available here. Feedback and sugguestions are always welcome! ^ - ^   Topi"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/stanford-cs250-ecc-lec2-thumbnail.png"><meta property="article:published_time" content="2024-12-15T16:00:00.000Z"><meta property="article:modified_time" content="2024-12-26T06:45:34.169Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Cryptography"><meta property="article:tag" content="ECC"><meta property="article:tag" content="Linear Code"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/stanford-cs250-ecc-lec2-thumbnail.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2024/12/15/stanford-cs250-ecc-lec2/"},"headline":"「Algebraic ECCs」: Lec2 Linear Codes and Finite Fields","image":["https://f7ed.com/gallery/thumbnails/stanford-cs250-ecc-lec2-thumbnail.png"],"datePublished":"2024-12-15T16:00:00.000Z","dateModified":"2024-12-26T06:45:34.169Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"In this series, I will be learning Algebraic Error Correcting Codes, lectured by Mary Wootters. The lecture videos are available here. Feedback and sugguestions are always welcome! ^ - ^   Topi"}</script><link rel="canonical" href="https://f7ed.com/2024/12/15/stanford-cs250-ecc-lec2/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Algebraic ECCs」: Lec2 Linear Codes and Finite Fields</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2024-12-15T16:00:00.000Z" title="2024-12-15T16:00:00.000Z">2024-12-16</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2024-12-26T06:45:34.169Z" title="2024-12-26T06:45:34.169Z">2024-12-26</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Cryptography-ECCs/">Cryptography-ECCs</a></span><span class="level-item"><i class="far fa-clock"></i> 19 minutes read (About 2911 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><article class="message message-immersive is-info">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="message-body">
+<i class="fas fa-info-circle mr-2"></i>
+    In this <a href="/categories/Cryptography-ECCs">series</a>, I will be learning <strong>Algebraic Error Correcting Codes</strong>, lectured by Mary Wootters. The lecture videos are available <a target="_blank" rel="noopener" href="https://youtube.com/playlist?list=PLkvhuSoxwjI_UudECvFYArvG0cLbFlzSr">here</a>. Feedback and sugguestions are always welcome! ^ - ^
+</div>
+</article>
+<b>Topics Covered:</b>
+
+<ul>
+<li><p>Linear Algebra over   $\{0, 1\}$ </p>
+<ul>
+<li>Generator Matrices</li>
+<li>Parity-Check Matrices</li>
+</ul>
+</li>
+<li><p>Linear Algebra not Working over  $\{0, 1, 2, 3\}$ </p>
+</li>
+<li><p>Finite Fields and Linear Codes</p>
+</li>
+</ul>
+<span id="more"></span>
+
+<h1 id="Recap"><a href="#Recap" class="headerlink" title="Recap"></a>Recap</h1><p>In last lecture, we are left with the open question:</p>
+<p><strong>What is the best trade-off between rate and distance?</strong></p>
+<p>We called the following example the <strong>Hamming Code</strong> of length 7 and we saw that it was optimal in that it met the <strong>Hamming Bound</strong>.</p>
+<img src="https://s21.ax1x.com/2024/12/13/pAbxUjf.png" alt="image.png" style="zoom:44%;" />
+
+<p>We also came up with a decoding algorithm for this code.</p>
+<p>Viewing the code as overlapping circles, we can identify which circles don’t sum to 0 (mod 2) and flip the unique bit that ameliorates the situation.</p>
+<img src="https://s21.ax1x.com/2024/12/13/pAbxNgP.png" alt="image.png" style="zoom:50%;" />
+
+<p>However, this circle view seems a bit ad hoc.</p>
+<p>In this Lecture, we are going to <strong>generalize this construction</strong> and <strong>generalize the decoding algorithm</strong> as well as the <strong>distance argument</strong>.</p>
+<article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>  <b>Who was Hamming?</b> 
+
+<p>Richard Hamming (1915-1998) was working at Bell labs starting in the late 1940’s, where he was colleagues with Claude Shannan (of the “Shannon model” which we also mentioned). Hamming was working on old-school computers (calculating machines), and they would return an error if even on bit was entered in error. This was extremely frustrating, and inspired Hamming to study this rate-vs-distance question, and to come up with Hamming codes. </div> </article></p>
+<h1 id="Linear-Algebra-over-0-1"><a href="#Linear-Algebra-over-0-1" class="headerlink" title="Linear Algebra over {0, 1}"></a>Linear Algebra over {0, 1}</h1><p>The Hamming code in the previous Example 3 has a really nice form of encoding:</p>
+<img src="https://s21.ax1x.com/2024/12/13/pAbxt3t.png" alt="image.png" style="zoom:50%;" />
+
+<h2 id="Generator-Matrices"><a href="#Generator-Matrices" class="headerlink" title="Generator Matrices"></a>Generator Matrices</h2><p>We can see this encoding map as the <u>multiplication by a matrix modulo 2</u>, written as $x\mapsto Gx\pmod 2$, where $G$ is some matrix called the <strong>Generator Matrix</strong>. </p>
+<img src="https://s21.ax1x.com/2024/12/13/pAbxY9I.png" alt="image.png" style="zoom:60%;" />
+
+<p>Viewing codes generated by a generator matrix is a very useful view to look at things.</p>
+ <article class="message message-immersive is-warning"> <div class="message-body"> <i class="fas fa-exclamation-triangle mr-2"></i> Suppose for now “linear algebra works mod 2”. </div> </article> 
+
+<p>For example, the codes in Example 3has a very nice property: <u>it is closed under addition modulo 2</u>, which means that if $c\in \mathcal{C}$, $c’\in \mathcal{C}$, then $c+c’\in \mathcal{C}$.</p>
+<p>Writing it as the multiplication by a matrix makes it very clear:</p>
+<img src="https://s21.ax1x.com/2024/12/13/pAbxdu8.png" alt="image.png" style="zoom:50%;" />
+
+<p>Moreover, we can view any <strong>codeword</strong> $c\in \mathcal{C}$ as <u>a linear combination of the column vectors of the generator matrix $G$.</u> </p>
+<p>In other words, the <strong>code</strong> $\mathcal{C}$ is the column span of the generator matrix $G$, aka $\mathcal{C}=\text{span}(\text{cols}(G))$ is <u>a linear subspace of dimension 4.</u></p>
+<h3 id="dist-C-min-wt-C"><a href="#dist-C-min-wt-C" class="headerlink" title="dist (C) = min wt (C)"></a>dist (C) = min wt (C)</h3><p>A key observation is that the minimum Hamming distance of the code is the same as the minimum weight of the non-zero codewords.</p>
+ <article class="message is-info"> <div class="message-header">  Observation:  </div> <div class="message-body">  If $\mathcal{C}$  is linear, then $\text{distance}(\mathcal{C})=\min \text{wt}(C)$.  </div> </article> 
+
+<p><font color=blue><u><i> Proof: </i></u></font></p>
+<p>The proof is straightforward: </p>
+<p>$$<br>\Delta(Gx, Gx’) = \Delta(G(x-x’), 0)=\text{wt}(G(x-x’))<br>$$</p>
+<p> where the first equality holds follows from linearity and $G(x-x’)$ is itself a codeword by the definition. $\blacksquare$ </p>
+<h2 id="Parity-check-Matrices"><a href="#Parity-check-Matrices" class="headerlink" title="Parity-check Matrices"></a>Parity-check Matrices</h2><p>The other way we looked at Example 3 was placing bits into circles as shown:</p>
+<img src="https://s21.ax1x.com/2024/12/13/pAbxNgP.png" alt="image.png" style="zoom:50%;" />
+
+<p>Each <strong>circle constitutes a parity check,</strong> meaning the <u>sum of the circle must equal 0 mod 2</u>. This constrain is indeed the linear relation, which we can express as:</p>
+<img src="https://s21.ax1x.com/2024/12/13/pAbxwDS.png" alt="image.png" style="zoom:45%;" />
+
+<p>where <u>each of the three rows corresponds to the linear constrains given by a circle.</u>  For example, the first row corresponds to the green circle, indicating that $c_2+c_3+c_4+c_5=0 \pmod 2$. </p>
+<p>This implies that <u>multiplying any potential codeword by the matrix $H$ should results in 0.</u> </p>
+<p>In other words, for any $c\in \mathcal{C}$, we have $Hc=0\pmod2$, which means that $\mathcal{C}$ is <u>contained in the kernel of the matrix $H$:</u></p>
+<p>$$<br>\mathcal{C}\subseteq \text{Ker}(H)<br>$$</p>
+<p>A raised <strong>question</strong> is: Does $\mathcal{C}=\text{Ker}(H)?$</p>
+<p>The answer is YES!</p>
+ <article class="message is-info"> <div class="message-header">  Lemma:  </div> <div class="message-body">  $\mathcal{C}=\text{Ker}(H)$  </div> </article> 
+
+<p>We prove it by counting dimension.</p>
+<p><font color=blue><u><i> Proof: </i></u></font></p>
+<ul>
+<li><p>$\text{dim}(\mathcal{C})=\text{dim}(\text{colspan}(G))=4$</p>
+<p>  It’s easy to see $\text{dim}(\text{colspan}(G))=4$ since the identity matrix is just sitting up there.</p>
+  <img src="https://s2.loli.net/2024/12/16/aBWTGqlvfxDeU8A.png" alt="image.png" style="zoom:60%;" />
+</li>
+<li><p>$\text{dim}(\text{Ker}(H))=n - \text{rank}(H) = 7 - \text{dim}(\text{rowspan}(H))=4$<br>Again, it’s easy to see $\text{dim}(\text{rowspan}(H))=3$ because of the identity matrix.</p>
+<img src="https://s2.loli.net/2024/12/16/ZhUfqgj587BFndT.png" alt="image.png" style="zoom:60%;" />
+</li>
+<li><p>Having $\mathcal{C}\subseteq \text{Ker}(H)$ with the same dimension, $\text{dim}(C)=\text{dim}(\text{Ker}(H))$, it follows that  $\mathcal{C}=\text{Ker}(H)$. $\blacksquare$ </p>
+</li>
+</ul>
+<p>Informally, the matrix $H$ here is called a <strong>Parity-Check</strong> matrix of $\mathcal{C}$ so that <u>the code $\mathcal{C}$ is the kernel of this matrix.</u></p>
+<h3 id="Easy-to-Capture-Distance"><a href="#Easy-to-Capture-Distance" class="headerlink" title="Easy to Capture Distance"></a>Easy to Capture Distance</h3><p>One <strong>benefit</strong> of the parity-check matrix is we can <u>read off the distance easily.</u></p>
+<p>As mentioned in the previous lecture, we supposed that the distance of the code in Example 3 is 3. Now, we can provide a proof using parity-check matrices.</p>
+<p><font color=blue><u><b> Claim: </b></u></font> $\text{dist}(\mathcal{C}) = 3$</p>
+<p><font color=blue><u><i> Proof: </i></u></font></p>
+<p>As before, it suffices to show  $\min_{c\in \mathcal{C}\backslash\{0, 1\} } \text{wt}(c) = 3$ that the minimum weight of all non-zero codewords is 3. </p>
+<p>Firstly, we prove $\text{wt}(c)\ge 3$ for $\forall c\in \mathcal{C}$, meaning that <u>all non-zero codewords has weight of at least 3.</u> </p>
+<p><strong>By contradiction</strong>, suppose there is some codeword vector $c\in \mathcal{C}$ with <u>has weight 1 or 2</u> so that $Hc = 0 \pmod 2$.</p>
+<img src="https://s2.loli.net/2024/12/16/tdOJvFxC81go4BP.png" alt="image.png" style="zoom:50%;" />
+
+<ul>
+<li><p>$\text{wt}(c)=1$<br>It implies one column of $H$ is 0 mod 2. (contradiction)</p>
+</li>
+<li><p>$\text{wt}(c)=2$</p>
+<p>  It implies the sum of some two columns of $H$ is 0 mod 2, aka there is a repeated column. (contradiction)</p>
+</li>
+</ul>
+<p>Now, the codeword <code>0101010</code> has weight exactly 3, so this bound is tight. Hence, the minimum weight is 3. $\blacksquare$ </p>
+<h3 id="Easy-to-Decode"><a href="#Easy-to-Decode" class="headerlink" title="Easy to Decode"></a>Easy to Decode</h3><p>Furthermore, the parity-check matrix gives us <strong>a slick decoding algorithm.</strong></p>
+<p>Recall the puzzle in Example 3:</p>
+<p><font color=blue><u><b> Puzzle: </b></u></font></p>
+<p>Given $\tilde{c}=0111010$, which bit has suffered one bit flip, and what is the original codeword $c$?</p>
+<p>The goal of the solution is to find a codeword $c\in \mathcal{C}$ such that the Hamming distance $\Delta(c, \tilde{c})\le 1$.</p>
+<p><font color=blue><u><i> Solution: </i></u></font></p>
+<p>We write $\tilde{c}=c+z\pmod 2$ where $z$ is <u>an error vector with weight 1</u>. Next, we consider what the product of $H\cdot \tilde{c}$ actually is?</p>
+<ul>
+<li><p>One the one hand, compute $H\cdot \tilde{c} \mod 2$ :</p>
+  <img src="https://s2.loli.net/2024/12/16/4i8azDdmu6MLSOj.png" alt="image.png" style="zoom:40%;" />
+</li>
+<li><p>On the other hand, write the product as $H\cdot (c+z) = Hc + Hz =Hz$ since $Hc=0$ for all $c\in \mathcal{C}$.</p>
+  <img src="https://s2.loli.net/2024/12/16/FLkWo1qvnANtyTZ.png" alt="image.png" style="zoom:40%;" />
+
+<p>  This shows that $z$ is just picking one column of $H$.</p>
+</li>
+</ul>
+<p>From the computation, we see  $H\cdot \tilde{c}$ <u>corresponds to the 3rd column of $H$, indicating the error occurred in position 3.</u></p>
+<p>This leads to an efficient decoding algorithm for $\mathcal{C}$: </p>
+<ol>
+<li>Compute $H\cdot \tilde{c}$ and identify which column of $H$ matches the result</li>
+<li>Determine $z$ recover $\tilde{c}=c + z\mod 2$.</li>
+</ol>
+<p>This view with <u>parity-check matrix</u> gives us a much nicer way of seeing our <u>circle-based algorithm.</u> </p>
+<p>“Which circles fail to sum 1” is the same as “which bits of $H\cdot \tilde{c}$ are 1”, and it picks out which bit we need to flip.</p>
+<hr>
+<p>Now, let’s summarize <strong>the moral of the story</strong> so far:</p>
+<p>The Hamming code of length 7 $\mathcal{C}$, is a subspace over $\{0, 1\}^7$, which means we can view it in <strong>two different liner-algebraic ways:</strong></p>
+<ol>
+<li> $\mathcal{C}=\{G\cdot x: x\in \{0, 1\}^4\}=\text{span(cols}(G))$, as the <u>column-span of the generator matrix.</u></li>
+<li> $\mathcal{C}=\{x\in \{0, 1\}^7:H\cdot x=0\} = \text{Ker}(H)$ , as the <u>kernel of the parity-check matrix.</u>
+
+</li>
+</ol>
+<p>However, all of these are predicated on the <strong>assumption</strong> that the <u>linear algebra works over $\{0, 1\}$ .</u></p>
+<h1 id="Linear-Algebra-not-Working-over-0-1-2-3"><a href="#Linear-Algebra-not-Working-over-0-1-2-3" class="headerlink" title="Linear Algebra not Working over {0, 1, 2, 3}"></a>Linear Algebra not Working over {0, 1, 2, 3}</h1><p>A natural question arises:</p>
+<p>Does linear algebra “make sense” over $\{0,1\}$? </p>
+<p>To explore this, let’s consider what happens for $\{0, 1,2,3\}$. </p>
+ <article class="message message-immersive is-warning"> <div class="message-body"> <i class="fas fa-exclamation-triangle mr-2"></i> The statements below contains <b>falsehoods.</b> </div> </article> 
+
+<p><font color=blue><u><b><i>Non-example: </i></b></u></font></p>
+<p>Let  $G = \left[
+\begin{array}{cc}
+2 & 0 \\ 
+0 & 2 \\
+2 & 2
+\end{array}
+\right]$be a generator matrix, mod 4. </p>
+<p>Using this generator matrix, we can define a code $\mathcal{C} = \{G\cdot x: x\in \{0, 1, 2,3\}^2\} = \text{colspan}(G)$, with message length $k = 2$, block length $n = 3$, over the alphabet $\Sigma = \{0, 1, 2,3\}$. </p>
+<p>Thus, $\text{dim}(\mathcal{C})=2$, since the columns of $G$ are <u>not scalar multiples of each other, aka, they are linearly independent.</u></p>
+<p>Now, consider the parity-check matrix  $H = G^{T} = \left[\begin{array}{cc}
+2 & 0 & 2 \\
+0 & 2 & 2\\
+\end{array} \right]$. </p>
+<p>We observe $H\cdot G = 0$, which means $H$ is a legit parity-check matrix for the code $\mathcal{C}$. Specifically, for any $c\in \mathcal{C}$, we have: $H\cdot c = H\cdot G\cdot x = 0 \mod 4$.</p>
+<p>However, when we calculate $\text{dim(Ker}(H))$, we find: $\text{dim}(\text{Ker}(H)) = 3 - \text{rank}(H) = 1$.</p>
+<p>This leads to a <font color=red><b>contradiction</b></font> for the code $\mathcal{C}$ is a liner subspace such that $\mathcal{C} = \text{colspan}(G) = \text{Ker}(H)$.</p>
+<p>Additionally, when we look at the distance of code using the parity-check matrix, we find that $\text{dist}(\mathcal{C})\ge 3$ since no two columns of $H$ are linearly dependent.</p>
+<p>Yet, there exists a codeword  $c = G\cdot \left(\begin{array}{c}
+1\\1
+\end{array}
+\right) = \left(\begin{array}{c}
+2\\2 \\0
+\end{array}
+\right)$, which has weight $2$,  leading to another <font color=red><b>contradiction</b></font>.</p>
+<hr>
+<p>The main reason for contradiction is that the linear algebra does not “work” over  $\{0, 1, 2, 3\} \mod 4$. </p>
+<p>In particular, the assertions that two vectors are linearly independent since they are not scalar multiples of each other are not working over  $\{0, 1, 2, 3\}$. </p>
+<p>The following definitions are both for the <strong>linearly independent</strong>. </p>
+<ul>
+<li>Non-zero vectors $v$ and $w$ are linearly independent iff there is no non-zero $\lambda$ s.t. $v = \lambda \cdot w$.</li>
+<li>Non-zero vectors $v$ and $w$ are linearly independent iff there is no non-zero $\lambda_1, \lambda_2$ s.t. $\lambda_1 \cdot v + \lambda_2 \cdot w = 0$.</li>
+</ul>
+<p>They are the same over the real field $\mathbb{R}$. The proof is straightforward</p>
+<p><font color=blue><u><i> Proof: </i></u></font><br>Suppose $\exists \lambda_1, \lambda_2 \ne 0$ s.t. $\lambda_1 \cdot v + \lambda_2 \cdot w = 0$. Then $v = (\frac{-\lambda_2}{\lambda_1})\cdot w$.<br>Conversely, if $\exists \lambda$ s.t. $v = \lambda w$, then choose $\lambda_2 = \lambda, \lambda_1 = -1$ and $\lambda_1 v + \lambda_2 w = 0$. $\blacksquare$ </p>
+<p>However, they not the same over  $\{0, 1,2, 3\}$. There exists $\lambda_1 =\lambda_2 = 2$ such that </p>
+ 
+$$
+2\cdot \left(\begin{array}{c}
+2 \\ 0 \\2
+\end{array}\right ) + 2\cdot \left(\begin{array}{c}
+0 \\ 2 \\2
+\end{array}\right ) = \left(\begin{array}{c}
+4 \\ 4 \\8
+\end{array}\right ) = \left(\begin{array}{c}
+0 \\ 0 \\0
+\end{array}\right ) \mod 4
+$$
+
+ 
+
+<p>even though the two columns of $G$ are not scalar multiples of each other.</p>
+<p>If you have the background of the finite field, the reason here is that $\{0, 1, 2, 3\}$ is not a finite field and we cannot divide by 2 mod 4. </p>
+<p>This does not bode well for algebraic coding theory if even linear algebra doesn’t work.</p>
+<h1 id="Finite-Field-and-Linear-Codes"><a href="#Finite-Field-and-Linear-Codes" class="headerlink" title="Finite Field and Linear Codes"></a>Finite Field and Linear Codes</h1> <article class="message message-immersive is-warning"> <div class="message-body"> <i class="fas fa-exclamation-triangle mr-2"></i> The second part of the lecture covers finite fields. I omit it here since we have already covered it in this blog. </div> </article> 
+
+<p>The key takeaway is all the definitions we know for the linear algebra over $\mathbb{R}$ also make sense over finite fields.</p>
+<p>Here, I list some essential points relevant to this lecture.</p>
+<p>Let $\mathbb{F}$ be a finite field. Then:</p>
+<ul>
+<li> $\mathbb{F}^n = \{(x_1, \dots, x_n): x_i \in \mathbb{F}\}$ </li>
+<li>A <strong>subspace</strong> $V\subseteq \mathbb{F}^n$ is a subset that is closed unde r addition and scalar multiplication. Specifically: $\forall v, w\in V, \forall \lambda\in \mathbb{F}, v+ \lambda w\in V$.</li>
+<li>Vectors $v_1, \dots, v_t \in \mathbb{F}^n$ are <strong>linearly independent</strong> if $\forall \lambda_1, \dots, \lambda_t\in \mathbb{F}$ that are not all 0, $\sum_{i} \lambda_i \cdot v_i \ne 0$.</li>
+<li>For $v_1, \dots, v_t \in \mathbb{F}^n$, their <strong>span</strong> is  defined as $\text{span}(v_1, \dots, v_t)=\{\sum_i \lambda_i v_i : \lambda_i \in \mathbb{F}\}$. </li>
+<li>A <strong>basis</strong> for a subspace $V\subseteq \mathbb{F}$ is a collection of vectors $v_1, \dots, v_t\in V$ s.t.<ul>
+<li>$v_1, \dots, v_t$ are linearly independent</li>
+<li>$V = \text{span}(v_1, \dots, v_t)$</li>
+</ul>
+</li>
+<li>The <strong>dimension</strong> of a subspace $V$ is the number of elements in any basis of $V$.</li>
+</ul>
+<p>Now, we can define a linear code over a finite field.</p>
+ <article class="message is-info"> <div class="message-header">  Definition of Linear Codes:  </div> <div class="message-body">  A Linear Code $\mathcal{C}$ of length $n$ and dimension $k$ over a finite field $\mathbb{F}$ is a $k$-dimension linear subspace of $\mathbb{F}^n$. (The alphabet of $\mathcal{C}$ is $\Sigma = \mathbb{F}$)  </div> </article> 
+
+<p>This definition implies that a linear code is essentially a linear space.</p>
+<p>This definition aligns with the one we introduced in the previous lecture. </p>
+ <article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>   <b>(Recall) Definition of Code :</b>  A code with distance $d$, message length $k$, block length $n$, and alphabet $\Sigma$ is called a $(n, k, d)_{\Sigma}$ code.  </div> </article> 
+
+<p>Here, we use overloaded $k$ for both message length and dimension. This is intentional, as it makes sense in this context.</p>
+<p>If $\mathcal{C}$ is a $k$-dimensional subspace over $\mathbb{F}$, then $|\mathcal{C}|=|\mathbb{F}^k|$, hence $k = \log _{|\mathbb{F}|}|\mathcal{C}| = \log_{|\Sigma|}|\mathcal{C}|=$ message length. </p>
+<p>Moreover, if $\mathcal{C}$ is a code of block length $n$, message length $k$, over alphabet $\mathcal{\Sigma = \mathbb{F}}$, then $\mathcal{C}$ is a linear code and also a $k$-dimensional subspace over $\mathbb{F}$.</p>
+ <article class="message is-info"> <div class="message-header">  Definition of Generator Matrix:  </div> <div class="message-body">  Let $\mathcal{C}$ be a linear code of length $n$ and dimension $k$ over a finite field $\mathbb{F}$. A matrix $G\in \mathbb{F}^{n\times k}$ is a generator matrix  for $\mathcal{C}$ if $\mathcal{C} = \text{colspan}(G)=\{G\cdot x: x\in \mathbb{F}^k\}$.   </div> </article> 
+
+<p><font color=blue><u><b> Observation: </b></u></font></p>
+<p>Any linear code has a generator matrix. </p>
+<p><font color=blue><u><i> Proof: </i></u></font></p>
+<p>Choose the columns of $G$ to be  a basis of $\mathcal{C}$. $\blacksquare$</p>
+<p>Note that the generator matrix for a code is <strong>not unique</strong>. There can be many generator matrices for the same code. They all describe the same code, but they implicitly describe different encoding maps. </p>
+<p>For example, the following $G$ and $G’$ are both generator matrices for the same Hamming code.</p>
+<img src="https://s2.loli.net/2024/12/16/Tqx8G4cNyBaFSIW.png" alt="image.png" style="zoom:50%;" />
+
+<p>In particular, we can always permute on rows since it does not change the space of column-span.</p>
+<p>Some generator matrices may be more useful than others. For example, $G$ above corresponds to a <strong>systematic encoding map</strong>. This means that that $\text{Enc}_G(x_1, x_2, x_3, x_4) \mapsto (x_1, x_2, x_3, x_4, \text{stuff})$.</p>
+<p>In particular, <strong>for linear codes</strong>, there is always a systematic encoding map defined by a generator matrix look like the above $G$, having an identity matrix sit up there and some other stuff down there.</p>
+ <article class="message is-info"> <div class="message-header">  Definition of Dual Code:  </div> <div class="message-body">   If $\mathcal{C}\subseteq \mathbb{F}^n$ is a linear code over $\mathbb{F}$, then $\mathcal{C}^\perp=\{v\in \mathbb{F}^n: \langle v, c\rangle =0 \text{ for }\forall c\in \mathcal{C}\}$   </div> </article> 
+
+<article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>  Dual code is the same definition as the dual subspace in linear algebra. </div> </article>
+
+ <article class="message is-info"> <div class="message-header">  Note:  </div> <div class="message-body">  Let $\mathcal{C}\subseteq \mathbb{F}^n$ be a linear code of length $n$ over $\mathbb{F}$ with $\text{dim}(\mathcal{C})=k$, then $\text{dim}(\mathcal{C}^\perp) = n - k$. (Just like over $\mathbb{R}$).  </div> </article> 
+
+
+
+ <article class="message is-info"> <div class="message-header">  Definition of Parity Check Matrix:  </div> <div class="message-body">  Let $\mathcal{C}$ be a linear code of length $n$ and dimension $k$ over a finite field $\mathbb{F}$. A matrix $H\in \mathbb{F}^{(n-k)\times n}$ so that  $\mathcal{C} = \text{Ker}(H)=\{c\in \mathbb{F}^n: H\cdot c = 0\}$ is  a <b>parity-check matrix</b> for $\mathcal{C}$.  The rows of $H$ (or any vector $v$ s.t. $\langle v, c\rangle =0 \;\forall c\in \mathcal{C}$ ) are called <b>parity checks</b>.  </div> </article> 
+
+
+
+<p><font color=blue><u><b> Observation: </b></u></font></p>
+<p>Any linear code has a parity-check matrix. </p>
+<p><font color=blue><u><i> Proof: </i></u></font></p>
+<p>Choose the rows of $H$ to be  a basis of $\mathcal{C}^\perp$. $\blacksquare$  </p>
+<p>Similarly, the parity-check matrix for a code is <strong>not unique—</strong>there can be many parity-check matrices for the same code.</p>
+<p>With these definitions under our belts, we can move to some facts about linear codes.</p>
+<p><font color=blue><u><b> Facts About Linear Codes: </b></u></font></p>
+<p>If $\mathcal{C}\subseteq \mathbb{F}^n$  is a linear code over $\mathbb{F}$ of dimension $k$ with the generator matrix $G$ and parity-check matrix $H$, then:</p>
+<ul>
+<li>$H\cdot G = 0$</li>
+<li>$\mathcal{C}^\perp$ is a linear code of dimension $n-k$ with generator matrix $H^T$ and parity-check matrix $G^T$.<br>Note that the parity-check matrix $H$ for code $\mathcal{C}$ is taken as the generator matrix for $\mathcal{C}^\perp$.</li>
+<li>The distance of $\mathcal{C}$ is the minimum weight of any nonzero codeword in $\mathcal{C}$: $\text{dist}(\mathcal{C})=\min_{c\in \mathcal{C}\backslash\{0\}}\sum_{i=0}1\{c_i \ne 0\}$. </li>
+<li>The distance of $\mathcal{C}$ is the smallest number $d$ so that $H$ has $d$ linearly dependent columns.<br>Recall how we proved the distance of the code in Example 3: we argue that it suffices to show that no pairs of columns in $H$ are linearly dependent.<br>As shown below, the distance of the code corresponds to the smallest number $d$ so that there exists a codeword $c$ of weight $d$, which is picking up $d$ columns of $H$ that is linearly dependent. <img src="https://s2.loli.net/2024/12/16/k7lP8ozXf4aCTJZ.png" alt="image.png" style="zoom:60%;" />
+</li>
+</ul>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Algebraic ECCs」: Lec2 Linear Codes and Finite Fields</p><p><a href="https://f7ed.com/2024/12/15/stanford-cs250-ecc-lec2/">https://f7ed.com/2024/12/15/stanford-cs250-ecc-lec2/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2024-12-16</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2024-12-26</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Cryptography/">Cryptography, </a><a class="link-muted" rel="tag" href="/tags/ECC/">ECC, </a><a class="link-muted" rel="tag" href="/tags/Linear-Code/">Linear Code </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2024/12/25/stanford-cs250-ecc-lec3/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Algebraic ECCs」: Lec3 GV Bound and q-ARY Entropy</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2024/12/10/stanford-cs250-ecc-lec1/"><span class="level-item">「Algebraic ECCs」: Lec1 Basics of ECCs</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "4522a798f4bdf04fb501ca51947c2614",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">71</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">139</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Recap"><span class="level-left"><span class="level-item">1</span><span class="level-item">Recap</span></span></a></li><li><a class="level is-mobile" href="#Linear-Algebra-over-0-1"><span class="level-left"><span class="level-item">2</span><span class="level-item">Linear Algebra over {0, 1}</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Generator-Matrices"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">Generator Matrices</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#dist-C-min-wt-C"><span class="level-left"><span class="level-item">2.1.1</span><span class="level-item">dist (C) = min wt (C)</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Parity-check-Matrices"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">Parity-check Matrices</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Easy-to-Capture-Distance"><span class="level-left"><span class="level-item">2.2.1</span><span class="level-item">Easy to Capture Distance</span></span></a></li><li><a class="level is-mobile" href="#Easy-to-Decode"><span class="level-left"><span class="level-item">2.2.2</span><span class="level-item">Easy to Decode</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Linear-Algebra-not-Working-over-0-1-2-3"><span class="level-left"><span class="level-item">3</span><span class="level-item">Linear Algebra not Working over {0, 1, 2, 3}</span></span></a></li><li><a class="level is-mobile" href="#Finite-Field-and-Linear-Codes"><span class="level-left"><span class="level-item">4</span><span class="level-item">Finite Field and Linear Codes</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

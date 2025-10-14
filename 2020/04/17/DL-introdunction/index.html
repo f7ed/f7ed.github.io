@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「机器学习-李宏毅」：Deep Learning-Introduction - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="这篇文章中，介绍了Deep Learning的一般步骤。"><meta property="og:type" content="blog"><meta property="og:title" content="「机器学习-李宏毅」：Deep Learning-Introduction"><meta property="og:url" content="https://f7ed.com/2020/04/17/DL-introdunction/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="这篇文章中，介绍了Deep Learning的一般步骤。"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/79916708_p0_master1200.jpg"><meta property="article:published_time" content="2020-04-17T16:00:00.000Z"><meta property="article:modified_time" content="2020-07-03T08:41:15.486Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Machine-Learning"><meta property="article:tag" content="DeepLearning"><meta property="article:tag" content="open-classes"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/79916708_p0_master1200.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2020/04/17/DL-introdunction/"},"headline":"「机器学习-李宏毅」：Deep Learning-Introduction","image":["https://f7ed.com/gallery/thumbnails/79916708_p0_master1200.jpg"],"datePublished":"2020-04-17T16:00:00.000Z","dateModified":"2020-07-03T08:41:15.486Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"这篇文章中，介绍了Deep Learning的一般步骤。"}</script><link rel="canonical" href="https://f7ed.com/2020/04/17/DL-introdunction/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「机器学习-李宏毅」：Deep Learning-Introduction</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2020-04-17T16:00:00.000Z" title="2020-04-17T16:00:00.000Z">2020-04-18</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2020-07-03T08:41:15.486Z" title="2020-07-03T08:41:15.486Z">2020-07-03</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E6%9D%8E%E5%AE%8F%E6%AF%85/">机器学习-李宏毅</a></span><span class="level-item"><i class="far fa-clock"></i> 7 minutes read (About 1099 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>这篇文章中，介绍了Deep Learning的一般步骤。</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><span id="more"></span>
+
+<h1 id="Up-and-downs-of-Deep-Learning"><a href="#Up-and-downs-of-Deep-Learning" class="headerlink" title="Up and downs of Deep Learning"></a>Up and downs of Deep Learning</h1><ul>
+<li><p>1958: Perceptron (linear model)</p>
+</li>
+<li><p>1969: Perceptron has limitation</p>
+</li>
+<li><p>1980s: Multi-layer perceptron </p>
+<p>​            Do not have significant difference from DNN today</p>
+</li>
+<li><p>1986: Backpropagation</p>
+<p>​            Usually more than 3 hidden layers is not helpful</p>
+</li>
+<li><p>1989: 1 hidden layer is “good enough”, why deep?</p>
+</li>
+<li><p>2006: RBM initialization (breakthrough) </p>
+</li>
+<li><p>2009: GPU</p>
+</li>
+<li><p>2011: Start to be popular in speech recognition【语音辨识】</p>
+</li>
+<li><p>2012: win ILSVRC image competition 【图像识别】</p>
+</li>
+</ul>
+<h1 id="Step-1-Neural-Network"><a href="#Step-1-Neural-Network" class="headerlink" title="Step 1: Neural Network"></a>Step 1: Neural Network</h1><p>在将Regression 和 Classification时，Step 1 是确定一个function set。</p>
+<p>在Deep Learning中，也是相同的，只是这里的function set就是一个neural network的结构。</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/JmFnne"><img src="https://s1.ax1x.com/2020/04/18/JmFnne.md.png" alt="JmFnne.md.png"></a> </p>
+<p>上图中，一个Neuron就是如上图所示的一个unit，neuron之间不同的连接方式构成不同的Neural Network。</p>
+<h2 id="Fully-Connect-Feedforward-Network"><a href="#Fully-Connect-Feedforward-Network" class="headerlink" title="Fully Connect Feedforward Network"></a>Fully Connect Feedforward Network</h2><p><a target="_blank" rel="noopener" href="https://imgchr.com/i/JmFV1K"><img src="https://s1.ax1x.com/2020/04/18/JmFV1K.md.png" alt="JmFV1K.md.png"></a> </p>
+<p>这是一个Fully Connect Feedforward Network【全连接反馈网络】，其中每个neuron的activation function都是一个sigmod函数。</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/JmFeXD"><img src="https://s1.ax1x.com/2020/04/18/JmFeXD.md.png" alt="JmFeXD.md.png"></a>  </p>
+<p>为什么说neural network其实就是一个function呢？上面两张图中，输入是一个vector，输出也是一个vector，可以用下面函数来表示。</p>
+
+$$
+f\left(\left[\begin{array}{c}1 \\ -1\end{array}\right]\right)=\left[\begin{array}{c}0.62 \\ 0.83\end{array}\right] f\left(\left[\begin{array}{l}0 \\ 0\end{array}\right]\right)=\left[\begin{array}{l}0.51 \\ 0.85\end{array}\right]
+$$
+
+
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/JmFZ6O"><img src="https://s1.ax1x.com/2020/04/18/JmFZ6O.md.png" alt="JmFZ6O.md.png"></a> </p>
+<p>上图为全连接网络的一般形式，第一层是Input Layer，最后一层是Output Layer，中间的其他层称为Hidden Layer。</p>
+<p>而Deep Learning中的Deep的含义就是Many hidden layers的意思。</p>
+<h2 id="Matrix-Operation"><a href="#Matrix-Operation" class="headerlink" title="Matrix Operation"></a>Matrix Operation</h2><p><a target="_blank" rel="noopener" href="https://imgchr.com/i/JmFkfx"><img src="https://s1.ax1x.com/2020/04/18/JmFkfx.md.png" alt="JmFkfx.md.png"></a> </p>
+<p>上图的全连接网络中，第一个hidden layer的输出可以写成矩阵和向量的形式：</p>
+
+$$
+\sigma\left(\left[\begin{array}{cc}1 & -2 \\ -1 & 1\end{array}\right]\left[\begin{array}{c}1 \\ -1\end{array}\right]+\left[\begin{array}{c}1 \\ 0\end{array}\right]\right)=\left[\begin{array}{c}0.98 \\ 0.12\end{array}\right]
+$$
+
+
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/JmFEp6"><img src="https://s1.ax1x.com/2020/04/18/JmFEp6.md.png" alt="JmFEp6.md.png"></a> </p>
+<p>更为一般的公式，用W表示权重，b代表bias，a表示hidden layer的输出。输出vector y可以写成 $y = f(x)$ 的形式，即： $y= f(x)=$</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/JmFFt1"><img src="https://s1.ax1x.com/2020/04/18/JmFFt1.md.png" alt="JmFFt1.md.png"></a> </p>
+<p>转换为矩阵运算的形式，就可以使用并行计算的硬件技术（GPU）来加速矩阵运算，这也是为什么用GPU来训练Neural Network 更快的原因。</p>
+<h2 id="Output-Layer"><a href="#Output-Layer" class="headerlink" title="Output Layer"></a>Output Layer</h2><p>在 <a href="/2020/04/01/Classification2/" title="Logistic Regression">Logistic Regression</a>中第4节讲到Logistic Regression有局限，消除局限的一种方法是Feature Transformation。</p>
+<p>但是Feature Transformation需要人工设计，不太“机器学习”。</p>
+<p>在下图全连接图中，把Output Layer换成一个Multi-class Classifier（SoftMax），而其中Hidden Layers的作用就是Feature extractor，从feature x提取出新的feature，也就是 output layer的输入。</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/JmFpm4"><img src="https://s1.ax1x.com/2020/04/18/JmFpm4.md.png" alt="JmFpm4.md.png"></a> </p>
+<p>这样就不需要人工设计Feature Transformation/Feature engineering，可以让机器自己学习：如何将原来的feature转换为更好分类的feature。</p>
+<hr>
+<p><strong>Handwriting Digit Recognition</strong> </p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/Jmix6U"><img src="https://s1.ax1x.com/2020/04/18/Jmix6U.md.png" alt="Jmix6U.md.png"></a> </p>
+<p>在手写数字辨别中，输出是一个16*16的image（256维的vector），输出是一个10维的vector，每一维表示是该image是某个数字的概率。</p>
+<p>在手写数字辨别中，需要设计neural network的结构来提取输入的256维feature。</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/JmFC79"><img src="https://s1.ax1x.com/2020/04/18/JmFC79.md.png" alt="JmFC79.md.png"></a> </p>
+<h1 id="Step-2-Goodness-of-function"><a href="#Step-2-Goodness-of-function" class="headerlink" title="Step 2: Goodness of function"></a>Step 2: Goodness of function</h1><p>之前我们已经使用过的最小二乘法和交叉熵作为损失函数。</p>
+<p>一般在Neural Network中，使用output vector 和target vector的交叉熵作为Loss。</p>
+<h1 id="Step-3-Pick-the-best-function"><a href="#Step-3-Pick-the-best-function" class="headerlink" title="Step 3: Pick the best function"></a>Step 3: Pick the best function</h1><p>在NN中，也使用Gradient Descent。</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/JmF90J"><img src="https://s1.ax1x.com/2020/04/18/JmF90J.md.png" alt="JmF90J.md.png"></a> </p>
+<p>但是，Deep Neural Network中，参数太多了，计算结构也很复杂。</p>
+<p>Backpropagation：an efficient way to compute $\partial{L}/\partial{w}$ in neural network.</p>
+<p>Backpropagation本质也是Gradient Descent，只是一种更高效进行Gradient Descent的算法。</p>
+<p>在很多 toolkit（TensorFlow，PyTorch ，Caffe等）中都实现了Backpropgation。</p>
+<p>Backpropagation部分，见<a href="/2020/04/18/Backpropagation/" title="下一篇博客">下一篇博客</a>。</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1></div><div class="article-licensing box"><div class="licensing-title"><p>「机器学习-李宏毅」：Deep Learning-Introduction</p><p><a href="https://f7ed.com/2020/04/17/DL-introdunction/">https://f7ed.com/2020/04/17/DL-introdunction/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2020-04-18</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2020-07-03</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Machine-Learning/">Machine-Learning, </a><a class="link-muted" rel="tag" href="/tags/DeepLearning/">DeepLearning, </a><a class="link-muted" rel="tag" href="/tags/open-classes/">open-classes </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/04/17/Backpropagation/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「机器学习-李宏毅」：Backpropagation</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2020/04/14/ml-lee-hw2/"><span class="level-item">「机器学习-李宏毅」：HW2-Binary Income Predicting</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "b8ef7a1af14d9eb518eab0bd72141d2e",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">71</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">139</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Up-and-downs-of-Deep-Learning"><span class="level-left"><span class="level-item">1</span><span class="level-item">Up and downs of Deep Learning</span></span></a></li><li><a class="level is-mobile" href="#Step-1-Neural-Network"><span class="level-left"><span class="level-item">2</span><span class="level-item">Step 1: Neural Network</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Fully-Connect-Feedforward-Network"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">Fully Connect Feedforward Network</span></span></a></li><li><a class="level is-mobile" href="#Matrix-Operation"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">Matrix Operation</span></span></a></li><li><a class="level is-mobile" href="#Output-Layer"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">Output Layer</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Step-2-Goodness-of-function"><span class="level-left"><span class="level-item">3</span><span class="level-item">Step 2: Goodness of function</span></span></a></li><li><a class="level is-mobile" href="#Step-3-Pick-the-best-function"><span class="level-left"><span class="level-item">4</span><span class="level-item">Step 3: Pick the best function</span></span></a></li><li><a class="level is-mobile" href="#Reference"><span class="level-left"><span class="level-item">5</span><span class="level-item">Reference</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

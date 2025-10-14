@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Cryptography-ZKP」: Lec7 Poly-commit based on ECC - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="In this series, I will learn Zero Knowledge Proofs (ZKP) on this MOOC, lectured by Dan Boneh, Shafi Goldwasser, Dawn Song, Justin Thaler and Yupeng Zhang.  Any corrections and advice are welcom"><meta property="og:type" content="blog"><meta property="og:title" content="「Cryptography-ZKP」: Lec7 Poly-commit based on ECC"><meta property="og:url" content="https://f7ed.com/2023/08/01/zkp-lec7/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="In this series, I will learn Zero Knowledge Proofs (ZKP) on this MOOC, lectured by Dan Boneh, Shafi Goldwasser, Dawn Song, Justin Thaler and Yupeng Zhang.  Any corrections and advice are welcom"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/covers/zkp-lec7-banner.png"><meta property="article:published_time" content="2023-08-01T16:00:00.000Z"><meta property="article:modified_time" content="2023-08-02T12:11:14.601Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Cryptography"><meta property="article:tag" content="ECC"><meta property="article:tag" content="Poly-commit"><meta property="article:tag" content="Bulletproofs"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/covers/zkp-lec7-banner.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2023/08/01/zkp-lec7/"},"headline":"「Cryptography-ZKP」: Lec7 Poly-commit based on ECC","image":["https://f7ed.com/gallery/covers/zkp-lec7-banner.png"],"datePublished":"2023-08-01T16:00:00.000Z","dateModified":"2023-08-02T12:11:14.601Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"In this series, I will learn Zero Knowledge Proofs (ZKP) on this MOOC, lectured by Dan Boneh, Shafi Goldwasser, Dawn Song, Justin Thaler and Yupeng Zhang.  Any corrections and advice are welcom"}</script><link rel="canonical" href="https://f7ed.com/2023/08/01/zkp-lec7/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Cryptography-ZKP」: Lec7 Poly-commit based on ECC</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2023-08-01T16:00:00.000Z" title="2023-08-01T16:00:00.000Z">2023-08-02</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2023-08-02T12:11:14.601Z" title="2023-08-02T12:11:14.601Z">2023-08-02</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Cryptography-ZKP/">Cryptography-ZKP</a></span><span class="level-item"><i class="far fa-clock"></i> 30 minutes read (About 4496 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><article class="message message-immersive is-info">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="message-body">
+<i class="fas fa-info-circle mr-2"></i>
+    In this <a href="/categories/Cryptography-ZKP">series</a>, I will learn <strong>Zero Knowledge Proofs (ZKP)</strong> on this <a target="_blank" rel="noopener" href="https://zk-learning.org/">MOOC</a>, lectured by Dan Boneh, Shafi Goldwasser, Dawn Song, Justin Thaler and <strong>Yupeng Zhang</strong>. 
+<br>Any corrections and advice are welcome. ^ - ^
+</div>
+</article>
+
+
+
+<p><strong>Topics:</strong></p>
+<ul>
+<li>Poly-commit based on Error-correcting Codes</li>
+<li><strong>Argument for Vector-Matrix Product</strong><ul>
+<li>Proximity Test</li>
+<li>Consistency Test</li>
+</ul>
+</li>
+<li><strong>Linear-time encodable code based on expanders</strong><ul>
+<li>Lossless Expander</li>
+<li>Recursive Encoding with constant relative distance</li>
+</ul>
+</li>
+</ul>
+<span id="more"></span>
+
+<p>An important component in the common paradigm for efficient SNARK is the polynomial commitment scheme. </p>
+<img src="https://s1.ax1x.com/2023/08/02/pPPPYb4.png" alt="Paradigm for SNARKs" style="zoom:34%;" />
+
+<p>In Lecture 6 we introduced the KZG polynomial commitment based on bilinear pairing and other polynomial commitments based on discrete-log.</p>
+<p>It is worth noting that prover time is dependent on $O(d)$ exponentiations, which is not strictly linear-time.</p>
+<img src="https://s1.ax1x.com/2023/08/02/pPPPNVJ.png" alt="Poly-commit based on pairing and discrete-log" style="zoom:40%;" />
+
+<p>Today we are going to present a new class of <strong>polynomial commitments based on error-correcting codes.</strong></p>
+<p>Here are the motivations and drawbacks.</p>
+<p><u><b>Motivations:</b></u> </p>
+<ul>
+<li>Plausibly post-quantum secure</li>
+<li>No group exponentiations<br>Prover only uses hashes, additions and multiplications.</li>
+<li>Small global parameters</li>
+</ul>
+<p><u><b>Drawbacks:</b></u> </p>
+<ul>
+<li>Large proof size</li>
+<li>Not homomorphic and hard to aggregate</li>
+</ul>
+<h1 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h1><h2 id="Error-correcting-Code"><a href="#Error-correcting-Code" class="headerlink" title="Error-correcting Code"></a>Error-correcting Code</h2><p>Let’s briefly introduce the error-correcting code, which is allowed to correct errors.</p>
+<p>A $[n,k,\Delta]$ code is defined below:</p>
+<ul>
+<li>$Enc(m)$: Encode a message of size $k$ to a codeword of size $n$.</li>
+<li><strong>Minimum distance</strong> (Hamming distance) between any two codewords is $\Delta$.</li>
+</ul>
+<p>Note that we omit the alphabet $\Sigma$ (binary or field) here, which is another important parameter in code. </p>
+<img src="https://s1.ax1x.com/2023/08/02/pPPP3vT.png" alt="encoding" style="zoom:33%;" />
+
+<p>A simple example is the <strong>repetition code</strong>, which just repeat each symbol three times.</p>
+<p>Consider the binary alphabet with $k=2$ and $n=6$.</p>
+<p>The codewords are Enc(00)=000000, Enc(01)=000111, Enc(10)=111000 and Enc(11)=111111 with minimum distance $\Delta=3$.</p>
+<p>This repetition code with minimum distance $\Delta=3$ can correct 1 error duting the transmission.</p>
+<p>E.g., suppose the transmission can induce at most 1 error, then the message 010111 received from the sender can be decoded to 01.</p>
+<p>It is worth mentioning that we are going to <u>build poly-commit using error-correcting code <strong>without</strong> efficient decoding algorithm.</u></p>
+<p>The truth is that we don’t use the decoding algorithm at all.</p>
+<p>We define <u>rate</u> and <u>relative distance</u> over a $[n,k,\Delta]$ code.</p>
+<p>The <strong>rate</strong> $\frac{k}{n}$  represents the ratio of the minimal message in the codeword of size $n$. We want the rate close to 1.</p>
+<p>The <strong>relative distance</strong> $\frac{\Delta}{n}$ represents the ratio of the different locations between any two codewords.</p>
+<p>E.g., repetition code with rate $\frac 1 a$ repeats each symbol $a$ times with $n=ak$, and has $\Delta=a$ and relative distance $\frac 1 k$.</p>
+<p>We want rate and relative distance as big as possible, but increasing rate could decrease the relative distance.</p>
+<p>The <u>trade-off between the rate</u> and the distance of a code is well studied in code theory.</p>
+<h2 id="Linear-Code"><a href="#Linear-Code" class="headerlink" title="Linear Code"></a>Linear Code</h2><p>The most common type of code is <strong>linear code</strong>.</p>
+<p>An important <strong>property</strong> <u>is any linear combination of codewords is also a codeword.</u></p>
+<p>It is equivalent to say that <u>encoding can always be represented as vector-matrix multiplication</u> between $m$ (of size $k$) and the generator matrix (of size $k\times n$).</p>
+<p>Moreover, the <u>minimum (Hamming) distance</u> is the same as the <u>codeword with the least number of non-zeros</u> (<strong>weight</strong>).</p>
+<p>(The weight of a codeword indicats the number of non-zeros.)</p>
+<p>The subtraction of any two codewords is also a codeword so the number of the different locations directly implies the weight of another non-zero codeword.</p>
+<h3 id="Reed-Solomon-Code"><a href="#Reed-Solomon-Code" class="headerlink" title="Reed-Solomon Code"></a>Reed-Solomon Code</h3><p>A classical construction of linear code is <strong>Reed-Solomon Code</strong>.</p>
+<p>It encodes messages in $\mathbb{F}_p^k$ to codewords in $\mathbb{F}_p^n$.</p>
+<p>The <strong>idea of encoding</strong> is <u>veiwing the message of size $k$ as a unique degree $k-1$ univariate polynomial</u> and the <strong>codeword</strong> is the evaluations at $n$ points.</p>
+<p>It <u>treats each symbol of the message as an evaluation at a pre-defined point</u> so the polynomial can be uniquely defined by interpolation on the fixed set of public points.</p>
+<p>Then we can evaluate $n$ pre-defined public points as the codeword. E.g., $(\omega,\omega^2,\dots, \omega^n)$ for $n$-th root-of-unity $\omega^n=1 \mod p$.</p>
+<p>The <strong>minimal distance</strong> is $\Delta=n-k+1$ (indicating the least number of non-zeros) <u>since a degree $k-1$ polynomial has at most $k-1$ roots</u> (indicating the most number of zero evaluations).</p>
+<p>E.g., when $n=2k$, rate is $\frac 1 2$ and relative distance is $\frac 1 2$.</p>
+<p>It is pretty good in practice and is almost the best we can achieve.</p>
+<p>RS code is a linear code that the encoding algorithm can be represented as vector-matrix multiplication where the vector is the message and the <u>generator matrix can be derived from Fourier matrix.</u></p>
+<p>The <strong>encoding time</strong> is $O(n\log n)$ <u>using the fast Fourier transform (FFT).</u></p>
+<h1 id="Poly-commit-based-on-error-correcting-codes"><a href="#Poly-commit-based-on-error-correcting-codes" class="headerlink" title="Poly-commit based on error-correcting codes"></a>Poly-commit based on error-correcting codes</h1><p>Recall the polynomial commitment scheme we discussed in previous lectures. </p>
+<img src="https://s1.ax1x.com/2023/08/02/pPPPJrF.png" alt="poly-commit" style="zoom:43%;" />
+
+<ol>
+<li>keygen generates global parameters for $\mathbb{F}_p^{(\le d)}$.</li>
+<li>Prover commits to a univariate polynomial of degree $\le d$ .</li>
+<li>Later verifier requests to evaluate at point $u$.</li>
+<li>Prover opens $v$ with proof that $v=f(u)$ and $f\in \mathbb{F}_p^{(\le d)}$.</li>
+</ol>
+<h2 id="Reduce-PCS-to-Vec-Max-Product"><a href="#Reduce-PCS-to-Vec-Max-Product" class="headerlink" title="Reduce PCS to Vec-Max Product"></a>Reduce PCS to Vec-Max Product</h2><p>In the poly-commit based on error-correcting codes, we <u>write the polynomial coefficients in a matrix</u> of size $\sqrt{d}$ by $\sqrt{d}$.</p>
+<p>For simplicity, we assume $d$ is an exact power.</p>
+<img src="https://s1.ax1x.com/2023/08/02/pPPP12V.png" alt="Coefficient Matrix" style="zoom:53%;" />
+
+
+
+<p>Note that the <strong>vectorization of the above matrix</strong> forms the original vector of polynomial coefficients, that is:</p>
+
+$$
+[f_{1,1},f_{2,1},\dots, f_{\sqrt{d},1},\dots,f_{1,\sqrt{d}},\dots,f_{\sqrt{d},\sqrt{d}}]^{T}
+$$
+
+
+
+<p>Hence, the <strong>polynomial behind the matrix</strong> can be written with two indices:</p>
+
+$$
+f(u)=\sum_{i=1}^{\sqrt{d}}\sum_{j=1}^{\sqrt{d}} f_{i,j}u^{i-1+(j-1)\sqrt{d}}
+$$
+
+
+
+<p>Then the <strong>evaluation</strong> of $f(u)$ can be <u>viewed as two steps</u> as follows.</p>
+<img src="https://s1.ax1x.com/2023/08/02/pPPPGKU.png" alt="evaluation as two steps" style="zoom:50%;" />
+
+<p><font color=blue><u><b>Two steps of evaluation:</b></u></font> </p>
+<ol>
+<li><p><strong>(Vecor-Matrix Product)</strong> <u>Multiply a vector defined by point $u$</u> with the matrix of coefficients to get a vector of size $\sqrt{d}$.</p>
+<p> <img src="https://s1.ax1x.com/2023/08/02/pPPPUa9.png" alt="Vec-Mat Product"></p>
+</li>
+<li><p><strong>(Inner Product)</strong> Multiply the vector of size $\sqrt{d}$ <u>with another vector defined by point $u$</u> to obtain the final evaluation.</p>
+</li>
+</ol>
+<p>With this nice observation, we actually <strong>reduce the poly-commit to an argument for vector-matrix product.</strong></p>
+<p>Roughly speaking, <strong>prover</strong> can <u>only evaluate the first step</u> and sends a vector of size $\sqrt{d}$ as proof.</p>
+<p><strong>Verifier</strong> <u>checks whether the Vec-Mat product is correct</u> using proof system and <u>evaluates the second step locally</u>, which is an inner product of the Vec-Mat product and the vector defined by point $u$.</p>
+<p>As a result, the argument for Vec-Mat product gives us a polynomial commitment with $\sqrt{d}$ proof size.</p>
+<h2 id="Argument-for-Vec-Mat-Product"><a href="#Argument-for-Vec-Mat-Product" class="headerlink" title="Argument for Vec-Mat Product"></a>Argument for Vec-Mat Product</h2><p>Now our <strong>goal</strong> is to design a scheme to <u>test the Vec-Mat product without sending the matrix directly.</u></p>
+<h2 id="Commit"><a href="#Commit" class="headerlink" title="Commit"></a>Commit</h2><p>As usual, we need to commit to the polynomial.</p>
+<p>Here we instead <u>commit to an encoded matrix defined by the polynomial.</u></p>
+<p>We first use a linear code to encode the original matrix defined by the coefficients of polynomial.</p>
+<p>Concretely speaking, we <strong>encode each row with a linear code to compute an encoded matrix</strong> of size $\sqrt{d}\times n$ where $n$ is the size of the codeword.</p>
+<img src="https://s1.ax1x.com/2023/08/02/pPPPa5R.png" alt="Encode Rowwise" style="zoom:50%;" />
+
+<p>We will <u>use a linear code with constant rate</u> so that the <u>size of the encoded matrix is asymptotical to $d$.</u></p>
+<p>Then we can <strong>commit to each column of the encoded matrix using Merkle tree.</strong></p>
+<p>Recall the Merkle tree commitment introduced in <a href="/2023/07/18/zkp-lec4/" title="[Lecture 4]">[Lecture 4]</a>.</p>
+<img src="https://s1.ax1x.com/2023/08/02/pPPPwP1.png" alt="Commit Colwise" style="zoom:50%;" />
+
+<p>The root hash is served as the <u>commitment to the encoded matrix.</u></p>
+<p>Then verifier can request to <u>open each column individually</u> and checks whether the opened column is altered.</p>
+<p>It is worth noting that the <strong>key generation</strong> for this Merkle tree commitment is only <u>sampling a hash function</u>, resulting in a <u>constant size global parameters with no trusted setup.</u></p>
+<h2 id="Eval-and-Verify"><a href="#Eval-and-Verify" class="headerlink" title="Eval and Verify"></a>Eval and Verify</h2><p>We actually perform the evaluation together with verification.</p>
+<p>It consists of two tests, <strong>proximity test</strong> and <strong>consistency check</strong>.</p>
+<p>We fisrt consider <u>how a malicious prover could cheat in the commitment.</u></p>
+<p>A malicious prover can commit to a matrix of inappropriate size but it can be recognized easily by the Merkle tree proof.</p>
+<p>A <strong>malicious prover</strong> can <u>commit to an abitrary matrix</u> of specified size in which <u>each row is not a valid codeword.</u> </p>
+<p>E.g., a valid RS code is a vector of evaluations of a polynomial specified by the message.</p>
+<p>Hence, verifier uses the <strong>proxomity test</strong> to <u>test if the committed matrix indeed consists of $\sqrt{d}$ codewords.</u></p>
+<p>Having checked this proximity test, verifier is convinced that the committed matrix is nearly close to the encoded matrix defined by the original matrix of coefficients.</p>
+<p>Then verifier can move to the <strong>consistency check</strong> to <u>compute (and verifiy) the actual evaluation.</u></p>
+<h3 id="Step1-Proximity-Test"><a href="#Step1-Proximity-Test" class="headerlink" title="Step1: Proximity Test"></a>Step1: Proximity Test</h3><article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>  Ligero <a target="_blank" rel="noopener" href="https://eprint.iacr.org/2022/1608">[AHIV’2017]</a> and <a target="_blank" rel="noopener" href="https://eprint.iacr.org/2017/872">[BCGGHJ’2017]</a> are two independent works to introduce the proximity test. <br> Ligero proposed the so-called interleaved test using Reed-Solomon code with quasi-linear prover time.<br> [BCGGHJ’2017] instead used a linear-time encodable code to build the ideal linear commitment model, which is the first work to build SNARK with strictly linear prover time.<br> Note that the proximity test in these two works are proposed to build general-purpose SNARKs. Here we use it to build poly-commit as a specified protocol. </div> </article>
+
+
+
+<p>Ligero [<a target="_blank" rel="noopener" href="https://eprint.iacr.org/2022/1608">AHIV’2017</a>] and [<a target="_blank" rel="noopener" href="https://eprint.iacr.org/2017/872">BCGGHJ’2017</a>] are two independent works to introduce the proximity test. </p>
+<p>Ligero proposed the so-called interleaved test using Reed-Solomon code with quasi-linear prover time. </p>
+<p>[BCGGHJ’2017] instead used a linear-time encodable code to build the ideal linear commitment model, which is the first work to build SNARK with strictly linear prover time. </p>
+<p>Note that the proximity test in these two works are proposed to build general-purpose SNARKs. Here we use it to build poly-commit as a specified protocol.</p>
+<p>We first present the description of the proximity test as below.</p>
+<img src="https://s1.ax1x.com/2023/08/02/pPPP08x.png" alt="Proximity Test" style="zoom:50%;" />
+
+<ol>
+<li><strong>Verifier</strong> <u>samples a random vector</u> $r$ of size $\sqrt{d}$ and sends it to prover.</li>
+<li><strong>Prover</strong> returns the vector-matrix product of the random vector $r$ and the <u>encoded matrix.</u></li>
+<li><strong>Verifier</strong> requests to <u>open several random columns</u> and <strong>prover</strong> reveals them with Merkle tree proof.</li>
+<li><strong>Verifier</strong> performs <u>3 checks</u><ol>
+<li>The returned vector is a <u>codeword</u></li>
+<li>The <u>opened columns are consistent</u> with the committed Merkle tree.</li>
+<li>The <u>inner product</u> between $r$ and the opened column is consistent with the corresponding element of the returned vector.</li>
+</ol>
+</li>
+</ol>
+<p>The <strong>completeness</strong> is evident.</p>
+<p>The vec-mat product computed by the <strong>honest prover</strong> is indeed the <u>linear combination of rows (codewords) specified by the random vector chosen by the verifier.</u></p>
+<p>Recall the propery of the linear codes that a linear combination of codewords is a codeword.</p>
+<p>So these 3 checks will be passed by verifier.</p>
+<p>Let’s intuitively give the <strong>proof of soundness.</strong></p>
+<p>Assume for the <u>contradiction</u> that the malicious prover <u>commits to a fake matrix</u>, and computes the vec-mat product by this fake matrix.</p>
+<p><font color=blue><u><b>Soundness (Intuition):</b></u></font> </p>
+<ul>
+<li>If the <u>vector is correctly computed</u>, under our assumption, the product is <u>not a codeword</u>. → check 1 will be failed.</li>
+<li>If the <u>vector is false</u> meaning that the prover just returns an arbitrary codeword,  there are <u>many different locations from the correct answer.</u><ul>
+<li>By check 2, columns are as committed.</li>
+<li>Probability of passing check 3 is <u>extreamly small.</u></li>
+</ul>
+</li>
+</ul>
+<p>Let’s discuss <strong>the second case</strong> where the <u>vector sent by the prover is false</u> and $w=r^TC$ denotes the correct answer.</p>
+<img src="https://s1.ax1x.com/2023/08/02/pPPntld.png" alt="vector is false" style="zoom:50%;" />
+
+<p>In the <font color=blue><u><b>formal proof for soundness:</b></u></font>  [<a target="_blank" rel="noopener" href="https://eprint.iacr.org/2022/1608">AHIV’2017</a>], it defines a parameter $e&lt;\frac{\Delta}{4}$, which is related to the minimal distance $\Delta$, to <u>measure the distance between the committed matrix and the codeword space.</u></p>
+<p>Concretely speaking, $e$ measures the minimal distance between any row (of the committed matrix) and any codeword (in the codeword space).</p>
+<p>If the <u>committed (fake) matrix is $e$-far from any codeword</u> for $e&lt;\frac{\Delta}{4}$, then the <strong>probability</strong> that the <u>vec-mat product $w=r^T C$ is $e$-close to any codeword</u> is $\le \frac{e+1}{\mathbb{F}}$, which is extreamly small.</p>
+
+$$
+\operatorname{Pr}[w=r^TC\text{ is }e\text{-close to any codeword}]\le \frac{e+1}{\mathbb{F}}
+$$
+
+
+
+<p>Then we can rule out this case, and the <strong>remaining case</strong> is that the <u>correct answer $w=r^TC$ is $e$-far from any codeword.</u></p>
+<p><u>Under this condition, we know there are at least $e$ different positions</u> between the codeword sent by prover and the correct answer $w$.</p>
+<p>Then the probability that check 3 is true for $t$ random columns is bounded by $(1-\frac e n)^t$ where $\frac e n$ is <u>constant for the linear code with constant relative distance</u>, e.g. RS code. </p>
+
+$$
+\operatorname{Pr}[\text{check 3 is true for }t \text{ random columns}] \le (1-\frac{e}{n})^t
+$$
+
+
+
+<p>Hence, soundness probability can be reduced to <u>negligible</u> probability. That’s why we want linear codes with constant relative distance.</p>
+<h3 id="Optimization-for-Proximity-Test"><a href="#Optimization-for-Proximity-Test" class="headerlink" title="Optimization for Proximity Test"></a>Optimization for Proximity Test</h3><p>There is one optimization for the proximity test.</p>
+<p>Instead of sending the codeword, <strong>prover</strong> can <u>send the message behind the codeword to verifier.</u></p>
+<p>Note that the message is computed by the random vector and the original matrix defined by the polynomial coefficients.</p>
+<p>Then <strong>verifier</strong> can <u>encode the message to obtain the corresponding codeword</u> that is supposed to be sent by prover.</p>
+<p>This nice optimization <u>reduces the proof size</u> from $n$ to $k$.</p>
+<p>Moreover, there is <strong>no need</strong> for verifier to <u>perform the first check explicitly that the vector is a codeword</u> since the encoding is done by the verifier.</p>
+<p>We depict the optimized proximity test as below.</p>
+<img src="https://s1.ax1x.com/2023/08/02/pPPnN6A.png" alt="Optimization for Proximity Test" style="zoom:50%;" />
+
+<ol>
+<li><strong>Verifier</strong> samples a random vector $r$ of size $\sqrt{d}$ and sends it to prover.</li>
+<li><strong>Prover</strong> returns the vector-matrix product of the random vector $r$ and the <u>original matrix of coefficients.</u></li>
+<li><strong>Verifier</strong> <u>encodes the message to compute the codeword.</u></li>
+<li><strong>Verifier</strong> requests to open several random columns and <strong>prover</strong> reveals them with Merkle tree proof.</li>
+<li><strong>Verifier</strong> performs <u>2 checks</u><ol>
+<li><del>The returned vector is a codeword</del></li>
+<li>The opened columns are consistent with the committed Merkle tree.</li>
+<li>The inner product between $r$ and the opened column is consistent with the corresponding element of the returned vector.</li>
+</ol>
+</li>
+</ol>
+<h3 id="Step2-Consistency-Check"><a href="#Step2-Consistency-Check" class="headerlink" title="Step2: Consistency Check"></a>Step2: Consistency Check</h3><p>With the <strong>proximity test</strong>, the <u>verifier knows the committed matrix is close to an encoded matrix with overwhelming probability.</u></p>
+<p>Next we can <strong>perform the consistency check</strong> to really <u>test the evaluation of vec-mat product</u> between the vector defined by point $u$  and the original matrix of size $\sqrt{d}\times \sqrt{d}$.</p>
+<p>The consistency check is almost the same as the proximity test with the optimization mentioned above excetp that the vector is defined by point $u$ rather than a random vector $r$.</p>
+<p>Likewise, the verifier encodes the message to compute the codeword so the first check can be removed.</p>
+<p>Futhermore, the <strong>verifier</strong> can <u>use the same opened columns in the proximity test to perform the third check.</u></p>
+<p>The cosistency check is depicted as below where the first two checks can be removed.</p>
+<img src="https://s1.ax1x.com/2023/08/02/pPPndmt.png" alt="Consistency Check" style="zoom:50%;" />
+
+<p><font color=blue><u><b><strong>Knowledge Soundness (Intuition):</strong></b></u></font> </p>
+<p>In the consistency test, we actually need to prove the <strong>knowledge soundness.</strong></p>
+<p>By the proximity test, the committed matrix $C$ is close to an encoded matrix that can be uniquely decoded  to a matrix $F$ defined by  polynomial coefficients.</p>
+<p>Intuitively speaking, <u>there exists an extractor that extracts $F$ by Merkle tree commitment and decoding $C$,</u> s.t. $\vec{u}\times F=m$ with probability $1-\epsilon$.</p>
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>To put everything together, the poly-commit scheme based on linear code is described as below.</p>
+<p><font color=blue><u><b>PCS based on Linear Code:</b></u></font> </p>
+<ul>
+<li><strong>Keygen</strong>: sample a hash function</li>
+<li><strong>Commit</strong>:<ol>
+<li>encode the coefficient matrix $F$ of $f$ row-wise with a linear code</li>
+<li>compute the Merkle tree commitment col-wise</li>
+</ol>
+</li>
+<li><strong>Eval and Verify:</strong><ul>
+<li><strong>Proximity test</strong>: random linear combination of all rows, check its consistency with $t$ random columns</li>
+<li><strong>Consistency test</strong>: compute $\vec{u}\times F=m$, encode $m$ and check its consistency with $t$ random columns</li>
+<li><strong>Evaluate</strong> $f(u)=&lt;m,u’&gt;$ by verifier where $u’$ is another vector defined by point $u$.</li>
+</ul>
+</li>
+</ul>
+<p>An important thing to point out is that the <strong>proximity test is necessary</strong> for evaluation and verification although it is almost the same as the consistency test.</p>
+<p><strong>Suppose</strong> we only perform the consistency test, then the verifier checks consistency of the <u>inner-product of vector $\vec{u}$ and the random columns.</u></p>
+<p>But it<font color=red> <strong>dose not work</strong> </font>since vector $\vec{u}$ is defined in a very structured way.</p>
+<p>Intuitively speaking, it has to <strong>use random challenges</strong> chosen by the verifier to guarantee the consistency.</p>
+<p><font color=blue><u><b>Properties:</b></u></font> </p>
+<ul>
+<li>Keygen: $O(1)$, transparent setup with constant size $gp$.</li>
+<li>Commit:<ul>
+<li>Encoding: $O(d\log d)$ field multiplications using RS code, $O(d)$ using linear-time encodable codes.</li>
+<li>Merkle tree: $O(d)$ hashes, $O(1)$ commitment size.</li>
+</ul>
+</li>
+<li>Eval: $O(d)$ field multiplications</li>
+<li>Proof size: $O(\sqrt{d})$ (several vectors of size $\sqrt{d}$ )</li>
+<li>Verifier time: $O(\sqrt{d})$</li>
+</ul>
+<p>Look at the <strong>concrete performance</strong> in [<a target="_blank" rel="noopener" href="https://eprint.iacr.org/2021/1043">GLSTW’21</a>] with degree $d=2^{25}$ and linear-time encodable code.</p>
+<ul>
+<li>Commit: 36s</li>
+<li>Eval: 3.2s</li>
+<li>Proof size: 49MB</li>
+<li>Verifier time: 0.7s</li>
+</ul>
+<p>It is <u>excellent in practice</u> and <u>significantly faster than PCS based on pairing or discrete-log</u> (such as KZG, Bulletproofs) because it only uses linear operations without any exponentiations.</p>
+<h2 id="Related-Works"><a href="#Related-Works" class="headerlink" title="Related Works"></a>Related Works</h2><p>Let’s disscuss the following up-to-date works based on error-correcting codes.</p>
+<img src="https://s1.ax1x.com/2023/08/02/pPPnUOI.png" alt="Untitled" style="zoom:35%;" />
+
+<ul>
+<li>[<a target="_blank" rel="noopener" href="https://eprint.iacr.org/2020/1426">Bootle-Chiesa-Groth’20</a>]</li>
+</ul>
+<p>It <strong>proposed</strong> the <u>tensor query IOP</u> $&lt;f,(\vec{u}\otimes \vec{u}’)&gt;$, which evaluates inner-product of vector $f$ of size $\sqrt{d}$ and another vector generated by tensor product between two sub-vectors of size $\sqrt{d}$. (dimentsion 2)</p>
+<p>Note that this IOP only works for the product of specific form.</p>
+<p>Moreover, it <strong>generalizes to multiple dimentsions</strong> and performs the proximity test and consistency test dimension by dimension <u>with smaller proof size</u> $O(n^\epsilon)$ for constant $\epsilon&lt;1$.</p>
+<ul>
+<li>Brakedown [<a target="_blank" rel="noopener" href="https://eprint.iacr.org/2021/1043">GLSTW’21</a>]</li>
+</ul>
+<p>This work <strong>proposed</strong> the <u>polynomial commitment based on tensor query.</u></p>
+<p>As described above, we don’t use decoding algorithm at all in the poly-commit. The prover just sends the message and the verifier encodes the message to get the corresponding codeword.   It <u>gives relaxation on the design of the poly-commit which allows to use linear codes without efficient decoding algorithm.</u></p>
+<p><strong>Unfortunately</strong>, when we <u>prove the knowledge soundness</u>, it has to extract the matrix of polynomial coefficients from the committed encoded matrix in which <u>the efficient decoding is required</u>. If the decoding algorithm is not efficient, the extractor is not polynomial as well.</p>
+<p>Back to this work, the <strong>another contribution</strong> <u>is showing an alternative way to prove knowledge soundness without efficient decoding algorithm.</u></p>
+<p>As a result, it enables us to build poly-commit using any linear codes without efficient decoding algorithm.</p>
+<ul>
+<li>[<a target="_blank" rel="noopener" href="https://eprint.iacr.org/2020/1527">Bootle-Chiesa-Liu’21</a>]</li>
+</ul>
+<p>It improves proof size to $\text{poly}\log (n)$ with a proof composition of tensor IOP and PCP of proximity. [<a target="_blank" rel="noopener" href="https://link.springer.com/article/10.1007/s10472-009-9169-y">Mie’09</a>]</p>
+<ul>
+<li>Orion [<a target="_blank" rel="noopener" href="https://eprint.iacr.org/2022/1010">Xie-Zhang-Song’22</a>]</li>
+</ul>
+<p>It improves the proof size to $O(\log^2 n)$ with a proof composition of the code-switching technique [<a target="_blank" rel="noopener" href="https://eprint.iacr.org/2019/1062">Ron-Zewi-Rothblum’20</a>]</p>
+<p>Concretely, the proof size is 5.7MB for $d=2^{25}$, which is quite large in practice.</p>
+<h1 id="Linear-time-encodable-code-based-on-expanders"><a href="#Linear-time-encodable-code-based-on-expanders" class="headerlink" title="Linear-time encodable code based on expanders"></a>Linear-time encodable code based on expanders</h1><p>It is noteworthy that the following line of works all <strong>build SNARKs with linear prover</strong> <u>using the linear-time encodable code with constant relative distance.</u></p>
+<img src="https://s1.ax1x.com/2023/08/02/pPPnUOI.png" alt="Untitled" style="zoom:35%;" />
+
+<p>In the last segment, we are going to present the construction of linear-time encodable code based on expanders.</p>
+<p><strong>Linear-time encodable code</strong> is proposed by [<a target="_blank" rel="noopener" href="https://www.cs.yale.edu/homes/spielman/Research/ITsuperc.pdf">Spielman</a>’96] and generalized from binary to field by [<a target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.1145/2554797.2554815">Druk-Ishai’14</a>], which <u>relies on the expander graph.</u></p>
+<h2 id="Expander-Graph"><a href="#Expander-Graph" class="headerlink" title="Expander Graph"></a>Expander Graph</h2><p>Look at the following <u>bipartite graph</u> where each node on the left set has <u>3 outgoing edges</u> connecting to the nodes on the right edges and <u>every two nodes on the left set connect at least 5 nodes on the right set.</u></p>
+<article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>  Bipartite Graph (from wiki) <br> A bipartite graph is a graph whose vertices can be divided into two disjoint and independent sets U and V, that is, every edge connects a vertex in U to one in V. Vertex sets U and V are usually called the parts of the graph. </div> </article>
+
+<p>It is a <strong>good expander</strong> since <u>every two nodes on the left set have at most 6 outgoing edges.</u></p>
+<img src="https://s1.ax1x.com/2023/08/02/pPPnYSH.png" alt="Expander Graph" style="zoom:30%;" />
+
+<p>In terms of <u>encoding</u>, consider the <u>left nodes as message</u> where each symbol is put on a node and the <u>right nodes is the codeword</u>.</p>
+<p>The encoding of the message is to <u>compute for each right-side node the sum of nodes connected from the left set,</u> which can be represented as the vector-matrix multiplication between the message and the adjacent matrix of the graph so it is <u>a linear code.</u></p>
+<p>A <strong>nature question</strong> is <u>why we need such an expander graph to achieve linear codes with a good relative distance.</u></p>
+<p>Intuitively speaking, with such a good expander, <u>even a single non-zero node on the left set can be expanded to many non-zero nodes on the right set</u>, that is, it amplies the number of non-zeros (weight) from the message to the codeword, enabling us to achieve good relative distance.</p>
+<h2 id="Lossless-Expander"><a href="#Lossless-Expander" class="headerlink" title="Lossless Expander"></a>Lossless Expander</h2><article class="message message-immersive is-warning"> <div class="message-body"> <i class="fas fa-exclamation-triangle mr-2"></i> Note that the relative distance in the above simple example is not constant. </div> </article>
+
+<p>We are going to describe the lossless expander in a formal way.</p>
+<img src="https://s1.ax1x.com/2023/08/02/pPPnYSH.png" alt="Expander Graph" style="zoom:30%;" />
+
+<p>Let $|L|$ denote <u>the number of left nodes</u> and <u>the number of the right nodes</u> is $\alpha |L|$ for a constant $\alpha\in (0,1)$.</p>
+<p>The <u>degree of a left node</u> is denoted by $g$.</p>
+<p>Consider a good (almost perfect) expander that for every subset $S$ of nodes on the left, the <u>number of neighers</u> $|\Tau(S)|=g|S|$ for $|S|\le \frac{\alpha |L|}{g}$, which is bounded by the number of right nodes.</p>
+<p>But it is too good to achieve.</p>
+<p>We need to <u>relax</u> the equality and the boundary.</p>
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Lossless Expander:</strong></p>
+ </div> <div class="message-body"> 
+
+ For every subset $S$ of nodes on the left, the number of neighbors $|\Tau(S)|\ge (1-\beta)g|S|$ for $|S|\le \frac{\delta |L|}{g}$.( $\beta\rightarrow 0$, $\delta \rightarrow \alpha$ )
+
+ </div> </article> 
+
+<p>Likewise, the encoding on the lossless expander is to sum up the connected nodes from the left nodes for each right node to compute the codeword.</p>
+<h2 id="Recursive-Encoding"><a href="#Recursive-Encoding" class="headerlink" title="Recursive Encoding"></a>Recursive Encoding</h2><p>Then we move to the construction of linear-time encodable codes, which uses the recursive encoding with the lossless expander.</p>
+<p>The encoding algorithm is depicted as below.</p>
+<img src="https://s1.ax1x.com/2023/08/02/pPPhWWt.png" alt="Overview of Recursive Encoding" style="zoom:43%;" />
+
+<p>Let’s elaborate on the detailed procedure of encoding a message $m$ of size $k$ to a codeword of size $4k$ with rate $1/4$.</p>
+<p><font color=blue><u><b>Recursive Encoding:</b></u></font> </p>
+<ol>
+<li><u>Copy the message</u> as the first part of the final codeword.</li>
+<li><u>Apply the lossless expander</u> with $\alpha=\frac 1 2$ to compute the codeword $m_1$ of size $k/2$.</li>
+<li><u>Assume we already had an encoding algorithm</u> for message $m_1$ of size $k/2$ with rate $1/4$ and <u>good relative distance</u> $\Delta$, then we apply it to compute the codeword $c_1$ of size $2k$ as the second part of the final codeword.</li>
+<li><u>Apply another lossless expander</u> with $\alpha =\frac 1 2$ for messages of size $2k$ to compute the codeword $c_2$ of size $k$ as the third part.</li>
+<li>The final codeword is the concatenation $c=m|| c_1||c_2$</li>
+</ol>
+<p>The <strong>remaining thing</strong> is <u>how we get the encoding algorithm for messages of size $k/2$ with rate $1/4$ and good relative distance.</u></p>
+<p>That’s exactly the <strong>recursiving encoding</strong> that we just use the entire encoding algorithm for the message of size $k/2$.</p>
+<p>Hence, we <u>repeate the entire encoding algorithm</u> in recursion from $k/2,k/4,\dots$ until a constant size.</p>
+<p>Note that the <u>lossless expanders used in each iteration are different</u> since the size of message are different.</p>
+<p>Finally we can <u>use any code with good distance for a constant-size message</u>. E.g., Reed-Solomon code.</p>
+<h2 id="Distance-of-the-Code"><a href="#Distance-of-the-Code" class="headerlink" title="Distance of the Code"></a>Distance of the Code</h2><p>The recursive way of encoding enables to <u>achieve a constant relative distance:</u></p>
+
+$$
+\Delta'=\min \{\Delta,\frac{\delta}{4g}\}
+$$
+
+
+
+<p>where $\Delta$ is the relative distance of the <u>code used in the middle</u> from $k/2$ to $2k$ and $\frac{\delta}{4g}$ depends on the <u>expander graph.</u></p>
+<p><font color=blue><u><b>Proof of relative distance (case by case):</b></u></font> [<a target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.1145/2554797.2554815">Druk-Ishai’14</a>]</p>
+<ol>
+<li>If weight of $m$ is larger than $4k\Delta’$, then the relative distance is larger than $\frac{4k\Delta’}{4k}=\Delta’$.<br>→ Done. It means that for all messages with large weight, we automatically get codewords with large weight.</li>
+<li> If weight of $m\le 4k\Delta'\le \frac{\delta k}{g}$, the condition of the first lossless expander  holds. (since $\Delta'\le \frac{\delta}{4g}$ )
+<ol>
+<li>Let $S$ be the set of non-zero nodes in $m$, then we have $|\Tau(S)|\ge (1-\beta)g|S|$.</li>
+<li>We can set $g\ge 10$ and $\beta &lt; 0.1$, then at least $(1-2\beta)g|S| &gt; 8|S|&gt;0$ vertices in Hamming ball have a unique neighbor in $S$.</li>
+<li>Hence, $m_1$ (the output of this lossless expander) is <u>non-zero</u>.</li>
+<li>After applying the encoding for $m_1$ of size $k/2$ with relative distance $\Delta$, the wight of $c_1$ $\ge 2k\Delta\ge 2k\Delta’$.<br>(The second inequality holds by the definition of min).</li>
+</ol>
+</li>
+<li>If the weight of $c_1$ is larger than $4k\Delta’$, then the relative distance is larger than $\Delta’$.<br>→Done</li>
+<li>Else, weight of $c_1$ is $\le 4k\Delta’&lt;\frac{\delta2k}{g}$, the condition of the second lossless expander holds. <ol>
+<li>Let $S’$ be the set of non-zero nodes in $c_1$, then we can show the weight of $c_2$ is at least $|\Tau(S’)|\ge (1-\beta)g|S’|&gt;8|S’|&gt;16k\Delta’   &gt;(4k)\Delta’$.</li>
+</ol>
+</li>
+</ol>
+<h2 id="Sampling-of-the-Lossless-Expander"><a href="#Sampling-of-the-Lossless-Expander" class="headerlink" title="Sampling of the Lossless Expander"></a>Sampling of the Lossless Expander</h2><p>With lossless expander, we can build the linear-time encodable codes with constant relative distance.</p>
+<p>The last piece of the puzzle is <u>how to construct the lossless expander.</u></p>
+<p>[<a target="_blank" rel="noopener" href="https://dash.harvard.edu/bitstream/handle/1/3330492/Vadhan_CondLosslessExpanders.pdf">Capalbo-Reingold-Vadhan-Widgerson’2002</a>] proposed an <u>explicit construction</u> of lossless expander.</p>
+<p>Note that being explicit is <u>deterministic</u>.</p>
+<p><u>Unfortunately, it has large hidden constant</u> so the concrete efficiency is not good.</p>
+<p><strong>An alternative way</strong> is <u>random sampling</u> since a random graph is supposed to have good expansion.</p>
+<p>Since the sample space is polynomial, there <u>is a $1/\text{poly}(n)$ failure probability</u> instead of negligible probability.</p>
+<h2 id="Improvements-of-the-Code"><a href="#Improvements-of-the-Code" class="headerlink" title="Improvements of the Code"></a>Improvements of the Code</h2><ul>
+<li>Brakedown [<a target="_blank" rel="noopener" href="https://eprint.iacr.org/2021/1043">GLSTW’21</a>]</li>
+</ul>
+<p>Instead of the plain summations when encoding, it uses <u>random summations</u>, which assign a random weight for each edge and performs the weighted summation,  to significantly boost the distance.</p>
+<ul>
+<li>Orion  [<a target="_blank" rel="noopener" href="https://eprint.iacr.org/2022/1010">Xie-Zhang-Song’22</a>]</li>
+</ul>
+<p>It proposes <u>an expander testing with a negligible failure probability via maximum density of the graph.</u></p>
+<hr>
+<p>Let’s sum up the pros and cons of the polynomial commitment (and SNARK) based on linear code.</p>
+<ul>
+<li>Pros<ul>
+<li>Transparent setup: $O(1)$</li>
+<li>Commit and Prover time: $O(d)$ field additions and multiplications</li>
+<li>Plausibly post-quantum secure</li>
+<li>Field agnostic<br>It means that we can use any field.</li>
+</ul>
+</li>
+<li>Cons<ul>
+<li>Proof size: $O(\sqrt{d})$, MBs</li>
+</ul>
+</li>
+</ul>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Cryptography-ZKP」: Lec7 Poly-commit based on ECC</p><p><a href="https://f7ed.com/2023/08/01/zkp-lec7/">https://f7ed.com/2023/08/01/zkp-lec7/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2023-08-02</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2023-08-02</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Cryptography/">Cryptography, </a><a class="link-muted" rel="tag" href="/tags/ECC/">ECC, </a><a class="link-muted" rel="tag" href="/tags/Poly-commit/">Poly-commit, </a><a class="link-muted" rel="tag" href="/tags/Bulletproofs/">Bulletproofs </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2024/12/10/stanford-cs250-ecc-lec1/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Algebraic ECCs」: Lec1 Basics of ECCs</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2023/07/25/zkp-lec6/"><span class="level-item">「Cryptography-ZKP」: Lec6 Poly-commit based on Pairing and Discret-log</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "a7c85403683a45c6e9b6bb97d190ee8d",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">71</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">139</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Background"><span class="level-left"><span class="level-item">1</span><span class="level-item">Background</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Error-correcting-Code"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">Error-correcting Code</span></span></a></li><li><a class="level is-mobile" href="#Linear-Code"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">Linear Code</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Reed-Solomon-Code"><span class="level-left"><span class="level-item">1.2.1</span><span class="level-item">Reed-Solomon Code</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Poly-commit-based-on-error-correcting-codes"><span class="level-left"><span class="level-item">2</span><span class="level-item">Poly-commit based on error-correcting codes</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Reduce-PCS-to-Vec-Max-Product"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">Reduce PCS to Vec-Max Product</span></span></a></li><li><a class="level is-mobile" href="#Argument-for-Vec-Mat-Product"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">Argument for Vec-Mat Product</span></span></a></li><li><a class="level is-mobile" href="#Commit"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">Commit</span></span></a></li><li><a class="level is-mobile" href="#Eval-and-Verify"><span class="level-left"><span class="level-item">2.4</span><span class="level-item">Eval and Verify</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Step1-Proximity-Test"><span class="level-left"><span class="level-item">2.4.1</span><span class="level-item">Step1: Proximity Test</span></span></a></li><li><a class="level is-mobile" href="#Optimization-for-Proximity-Test"><span class="level-left"><span class="level-item">2.4.2</span><span class="level-item">Optimization for Proximity Test</span></span></a></li><li><a class="level is-mobile" href="#Step2-Consistency-Check"><span class="level-left"><span class="level-item">2.4.3</span><span class="level-item">Step2: Consistency Check</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Summary"><span class="level-left"><span class="level-item">2.5</span><span class="level-item">Summary</span></span></a></li><li><a class="level is-mobile" href="#Related-Works"><span class="level-left"><span class="level-item">2.6</span><span class="level-item">Related Works</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Linear-time-encodable-code-based-on-expanders"><span class="level-left"><span class="level-item">3</span><span class="level-item">Linear-time encodable code based on expanders</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Expander-Graph"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">Expander Graph</span></span></a></li><li><a class="level is-mobile" href="#Lossless-Expander"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">Lossless Expander</span></span></a></li><li><a class="level is-mobile" href="#Recursive-Encoding"><span class="level-left"><span class="level-item">3.3</span><span class="level-item">Recursive Encoding</span></span></a></li><li><a class="level is-mobile" href="#Distance-of-the-Code"><span class="level-left"><span class="level-item">3.4</span><span class="level-item">Distance of the Code</span></span></a></li><li><a class="level is-mobile" href="#Sampling-of-the-Lossless-Expander"><span class="level-left"><span class="level-item">3.5</span><span class="level-item">Sampling of the Lossless Expander</span></span></a></li><li><a class="level is-mobile" href="#Improvements-of-the-Code"><span class="level-left"><span class="level-item">3.6</span><span class="level-item">Improvements of the Code</span></span></a></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Algebraic ECCs」: Lec4 Singleton + Plotkin Bounds and RS Code - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="In this series, I will be learning Algebraic Error Correcting Codes, lectured by Mary Wootters. The lecture videos are available here. Feedback and sugguestions are always welcome! ^ - ^    Top"><meta property="og:type" content="blog"><meta property="og:title" content="「Algebraic ECCs」: Lec4 Singleton + Plotkin Bounds and RS Code"><meta property="og:url" content="https://f7ed.com/2025/01/12/stanford-cs250-ecc-lec4/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="In this series, I will be learning Algebraic Error Correcting Codes, lectured by Mary Wootters. The lecture videos are available here. Feedback and sugguestions are always welcome! ^ - ^    Top"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/stanford-cs250-ecc-lec4-thumbnail.png"><meta property="article:published_time" content="2025-01-12T16:00:00.000Z"><meta property="article:modified_time" content="2025-01-31T12:29:41.123Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Cryptography"><meta property="article:tag" content="ECC"><meta property="article:tag" content="Singleton Bound"><meta property="article:tag" content="Plotkin Bound"><meta property="article:tag" content="RS Code"><meta property="article:tag" content="GRS Code"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/stanford-cs250-ecc-lec4-thumbnail.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2025/01/12/stanford-cs250-ecc-lec4/"},"headline":"「Algebraic ECCs」: Lec4 Singleton + Plotkin Bounds and RS Code","image":["https://f7ed.com/gallery/thumbnails/stanford-cs250-ecc-lec4-thumbnail.png"],"datePublished":"2025-01-12T16:00:00.000Z","dateModified":"2025-01-31T12:29:41.123Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"In this series, I will be learning Algebraic Error Correcting Codes, lectured by Mary Wootters. The lecture videos are available here. Feedback and sugguestions are always welcome! ^ - ^    Top"}</script><link rel="canonical" href="https://f7ed.com/2025/01/12/stanford-cs250-ecc-lec4/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Algebraic ECCs」: Lec4 Singleton + Plotkin Bounds and RS Code</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2025-01-12T16:00:00.000Z" title="2025-01-12T16:00:00.000Z">2025-01-13</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2025-01-31T12:29:41.123Z" title="2025-01-31T12:29:41.123Z">2025-01-31</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Cryptography-ECCs/">Cryptography-ECCs</a></span><span class="level-item"><i class="far fa-clock"></i> 27 minutes read (About 4052 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><article class="message message-immersive is-info">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="message-body">
+<i class="fas fa-info-circle mr-2"></i>
+    In this <a href="/categories/Cryptography-ECCs">series</a>, I will be learning <strong>Algebraic Error Correcting Codes</strong>, lectured by Mary Wootters. The lecture videos are available <a target="_blank" rel="noopener" href="https://youtube.com/playlist?list=PLkvhuSoxwjI_UudECvFYArvG0cLbFlzSr">here</a>. Feedback and sugguestions are always welcome! ^ - ^
+</div>
+</article>
+
+<p><b>Topics Covered:</b></p>
+<ul>
+<li>Singleton Bound</li>
+<li>Plotkin Bound</li>
+<li>Reed-Solomon Codes</li>
+<li>Dual View of RS Codes</li>
+<li>Generalized RS Code</li>
+</ul>
+<span id="more"></span>
+
+<p>In the previous lecture, we explored the GV bound and the Hamming bound in the asymptotic setting where $n,k,d$ gets big. We would like to push the GV bound as much up as possible while at the same time push down the Hamming bound as much as possible.</p>
+<img src="https://s21.ax1x.com/2025/01/13/pEPjyb4.png" alt="image.png" style="zoom:40%;" />
+
+<p>Today, we are going to learn two additional bounds, <strong>the Singleton and Plotkin bounds</strong>, which narrow down the yellow region a little bit.</p>
+<p>Additionally, we will learn Reed Solomon codes, which meet the Singleton bound.</p>
+<h1 id="Singleton-Bound"><a href="#Singleton-Bound" class="headerlink" title="Singleton Bound"></a><strong>Singleton Bound</strong></h1> <article class="message is-info"> <div class="message-header">  Singleton Bound:  </div> <div class="message-body">  If $\mathcal{C}$ is an $(n,k,d)_q$ code, then  $$ k\le n-d+1 $$   </div> </article> 
+
+
+
+<p>Before proving the Singleton bound, let’s  examine what it looks like. The Singleton bound states that $k\le n-d+1$ for an $(n,k,d)_q$ code. In the asymptotic setting, this translates to<br>$$<br>R\le 1-\delta<br>$$</p>
+<p>as illustrated below:</p>
+<img src="https://s21.ax1x.com/2025/01/13/pEPj02V.png" alt="image.png" style="zoom:50%;" />
+
+<p>The purple line represents the <u>Singleton bound for binary codes</u> ($q=2$). This implies that all points above the Singleton bound are unachievable, which we already know from the Hamming bound. Hence, <u>for $q=2$, the Singleton bound is strictly weaker than the Hamming bound</u>, despite its simplicity. </p>
+<p>However, <u>when $q\to \infty$, the Singleton bound can be better than the Hamming bound</u>. For $q&gt;2$, the Hamming bound shifts up while the Singleton bound stays the same as illustrated below:</p>
+<img src="https://s21.ax1x.com/2025/01/13/pEPjcVJ.png" alt="image.png" style="zoom:30%;" />
+
+<p>This shows that the region to the bottom right (below the Hamming bound but above the Singleton bound) becomes unachievable. This is information we cannot infer from the Hamming bound alone.</p>
+<p>Now, let’s prove the Singleton bound.</p>
+<p><b><font color=blue><u><i> Proof of the Singleton Bound: </i></u></font></b></p>
+<ul>
+<li>For a codeword $c=(x_1,\dots, x_n)\in \mathcal{C}$, consider throwing out the last $d-1$ coordinates.
+  
+    $$
+    c=(\underbrace{x_1, x_2, \dots, x_{n-d+1}}_{\text{call this }\varphi(c)\in \Sigma^{n-d+1}}, \underbrace{x_{n-d+2}, \dots, x_n}_{\text{get rid of these}})
+    $$
+    
+    Define the first $n-d+1$ coordinates as $\varphi(c)\in \Sigma^{n-d+1}$.  
+</li>
+<li><p>Now, we define <strong>a new code:</strong></p>
+<p>  $$<br>  \tilde{\mathcal{C}}={\varphi(c):c\in \mathcal{C}}<br>  $$</p>
+<p>   which is the set of all $\varphi(c)$ for every codeword $c\in \mathcal{C}$. Thus, $\tilde{\mathcal{C}}\subseteq \Sigma^{n-d+1}$.</p>
+</li>
+<li><p>We derive two key claims:</p>
+<ul>
+<li>Claim 1: $|\mathcal{C}|=|\tilde{\mathcal{C}}|$.<br>If not, then there must be a collision: $\exists c, c’\in \mathcal{C}, c\ne c’$ such that $\varphi(c)=\varphi(c’)$. This implies that $c$ and $c’$ differ only in their last $d-1$ coordinates, meaning  $\Delta(c, c’)\le d-1$, which contradicts the distance $d$ of the original code.</li>
+<li>Claim 2: $|\tilde{\mathcal{C}}|\le q^{n-d+1}$.<br>This follows because $\tilde{\mathcal{C}}\subseteq \Sigma^{n-d+1}$.</li>
+</ul>
+</li>
+<li><p>Combining these two claims, we have: $|\mathcal{C}|=q^k\le q^{n-d+1}$. Taking log base $q$ gives us $k\le n-d+1$.</p>
+</li>
+<li><p>$\blacksquare$</p>
+</li>
+</ul>
+<h1 id="Plotkin-Bound"><a href="#Plotkin-Bound" class="headerlink" title="Plotkin Bound"></a>Plotkin Bound</h1><p>Recall that the GV bound only works up to the relative distance $\delta=d/n\le 1-1/q$. </p>
+<p>Hence, as depicted below, there is a gap between $\delta\in (1-1/q, 1)$. We are wondering <u>if it is possible to have codes with relative distance greater than $1-1/q$ and rate greater than $0$.</u></p>
+<img src="https://s21.ax1x.com/2025/01/13/pEPjw80.png" alt="image.png" style="zoom:70%;" />
+
+<p><strong>Unfortunately, the answer is no.</strong> This is what the Plotkin bound tells us:</p>
+<article class="message is-info"> <div class="message-header"> Plotkin Bound: </div> <div class="message-body"> Let $\mathcal{C}$ be a $(n, k, d)_q$ code. <br> 1. If $d=(1-{1/q})\cdot n$, then $|\mathcal{C}|\le 2\cdot q\cdot n$. <br> 2. If $d>(1-1/q)\cdot n$, then $|\mathcal{C}|\le \frac{d}{d-(1-1/q)\cdot n}$. </div> </article>
+
+<p>This implies that the asymptotic rate $R=\frac{\log_q|\mathcal{C}|}{n}$ approaches to $0$ as $n\to \infty$. </p>
+<p>Thus, <u>in order to have a constant-rate code, we must have $d&lt;(1-1/q)\cdot n$.</u></p>
+<blockquote>
+<p>The proof of the Plotkin bound is omitted in class. For details, refer to “Essential Coding Theory”, Section 4.4.</p>
+</blockquote>
+<p>Instead, we prove a <strong>corollary</strong>, which extends the Plotkin bound and achieves a trade-off when distance $\delta &lt; 1 - 1/q$.</p>
+<article class="message is-info"> <div class="message-header"> Corollary of the Plotkin Bound: </div> <div class="message-body"> Let $\mathcal{C}$ be a family of codes of rate $R$ and relative distance $\delta< 1-1/q$. Then: $$ R\le 1-\left({q\over q-1}\right )\cdot \delta + o(1) $$ where $o(1)$ can be dropped since we are considering a family of codes with $n,k,d\to \infty$. </div> </article>
+
+<p>Before proving this corollary, let’s look at what the Plotkin bound looks like when $q=2$.</p>
+<img src="https://s21.ax1x.com/2025/01/13/pEPjBvT.png" alt="image.png" style="zoom:50%;" />
+
+<p>The <strong>green line</strong> represents the Plotkin bound for binary codes ($q=2$). <u>When $\delta$ is small, the Plotkin bound is a little worse than the Hamming bound. But when $\delta$ gets larger, it is better than the Hamming bound.</u></p>
+<p>When $q&gt;2$, the Plotkin bound is also a straight line ending at $\delta=1-1/q$, which is also  the endpoint of the GV bound.</p>
+<img src="https://s21.ax1x.com/2025/01/13/pEPjga9.png" alt="image.png" style="zoom:47%;" />
+
+<p><font color=blue><u><b><i>Proof of Corollary of Plotkin Bound:</i></b></u></font></p>
+<ul>
+<li><p>Assuming the Plotkin Bound holds.</p>
+</li>
+<li><p>Choose $n’=\lfloor{dq \over q-1}\rfloor-1$ such that $d&gt;(1-1/q)\cdot n’$.<br>Notice that $n’&lt;{dq\over q-1}$, so $d&gt;(1-1/q)\cdot n’$. This will be useful when applying the Plotkin bound.</p>
+</li>
+<li><p>For all $x\in \Sigma^{n-n’}$, define <strong>a new code</strong> $\mathcal{C}_x$: 
+  
+    $$
+    \mathcal{C}_x=\{(\underbrace{c_{n-n'+1}, \dots, c_n}_{n'}): c\in \mathcal{C} \text{ with }(\underbrace{c_1, \dots, c_{n-n'}}_{n-n'})=x\}
+    $$
+    
+    which is the set of <strong>ENDs</strong> (the last $n’$ symbols) of codewords that <strong>BEGIN</strong> with $x$. </p>
+</li>
+<li><p>Now $\mathcal{C}_x$ has distance $\ge d$ with block length $n’&lt;{d\over 1-1/q}$.</p>
+<ul>
+<li><p>Why is this true?</p>
+</li>
+<li><p>For any two different codeword $c, c’\in \mathcal{C}$, they must have distance from each other at least $d$. If they have the same first $n-n’$ symbols denoted by $x$, they corresponds to the codewords in $\mathcal{C}_x$.</p>
+  <img src="https://s21.ax1x.com/2025/01/13/pEPjsrF.png" alt="image.png" style="zoom:40%;" />
+</li>
+<li><p>Thus, their distance must come from the end part, meaning that $\mathcal{C}_x$ also has the distance $\ge d$.</p>
+</li>
+</ul>
+</li>
+<li><p>Applying the Plotkin bound for $\mathcal{C}_x$ with $d&gt;(1-1/q)\cdot n’$, we have</p>
+<p>  $$<br>  |\mathcal{C}_x|\le {d\over d-(1-1/q)\cdot n’}= {qd\over qd - (q-1)\cdot n’}\le qd<br>  $$</p>
+<p>  The second inequality follows by the fact that the denominator $qd-(q-1)\cdot n’$ is an integer $&gt;0$. Thus, in particular, it is $\ge 1$.</p>
+</li>
+<li><p>We can plug this bound into the original code $\mathcal{C}$ since each codeword in $\mathcal{C}$ shows in only a certain $\mathcal{C}_x$.
+  
+    $$
+    \begin{align}
+    |\mathcal{C}|
+    =\sum_{x\in \Sigma^{n-n'}}|\mathcal{C}_x|
+    &\le q^{n-n'} \cdot qd \\
+    &=q^{(n-\lfloor {qd\over q-1}\rfloor +1)}\cdot qd\\
+    &=\exp_q(n-{qd\over q-1} + o(n))\\
+    &=\exp_q(n (1-\delta\cdot ({q\over q-1})+o(1))
+    \end{align}
+    $$
+    
+    </p>
+<p>  where the third equality captures the floor operation and constant by $o(n)$.</p>
+</li>
+<li><p>Taking log base $q$ to the both sides, we have $R\le 1-\delta\cdot ({q\over q-1}+o(1))$ as desired.</p>
+</li>
+<li><p>$\blacksquare$</p>
+</li>
+</ul>
+<h1 id="Discussion-of-Two-Bounds"><a href="#Discussion-of-Two-Bounds" class="headerlink" title="Discussion of Two Bounds"></a>Discussion of Two Bounds</h1><p>Both <u>the Singleton and Plotkin bounds indicate the impossible results.</u> They demonstrate that what trade-off between the distance and rate is impossible while the GV bound shows the possible trade-off.</p>
+<p>As depicted below, the Plotkin bounds seems strictly better than the Singleton bound.</p>
+<p>Why would we bother to discuss the Singleton bound?</p>
+<img src="https://s21.ax1x.com/2025/01/13/pEPjga9.png" alt="image.png" style="zoom:47%;" />
+
+<p>On one hand, it is true.</p>
+<p>But one the other hand, we’ll see <u>a family of codes that indeed achieve the Singleton bound.</u></p>
+<p>Before we get there, you might think it impossible given what we’ve just stated that the Singleton bound shows the impossible results. We table the discussion in the next section.</p>
+<article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>  The trick here is the alphabet size $q$ will be growing with $n$. </div> </article>
+
+<h1 id="Reed-Solomon-Codes"><a href="#Reed-Solomon-Codes" class="headerlink" title="Reed-Solomon Codes"></a>Reed-Solomon Codes</h1><p>Reed-Solomon code is a family of codes that achieve the Singleton bound while admitting efficient error-correcting algorithm. This code is widely used in practice.</p>
+<p>Before getting into Reed-Solomon codes, let’s first discuss the polynomials over finite fields and the Vandermonde matrix.</p>
+<p><strong><u>Polynomial:</u></strong></p>
+<p>A (univariate) polynomial in variable $X$ over the finite field $\mathbb{F}_q$ of degree $d$ is of the form:</p>
+<p>$$<br>f(X)=a_0+a_1\cdot X + \dots a_d\cdot X^d<br>$$</p>
+<p>where each coefficient $a_i\in \mathbb{F}_q$ and the top coefficient $a_d\ne 0$.</p>
+<p>The set of all univariate polynomials with coefficients in $\mathbb{F}_q$ is denoted by $\mathbb{F}_q[X]$.</p>
+<p>Polynomials over finite fields behave similarly to those over $\mathbb{R}$.</p>
+<p>There is a simple but super useful fact about polynomials that <u>low-degree polynomial do not have too many roots.</u></p>
+<p><font color=blue><u><b>Fact:</b></u></font></p>
+<p>A non-zero polynomial of $f$ of degree $d$ over $\mathbb{F}_q$ has at most $d$ roots.</p>
+<p><font color=blue><u><b><i><em>Proof Sketch:</em></i></b></u></font></p>
+<ul>
+<li>If $f(\beta)=0$, then $(x-\beta)\mid f$.</li>
+<li>If $f$ has $d+1$ (distinct) $\beta_1,\dots, \beta_{d+1}$ roots, then $(x-\beta_1)(x-\beta_2)\dots(x-\beta_{d+1})\mid f$ .</li>
+</ul>
+<p>This leads to a contradiction because the grand product on the left has degree $d+1$, while $f(X)$ has degree of $d$.</p>
+<p><u>Example:</u></p>
+<p>Consider the field  $\mathbb{F}_3=\{0, 1, 2\}$:</p>
+<ul>
+<li>$f(X)=X^2-1$ has two roots $[f(2)=f(1)=0]$</li>
+<li>$f(X)=X^2+2X+1$ has one root $[f(2)=0]$</li>
+<li>$f(X)=X^2+1$ has zero root</li>
+</ul>
+<p>Note: The polynomial $X^2+1$ <strong>DOES</strong> have a root over $\mathbb{F}_2$, showing that the choice of the field matters.</p>
+<h2 id="Vandermonde-Matrix"><a href="#Vandermonde-Matrix" class="headerlink" title="Vandermonde Matrix"></a>Vandermonde Matrix</h2><p>Next, we will explore some useful facts about Vandermonde matrix.</p>
+<p><font color=blue><u><b>Vandermonde matrix:</b></u></font></p>
+A Vandermonde matrix has the form
+
+$$
+V=\left[\begin{array}{c}
+1 & \alpha_1 & \alpha_1^2 & \dots & \alpha_1^m \\
+1 & \alpha_2 & \alpha_2^2 & \dots & \alpha_2^m \\
+1 & \alpha_3 \\
+\vdots \\
+1 & \alpha_n & \alpha_n^2 & \dots & \alpha_n^m 
+
+\end{array}\right]
+$$
+
+where $\alpha_1, \dots, \alpha_n\in \mathbb{F}_q$ are distinct. Aka, $V_{ij}=\alpha_i^{j-1}$. 
+
+<article class="message is-info"> <div class="message-header"> Theorem: </div> <div class="message-body"> A square Vandermonde matrix is invertible. </div> </article>
+
+<p><font color=blue><u><i>Proof 1:</i></u></font></p>
+<ul>
+<li><p>Consider a square Vandermonde matrix $V\in \mathbb{F}^{n\times n}$.</p>
+</li>
+<li><p>Suppose $\vec{a}=(a_0, \dots, a_n)$ is a vector. Then $V\cdot \vec{a}$ can be expressed as
+  
+    $$
+    V\cdot \vec{a}=\left (
+    \begin{array}{c}
+    \sum_{i=0}^{n-1} a_i\cdot \alpha_1^i \\
+    \sum_{i=0}^{n-1} a_i\cdot \alpha_2^i \\
+    \vdots \\
+    \sum_{i=0}^{n-1} a_i\cdot \alpha_n^i
+    \end{array}
+    \right )=\left (
+    \begin{array}{c}
+    f(\alpha_1)\\
+    f(\alpha_2)\\
+    \vdots \\
+    f(\alpha_n)
+    \end{array}
+    \right )
+    $$
+    
+    where $f(X)=a_0+a_1X+\dots a_{n-1}X^{n-1}$.</p>
+</li>
+<li><p>To prove that the Vandermonde matrix is invertible, we’d like to show:<br>if $V\cdot \vec{a}=0$, then $\vec{a}$ itself must be $0$.</p>
+</li>
+<li><p>This is true because</p>
+<ul>
+<li><strong>Case 1</strong>: If $f$ is a zero polynomial (i.e., $\vec{a}$ itself is the zero vector), it is clear that $V\cdot \vec{a}=0$.</li>
+<li><strong>Case 2:</strong> If $f$ is a non-zero polynomial (i.e., $\vec{a}$ is a non-zero vector), then $f(X)$ has degree at most $n-1$ and cannot have $n$ roots. So, we have $V\cdot \vec{a}\ne 0$.</li>
+</ul>
+</li>
+<li><p>Hence, $\text{Ker}(V)=\emptyset$, so $V$ is invertible.</p>
+</li>
+<li><p>$\blacksquare$</p>
+</li>
+</ul>
+<p><font color=blue><u><i>Proof 2:</i></u></font></p>
+<p>It can be proven by its determinate.</p>
+<p>The determinate of a Vandermonde matrix is</p>
+<p>$$<br>\det(V)=\prod_{1\le i&lt;j\le n}(a_i-a_j)\ne 0<br>$$</p>
+<p>since $a_i\ne a_j$ for any $i\ne j$. $\blacksquare$</p>
+<article class="message is-info"> <div class="message-header"> Corollary: </div> <div class="message-body"> Any square <b>contiguous</b> submatrix of a Vandermonde matrix is invertible. </div> </article>
+
+ <article class="message message-immersive is-warning"> <div class="message-body"> <i class="fas fa-exclamation-triangle mr-2"></i>  <b>Caveat</b>: If one of the evaluation points is 0, then the submatrix must include part of the all-ones column for it to be invertible. Otherwise, it is not inveritble.  </div> </article> 
+
+<p><font color=blue><u><i>Proof:</i></u></font></p>
+<p>A $(r+1)\times (r+1)$   square submatrix takes the following form:
+
+$$
+\left[
+\begin{array}{c}
+\alpha_i^j & \alpha_i^{j+1} & \dots &\alpha_i^{j+r-1} \\ 
+\alpha_{i+1}^j & \alpha_{i+1}^{j+1} & \dots &\alpha_{i+1}^{j+r-1} \\
+\vdots \\
+\alpha_{i+r}^j & \alpha_{i+r}^{j+1} & \dots & \alpha_{i+r}^{j+r}
+\end{array}
+\right]=D\cdot V 
+$$
+
+where:</p>
+<ul>
+<li>$D$ is a diagonal matrix with <strong>non-zero</strong> diagonal entries $\alpha_i^j, \dots, a_{i+r}^j$,</li>
+<li>$V$ is a $(r+1)\times (r+1)$ Vandermonde matrix.</li>
+</ul>
+<p>The invertibility of $D\cdot V$ depends on the invertibility of both $D$ and $V$:</p>
+<ul>
+<li>$D$ is invertible if all diagonal entries are non-zero. This is guaranteed if either $j=0$ or $a_i\ne 0$ for all $i$, as required in the caveat.</li>
+<li>$V$ is invertible by the aforementioned theorem.</li>
+</ul>
+<p>$\blacksquare$</p>
+<p>These facts about Vandermonde matrices will be useful.</p>
+<p>First, they imply  that “polynomial interpolation works over $\mathbb{F}_q$”.</p>
+<p><font color=blue><u><b>Theorem:</b></u></font></p>
+<p>Given $(\alpha_i, y_i)\in \mathbb{F}_q\times \mathbb{F}_q$ for $i=1,\dots, d+1$, there is a unique degree-$d$ polynomial $f$ so that $f(\alpha_i)=y_i$ for $\forall i$.</p>
+<p><font color=blue><u><i>Proof: </i></u></font></p>
+<p>If $f(X)=a_0+a_1X+\dots+a_dX^d$, then the requirement that $f(\alpha_i)=y_i$ for all $i$ can be written as $V\cdot \vec{a}=\vec{y}$, where $V$ is a square Vandermonde matrix.</p>
+<p>Hence, $\vec{a}=V^{-1}y$ is the unique solution because linear algebra “works” over $\mathbb{F}_q$.</p>
+<p>$\blacksquare$</p>
+<p>Moreover, the proof implies that we can find $f$ efficiently.</p>
+<p>Actually, we can compute $f$ very efficiently by using <strong>NTT</strong> (Number Theoretic Transform), which allows for  fast multiplication by certain special Vandermonde matrix .</p>
+<p><font color=blue><u><b>Fact:</b></u></font></p>
+<p>All functions $f:\mathbb{F}_q\mapsto \mathbb{F}_q$ are polynomials of degree $\le q-1$.</p>
+<p><font color=blue><u><i>Proof: </i></u></font></p>
+<p>There are only $q$ points in $\mathbb{F}_q$, so we can interpolate a (unique) degree $\le q-1$ polynomial through any function.</p>
+<p><u>Example:</u></p>
+<p>$f(X)=X^q$ must have some representation as a degree $\le q-1$ polynomial over $\mathbb{F}_q$.</p>
+<p>It is $X^q\equiv X$ because $\alpha^q=\alpha$ for all $\alpha\in \mathbb{F}_q$ (by <strong>Fermat’s little theorem)</strong>.</p>
+<h2 id="RS-code"><a href="#RS-code" class="headerlink" title="RS code"></a>RS code</h2><p>Now, we are finally ready to define the <strong>Reed-Solomon codes</strong>.</p>
+<article class="message is-info"> <div class="message-header"> Reed-Solomon Codes: </div> <div class="message-body"> Let $q\ge n \ge k$. The Reed-Solomon code of dimension $k$ over $\mathbb{F}_q$, with (distinct) evaluation points $\vec{\alpha}=(\alpha_1, \dots, \alpha_n)$ is  $$ \text{RS}_q(\vec{\alpha}, n, k)=\{(f(\alpha_1), f(\alpha_2), \dots, f(\alpha_n)):f\in \mathbb{F}_q[X], \deg(f)\le k-1\} $$  </div> </article>
+
+
+
+<p>The <strong>basic idea</strong> is that <u>low-degree polynomial does not have too many roots</u> so that the RS code can achieve a fairly good trade-off between the rate and the distance.</p>
+<p>The <strong>codeword</strong> of Reed-Solomon code <u>consists of evaluations of low-degree polynomials.</u></p>
+<p>This implies that <u>these codewords don’t have too many zeros</u> so that the distance of the code is good.</p>
+<p>Additionally, this definition implies a natural <strong>encoding map for RS code</strong>:</p>
+<p>$$<br>\vec{x}=(x_0, \dots, x_{k-1})\mapsto (f_{\vec{x}}(\alpha_0),\dots,f_{\vec{x}}(\alpha_{n}))<br>$$</p>
+<p>where $f_{\vec{x}}(X)=x_0+x_1\cdot X+\dots x_{k-1}\cdot X^{k-1}$.</p>
+<article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>  Note that this isn't the only encoding map, but it’s the commonest one. </div> </article>
+
+<p>This also implies the Reed-Solomon code is a linear code with Vandermonde matrix as  the generator matrix.</p>
+<p><font color=blue><u><b> Property: </b></u></font></p>
+<p>$\text{RS}_q(\vec{\alpha}, n, k)$ is <strong>a linear code</strong>, and the <strong>generator matrix</strong> is the $n\times k$ Vandermonde matrix with rows corresponding to $\alpha_1, \alpha_2, \dots, \alpha_n$.</p>
+<p><font color=blue><u><i>Proof: </i></u></font></p>
+<p>The proof is clear when we write down the generator matrix.</p>
+<img src="https://s21.ax1x.com/2025/01/13/pEPjrKU.png" alt="image.png" style="zoom:50%;" />
+
+<p>In the view of generator matrix, we have $\dim(\text{RS}(n, k))=k$ since the Vandermonde matrix has rank $k$.</p>
+<article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>  When $\vec{\alpha }$ is clear from context, $\vec{\alpha}$ can be omitted. </div> </article>
+
+<p>Then we can easily compute distance of a linear code.</p>
+<article class="message is-info"> <div class="message-header"> Property: </div> <div class="message-body"> The distance of $\text{RS}_q(n,k)$ is $d=n-k+1$.  </div> </article>
+
+<p><font color=blue><u><i>Proof: </i></u></font></p>
+<ul>
+<li>Since RS code is a linear code, $\text{dist}(\text{RS}_q(n, k)=\min_{c\in \text{RS}}\text{wt}(c)$.</li>
+<li>It suffices to show that $\max$ #non-zeros of any non-zero codewords is $k-1$.</li>
+<li>The #zeros of a non-zero codeword corresponds to the #roots of a non-zero polynomial of degree at most $k-1$.</li>
+<li>$\blacksquare$ </li>
+</ul>
+<p>The distance of the RS codes achieves the Singleton bound, and it is optimal for any $n$ and $k$ we choose.</p>
+<p><font color=blue><u><b> Corollary: </b></u></font></p>
+<p>RS codes exactly meet the Singleton bound.</p>
+<article class="message is-info"> <div class="message-header"> Maximum Distance Separable (MDS): </div> <div class="message-body"> A linear $(n, k, d)_q$ code with $d=n-k+1$ (aka, meeting the Singleton bound) is called Maximum Distance Separable. <br> Notice that <b>MDS-ness is equivalent</b> to the property: <u>“every $k\times k$ submatrix of the generator matrix is full rank”.</u> This property implies that if $\mathcal{C}$ is <b>MDS</b>, then <u>any $k$ positions of the codeword $c\in \mathcal{C}$ determine all of $c$.</u>  </div> </article>
+
+<p><font color=blue><u><i>Proof Sketch: </i></u></font></p>
+<ul>
+<li>To prove the distance is $n-k+1$, it <u>suffices to show the code can correct any $n-k$ erasures.</u></li>
+<li>For a codeword, any $n-k$ erasures leave us $k$ remaining non-erased positions, which <u>corresponds to $k$ rows of the generator matrix, forming a $k\times k$ submatrix.</u></li>
+</ul>
+<img src="https://s21.ax1x.com/2025/01/29/pEVwBAH.png" alt="image.png" style="zoom:97%;" />
+
+<ul>
+<li>We can recover the message $x$ if and only if the submatrix is invertible/full rank.</li>
+<li>$\blacksquare$</li>
+</ul>
+<p>We have seen that the RS code is MSD and it has the Vandermonde matrix as the generator matrix, so the property also holds for RS code.</p>
+<h2 id="Discussion-of-Two-Bound-cont"><a href="#Discussion-of-Two-Bound-cont" class="headerlink" title="Discussion of Two Bound (cont.)"></a>Discussion of Two Bound (cont.)</h2><p>We previously showed that the distance-rate trade-off in the Plotkin Bound and the Singleton Bound.</p>
+<img src="https://s21.ax1x.com/2025/01/29/pEVwDNd.png" alt="image.png" style="zoom:30%;" />
+
+<p>Both bounds indicate the impossible results, and the Plotkin bound is strictly better than the Singleton bound for any $q\ge 2$.</p>
+<p>This suggests that the <u>Singleton bound should never be achievable</u>. However, the <u>MDS codes are defined as codes that achieves the Singleton bound.</u></p>
+<p><strong>Why don’t MDS codes violate the Singleton bound?</strong></p>
+<p>The key lies in the fact that the <u>above figure only applies to any <strong>fixed</strong> $q$.</u></p>
+<p>However, <strong>in RS codes</strong>, the alphabet size $q$ is <strong>NOT fixed—</strong>it’s growing with $n$.</p>
+<p>Thus, <u>to get a MDS code, $q$ must be growing with $n$.</u></p>
+<p><strong>How big does $q$ have to be?</strong></p>
+<p>It is an <strong>open question</strong> in general!</p>
+<article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>  It was settled for prime field in 2012 by Ball. </div> </article>
+
+<h1 id="Dual-View-of-RS-Codes"><a href="#Dual-View-of-RS-Codes" class="headerlink" title="Dual View of RS Codes"></a>Dual View of RS Codes</h1><p><strong>What is the parity-check matrix of an RS code?</strong></p>
+<p>Before getting this, we need to recall some preliminary algebra.</p>
+<p><strong>Multiplicative Group $\mathbb{F}_q^*$</strong>:</p>
+ The set $\mathbb{F}_q^*$ is the <b>multiplicative group</b> of non-zero elements in $\mathbb{F}_q$, i.e. $\mathbb{F}_q^*=\mathbb{F}_q\backslash\{0\}$. 
+
+$\mathbb{F}_q^*$  is <b>CYCLIC</b>, which means there’s some $\gamma\in \mathbb{F}_q^*$ so that 
+
+$$
+\mathbb{F}_q^*=\{\gamma, \gamma^2, \dots, \gamma^{q-1}\}
+$$
+
+where $\gamma$  is called a <b>Primitive Element</b> of $\mathbb{F}_q$.
+
+ <article class="message message-immersive is-warning"> <div class="message-body"> <i class="fas fa-exclamation-triangle mr-2"></i>  Note that the multiplicative group $\mathbb{F}_q^*$ is equipped with multiplication while the field $\mathbb{F}_q$ is equipped with both multiplication and addition. For example, $\mathbb{F}_5^*=\{1, 2,3,4\}$ and $2+3=0$ is not in the set.  </div> </article> 
+
+<p><u>Example:</u></p>
+<ul>
+<li>2 is a primitive element of $\mathbb{F}_5$, and  $\mathbb{F}_5^*=\{2, 2^2=4, 2^3=3, 2^4=1\}$.</li>
+<li>4 is NOT a primitive element, since $4^2=1,4^3=-1, 4^4=1, 4^5=-1, \dots$, and we will never generate 2 or 3 as a power of 4.</li>
+</ul>
+<p><font color=blue><u><b>Lemma:</b></u></font></p>
+<p>For any integer $d$ with $0&lt;d&lt;q-1$,  the sum of all $d$-th powers in   $\mathbb{F}_q^*$  is zero,  i.e. </p>
+<p> $$ \sum_{\alpha\in \mathbb{F}_q}\alpha^d =0$$</p>
+<p><font color=blue><u><i>Proof: </i></u></font></p>
+<ul>
+<li>$\sum_{\alpha\in \mathbb{F}_q}\alpha^d=\sum_{\alpha\in \mathbb{F}_q^*}\alpha^d$
+<ul>
+<li>We are leaving out $\alpha=0$ since $0^d$ contributes 0 to the sum.</li>
+</ul>
+</li>
+<li><p>$=\sum_{j=0}^{q-2}(\gamma^j)^d$ for a primitive element $\gamma$.</p>
+<ul>
+<li>The index start from 0 since $\gamma^0=\gamma^{q-1}=1$.)</li>
+</ul>
+</li>
+<li><p>$=\sum_{j=0}^{q-2}(\gamma^d)^j$ for a primitive element $\gamma$.</p>
+<ul>
+<li>We are switching the order of the exponents.</li>
+</ul>
+</li>
+<li><p>$={1-(\gamma^d)^{q-1}\over 1-\gamma^d}$</p>
+<ul>
+<li><strong>Fact</strong>: For any $x\ne 1$, it follows that $(1-x)\cdot (\sum_{j=0}^{n-1}x^j)=1-x^n$, and so $\sum_{j=0}^{n-1}x^j={1-x^n\over 1-x}$ for any $n$.</li>
+</ul>
+</li>
+<li><p>$={1-1\over 1-\gamma^d}=0$</p>
+<ul>
+<li>$(\gamma^d)^{q-1}\cdot \gamma^d = (\gamma^d)^q=\gamma^d$. (Fermat’s little theorem)</li>
+<li>$\gamma^d\ne0$ since $0&lt;d&lt;q-1$.</li>
+<li>So $(\gamma^d)^{q-1}=1$.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>Now, we can <u>view the RS code in a new perspective</u>, which allows us to capture what the parity-check matrix of the RS code looks like.</p>
+ <article class="message is-info"> <div class="message-header">  Proposition:  </div> <div class="message-body">  Let $n=q-1$, and let $\gamma$ be a primitive element of $\mathbb{F}_q$.  
+
+$$\text{RS}_q((\gamma^0, \dots, \gamma^{n-1}),n, k)\\ =\{(c_0, c_1, \dots, c_{n-1})\in \mathbb{F}_q^n:c(\gamma^j)=0 \text{ for }j=1, 2, \dots, n-k\}$$
+
+ where $c(X)=\sum_{i=0}^{n-1}c_i\cdot X^i$.   </div> </article> 
+
+<p>This proposition kinds of flipping things around.</p>
+<p>In the <strong>original definition</strong>, the <u>messages are coefficients of some polynomial and the codewords are evaluations of that polynomial.</u></p>
+<p><strong>In this view</strong>, the <u>codewords are coefficients of some polynomial.</u></p>
+<p><font color=blue><u><i>Proof: </i></u></font></p>
+<p>First, let’s prove one direction of this proposition.</p>
+<ul>
+<li>Let $f(X)=\sum_{i=0}^{k-1}f_i\cdot X^i$ be a message, so the RS codeword is $(f(\gamma^0), f(\gamma),\dots, f(\gamma^{n-1}))$.</li>
+<li>$c(\gamma^j)=\sum_{\ell=0}^{n-1}c_{\ell}\cdot \gamma^{j\cdot \ell}$</li>
+<li>$=\sum_{\ell=0}^{n-1}(\sum_{i=0}^{k-1}f_i\cdot \gamma^{i\cdot \ell})\cdot \gamma^{j\cdot \ell}$</li>
+<li>$=\sum_{\ell=0}^{n-1}\sum_{i=0}^{k-1}f_i\cdot \gamma^{(i+j)\cdot \ell}$</li>
+<li>$=\sum_{i=0}^{k-1}\sum_{\ell=0}^{n-1}f_i\cdot \gamma^{(i+j)\cdot \ell}$ (switching the order of summation)</li>
+<li>$=\sum_{i=0}^{k-1}f_i\cdot \sum_{\ell=0}^{n-1}\gamma^{(i+j)\cdot \ell}$</li>
+<li>$=\sum_{i=0}^{k-1}f_i\cdot \sum_{\ell=0}^{n-1}(\gamma^{\ell})^{i+j}$<ul>
+<li>$0\le i\le k-1$ and $1\le j\le n-k$</li>
+<li>Thus, $1\le i+j\le n-1&lt;q-1$. (strictly less than $q-1$)</li>
+<li>Apply the aforementioned lemma to have $\sum_{\ell=0}^{n-1}(\gamma^{\ell})^{i+j}=0$</li>
+</ul>
+</li>
+<li>$=0$.</li>
+<li>$\text{RS}_q((\gamma^0, \dots, \gamma^{n-1}),n, k)\\
+\subseteq\{(c_0, c_1, \dots, c_{n-1})\in \mathbb{F}_q^n:c(\gamma^j)=0 \text{ for }j=1, 2, \dots, n-k\}$
+
+</li>
+</ul>
+<p>This shows one direction of the proposition—<u>RS code is contained in the above set.</u></p>
+<p>To prove the equality, we need to <u>count dimension.</u></p>
+<p>We will <u>show the set also has dimension $k$.</u></p>
+<ul>
+<li><p>Let $H$ be a matrix of this form:
+  
+    $$
+    H=\left[
+    \begin{array}{c}
+    1 & \gamma & \gamma^2 & \dots & \gamma^{n-1} \\
+    1 & \gamma^2 & \gamma^4 & \dots & \gamma^{2(n-1)} \\
+    \vdots \\
+    1 & \gamma^{n-k} & \gamma^{2(n-k)} & \dots & \gamma^{(n-k)(n-1)} \\
+    \end{array}
+    \right]\in \mathbb{F}_q^{(n-k)\times n}
+    $$
+    </p>
+</li>
+<li><p>Consider $H\cdot c$ where $c$ is a vector in that set:</p>
+<ul>
+<li>The $j$’th entry is $\sum_{i=0}^{n-1}c_i\cdot \gamma^{ji}=c(\gamma^j)=0$.</li>
+</ul>
+</li>
+<li><p>This implies that the set  $\{(c_0, c_1, \dots, c_{n-1})\in \mathbb{F}_q^n:c(\gamma^j)=0 \text{ for }j=1, 2, \dots, n-k\}$ is exactly $\text{Ker}(H)$.</p>
+</li>
+<li><p>This shows that the set has dimension $k$ since $H$ is a Vandermonde matrix of dimension $n-k$.</p>
+</li>
+</ul>
+<p>The proposition also answer our question about the parity-check matrix of the RS-codes.</p>
+ <article class="message is-info"> <div class="message-header">  Corollary:  </div> <div class="message-body">  The parity-check matrix of $\text{RS}_q((\gamma^0, \dots, \gamma^{n-1}),n,k)$ is $$ H=\left[ \begin{array}{c} 1 & \gamma & \gamma^2 & \dots & \gamma^{n-1} \\ 1 & \gamma^2 & \gamma^4 & \dots & \gamma^{2(n-1)} \\ \vdots \\ 1 & \gamma^{n-k} & \gamma^{2(n-k)} & \dots & \gamma^{(n-k)(n-1)} \\ \end{array} \right]\in \mathbb{F}_q^{(n-k)\times n} $$  </div> </article> 
+
+
+
+<p>Notice that the <strong>dual code</strong> $\text{RS}(n, k)^\perp$ has a <u>generator matrix</u> $H^T$, which again looks a lot like a Vandermonde matrix. </p>
+<p>It suggests that <u>the dual of the RS code is basically an RS code.</u></p>
+<p>This particular derivation of the proposition used the choice of evaluation points heavily. However, a statement like this is true in general.</p>
+<p>More precisely, we define <strong>a generalized RS codes</strong> with an additional parameter vector $\vec\lambda$.</p>
+ <article class="message is-info"> <div class="message-header">  Generalized Reed-Solomon Code (GRS):  </div> <div class="message-body">  A generalized RS code $\text{GRS}_q(\vec{\alpha},n,k;\vec{\lambda})$ is  $\text{GRS}_q(\vec{\alpha},n,k;\vec{\lambda})\\=\{\lambda_0f(\alpha_0), \lambda_1f(\alpha_1),\dots, \lambda_nf(\alpha_n):f\in \mathbb{F}_q[X],\deg(f)\le k\}$  where $\vec{\lambda}=(\lambda_0, \dots, \lambda_n)\in (\mathbb{F}_q^*)^n$.  </div> </article> 
+
+<p>The GRS code is almost identical to the RS code, except for the scaling factors $\lambda_i$ applied to each coordinate.</p>
+<p>The introduction of $\vec{\lambda}$ enables the following <strong>property</strong> we’ve seen before: <u>if we take the transpose of the parity-check matrix of a GRS code, it yields a generator matrix for another GRS code.</u></p>
+<p><strong>Theorem:</strong></p>
+ <article class="message is-info"> <div class="message-header">  Theorem:  </div> <div class="message-body">  For any distinct evaluation points $\vec{\alpha}$ and any $\vec{\lambda}\in (\mathbb{F}_q^*)^n$, there exists some $\vec{\sigma}\in (\mathbb{F}_q^*)^n$ s.t. $$ \text{GRS}_q(\vec{\alpha},n,k;\vec{\lambda})^\perp=\text{GRS}_q(\vec{\alpha},n,n-k;\vec{\sigma}) $$   </div> </article> </div><div class="article-licensing box"><div class="licensing-title"><p>「Algebraic ECCs」: Lec4 Singleton + Plotkin Bounds and RS Code</p><p><a href="https://f7ed.com/2025/01/12/stanford-cs250-ecc-lec4/">https://f7ed.com/2025/01/12/stanford-cs250-ecc-lec4/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2025-01-13</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2025-01-31</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Cryptography/">Cryptography, </a><a class="link-muted" rel="tag" href="/tags/ECC/">ECC, </a><a class="link-muted" rel="tag" href="/tags/Singleton-Bound/">Singleton Bound, </a><a class="link-muted" rel="tag" href="/tags/Plotkin-Bound/">Plotkin Bound, </a><a class="link-muted" rel="tag" href="/tags/RS-Code/">RS Code, </a><a class="link-muted" rel="tag" href="/tags/GRS-Code/">GRS Code </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2024/12/25/stanford-cs250-ecc-lec3/"><span class="level-item">「Algebraic ECCs」: Lec3 GV Bound and q-ARY Entropy</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "48b0efc6ea8abe468541b94818f233d8",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">71</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">139</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Singleton-Bound"><span class="level-left"><span class="level-item">1</span><span class="level-item">Singleton Bound</span></span></a></li><li><a class="level is-mobile" href="#Plotkin-Bound"><span class="level-left"><span class="level-item">2</span><span class="level-item">Plotkin Bound</span></span></a></li><li><a class="level is-mobile" href="#Discussion-of-Two-Bounds"><span class="level-left"><span class="level-item">3</span><span class="level-item">Discussion of Two Bounds</span></span></a></li><li><a class="level is-mobile" href="#Reed-Solomon-Codes"><span class="level-left"><span class="level-item">4</span><span class="level-item">Reed-Solomon Codes</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Vandermonde-Matrix"><span class="level-left"><span class="level-item">4.1</span><span class="level-item">Vandermonde Matrix</span></span></a></li><li><a class="level is-mobile" href="#RS-code"><span class="level-left"><span class="level-item">4.2</span><span class="level-item">RS code</span></span></a></li><li><a class="level is-mobile" href="#Discussion-of-Two-Bound-cont"><span class="level-left"><span class="level-item">4.3</span><span class="level-item">Discussion of Two Bound (cont.)</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Dual-View-of-RS-Codes"><span class="level-left"><span class="level-item">5</span><span class="level-item">Dual View of RS Codes</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「PyTorch」：2-Tensors Explained And Operations - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="PyTorch框架学习。 本篇文章主要介绍PyTorch中的Tensor及其基本操作，主要分为四个方面：Reshape, Element-wise, Reduction和Access。 Tensor的具体操作介绍，建议配合Colab笔记使用： PyTorch Tensors Explained  Tensor Operations: Reshape   Tensor Operations: Ele"><meta property="og:type" content="blog"><meta property="og:title" content="「PyTorch」：2-Tensors Explained And Operations"><meta property="og:url" content="https://f7ed.com/2020/10/20/pytorch-tensors/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="PyTorch框架学习。 本篇文章主要介绍PyTorch中的Tensor及其基本操作，主要分为四个方面：Reshape, Element-wise, Reduction和Access。 Tensor的具体操作介绍，建议配合Colab笔记使用： PyTorch Tensors Explained  Tensor Operations: Reshape   Tensor Operations: Ele"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/a0b70de959696be3ebc674582469d70d.png"><meta property="article:published_time" content="2020-10-20T16:00:00.000Z"><meta property="article:modified_time" content="2021-02-28T14:13:23.746Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="open-classes"><meta property="article:tag" content="DEEPLIZARD"><meta property="article:tag" content="PyTorch"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/a0b70de959696be3ebc674582469d70d.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2020/10/20/pytorch-tensors/"},"headline":"「PyTorch」：2-Tensors Explained And Operations","image":["https://f7ed.com/gallery/thumbnails/a0b70de959696be3ebc674582469d70d.png"],"datePublished":"2020-10-20T16:00:00.000Z","dateModified":"2021-02-28T14:13:23.746Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"PyTorch框架学习。 本篇文章主要介绍PyTorch中的Tensor及其基本操作，主要分为四个方面：Reshape, Element-wise, Reduction和Access。 Tensor的具体操作介绍，建议配合Colab笔记使用： PyTorch Tensors Explained  Tensor Operations: Reshape   Tensor Operations: Ele"}</script><link rel="canonical" href="https://f7ed.com/2020/10/20/pytorch-tensors/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「PyTorch」：2-Tensors Explained And Operations</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2020-10-20T16:00:00.000Z" title="2020-10-20T16:00:00.000Z">2020-10-21</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2021-02-28T14:13:23.746Z" title="2021-02-28T14:13:23.746Z">2021-02-28</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/PyTorch/">PyTorch</a></span><span class="level-item"><i class="far fa-clock"></i> 34 minutes read (About 5067 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>PyTorch框架学习。</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><p>本篇文章主要介绍PyTorch中的Tensor及其基本操作，主要分为四个方面：Reshape, Element-wise, Reduction和Access。</p>
+<p>Tensor的具体操作介绍，建议配合Colab笔记使用：</p>
+<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/PyTorch%20Tensors%20Explained.ipynb">PyTorch Tensors Explained</a> </p>
+<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Tensor%20Operations%EF%BC%9AReshape.ipynb">Tensor Operations: Reshape</a> </p>
+<p> <a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Tensor%20Operations%EF%BC%9AElement-Wise.ipynb">Tensor Operations: Element-wise</a>  </p>
+<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Tensor%20Operations%EF%BC%9AReduction%20and%20Access.ipynb">Tensor Operation: Reduction and Access</a>  </p>
+<p>英文的表达解释都是比较清晰且精确的，所以以英语的形式作为主要记录，文中会夹带一些中文总结语句，方便阅读。</p>
+<span id="more"></span>
+
+<h1 id="Introducing-Tensors"><a href="#Introducing-Tensors" class="headerlink" title="Introducing Tensors"></a>Introducing Tensors</h1><h2 id="Tensor-Explained-Data-Structures-of-Deep-Learning"><a href="#Tensor-Explained-Data-Structures-of-Deep-Learning" class="headerlink" title="Tensor Explained - Data Structures of Deep Learning"></a>Tensor Explained - Data Structures of Deep Learning</h2><h3 id="What-Is-A-Tensor"><a href="#What-Is-A-Tensor" class="headerlink" title="What Is A Tensor?"></a>What Is A Tensor?</h3><p>A tensor is the primary data structure used by neural networks.</p>
+<p>【Tensor是NN中最主要的数据结构】</p>
+<h4 id="Indexes-Required-To-Access-An-Element"><a href="#Indexes-Required-To-Access-An-Element" class="headerlink" title="Indexes Required To Access An Element"></a>Indexes Required To Access An Element</h4><p>The relationship within each of these pairs is that both elements require the same number of indexes to refer to a specific element within the data structure.</p>
+<p>【以下pairs都是需要同等数量的indexes才能确定特定的元素。】</p>
+<p>【而tensor是generalizations，是一种统一而普遍的定义。】</p>
+<table>
+<thead>
+<tr>
+<th>Indexes required</th>
+<th>Computer science</th>
+<th>Mathematics</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>number</td>
+<td>scalar</td>
+</tr>
+<tr>
+<td>1</td>
+<td>array</td>
+<td>vector</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2d-array</td>
+<td>matrix</td>
+</tr>
+</tbody></table>
+<h3 id="Tensors-Are-Generalizations"><a href="#Tensors-Are-Generalizations" class="headerlink" title="Tensors Are Generalizations"></a>Tensors Are Generalizations</h3><p>When more than two indexes are required to access a specific element, we stop giving specific names to the structures, and we begin using more general language.</p>
+<h4 id="Mathematics"><a href="#Mathematics" class="headerlink" title="Mathematics"></a>Mathematics</h4><p>In mathematics, we stop using words like scalar, vector, and matrix, and we start using the word <em>tensor</em> or nd-tensor. The n tells us the number of indexes required to access a specific element within the structure.</p>
+<p>【数学中，当我们需要用大于两个的indexes才能确定特点元素时，我们使用tensor或者nd-tensor来表示该数据结构，说明需要n个index才能确定该数据结构中的特定元素。】</p>
+<h4 id="Computer-Science"><a href="#Computer-Science" class="headerlink" title="Computer Science"></a>Computer Science</h4><p>In computer science, we stop using words like, number, array, 2d-array, and start using the word <em>multidimensional array</em> or nd-array. The <code>n</code> tells us the number of indexes required to access a specific element within the structure.</p>
+<p>【计算机科学中，我们使用nd-array来表示，因此，nd-array和tensor实则是一个东西。】</p>
+<table>
+<thead>
+<tr>
+<th>Indexes required</th>
+<th>Computer science</th>
+<th>Mathematics</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>n</td>
+<td>nd-array</td>
+<td>nd-tensor</td>
+</tr>
+</tbody></table>
+<p>Tensors and nd-arrays are the same thing!</p>
+<p>One thing to note about the dimension of a tensor is that it differs from what we mean when we refer to the dimension of a vector in a vector space. The dimension of a tensor does not tell us how many components exist within the tensor.</p>
+<p>【需要注意的地方是，tensor中的维度和vector向量空间中的维度不是同一个东西，vector向量空间中的维度表示该vector有多少个元素组成的，而tensor中的维度是下文中rank的含义。】</p>
+<h2 id="Rank-Axes-And-Shape-Explained"><a href="#Rank-Axes-And-Shape-Explained" class="headerlink" title="Rank, Axes, And Shape Explained"></a>Rank, Axes, And Shape Explained</h2><p>【下文会详细解释深度学习tensor的几个重要性质：Rank, Axes, Shape.】</p>
+<p>The concepts of rank, axes, and shape are the tensor attributes that will concern us most in deep learning.</p>
+<ul>
+<li>Rank</li>
+<li>Axes</li>
+<li>Shape</li>
+</ul>
+<h3 id="Rank-And-Indexes"><a href="#Rank-And-Indexes" class="headerlink" title="Rank And Indexes"></a>Rank And Indexes</h3><p>We are introducing the word <em>rank</em> here because it is commonly used in deep learning when referring to the number of dimensions present within a given tensor. </p>
+<p>The rank of a tensor tells us how many indexes are required to access (refer to) a specific data element contained within the tensor data structure.</p>
+<p>A tensor’s rank tells us how many indexes are needed to refer to a specific element within the tensor.</p>
+<p>【这里的rank实则就是tensor的维度。】</p>
+<p>【tensor的rank值告诉我们需要多少个indexes才能确定该tensor中的特定元素。】</p>
+<h3 id="Axes-Of-A-Tensor"><a href="#Axes-Of-A-Tensor" class="headerlink" title="Axes Of A Tensor"></a>Axes Of A Tensor</h3><p>If we have a tensor, and we want to refer to a specific <em>dimension</em>, we use the word <em>axis</em> in deep learning.</p>
+<p>An axis of a tensor is a specific dimension of a tensor.</p>
+<p>Elements are said to exist or run along an axis. This <em>running</em> is constrained by the length of each axis. Let’s look at the length of an axis now.</p>
+<h4 id="Length-Of-An-Axis"><a href="#Length-Of-An-Axis" class="headerlink" title="Length Of An Axis"></a>Length Of An Axis</h4><p>The length of each axis tells us how many indexes are available along each axis.</p>
+<p>【当我们关注tensor的某一具体维度时，在深度学习中我们使用axis来表达。】</p>
+<p>【元素被认为是在某一axie上存在或延伸的，元素延伸的长度取决于axis的长度。】</p>
+<p>【Axis的长度表示在每一维度（axis）上有多少个索引】</p>
+<h3 id="Shape-Of-A-Tensor"><a href="#Shape-Of-A-Tensor" class="headerlink" title="Shape Of A Tensor"></a>Shape Of A Tensor</h3><p>The <em>shape</em> of a tensor is determined by the length of each axis, so if we know the shape of a given tensor, then we know the length of each axis, and this tells us how many indexes are available along each axis.</p>
+<p>The shape of a tensor gives us the length of each axis of the tensor.</p>
+<p>【tensor的shape由每一axis的长度决定，即每一axis的索引数目】</p>
+<p>Additionally, one of the types of operations we must perform frequently when we are programming our neural networks is called <em>reshaping</em>.</p>
+<p>Reshaping changes the shape but not the underlying data elements.</p>
+<p>【tensor的常见操作reshape只改变tensor的shape，而不改变底层的数据。】</p>
+<h2 id="CNN-Tensors-Shape-Explained"><a href="#CNN-Tensors-Shape-Explained" class="headerlink" title="CNN Tensors Shape Explained"></a>CNN Tensors Shape Explained</h2><p>CNN的相关介绍，可见 <a href="/2020/04/25/CNN/" title="这篇文章">这篇文章</a></p>
+<p>What I want to do now is put the concepts of rank, axes, and shape to use with a practical example. To do this, we’ll consider an image input as a tensor to a CNN.</p>
+<p>Remember that the shape of a tensor encodes all the relevant information about a tensor’s axes, rank, and indexes, so we’ll consider the shape in our example, and this will enable us to work out the other values. </p>
+<p>【tensor的shape能体现tensor的axes、rank、index所有信息】</p>
+<p>【以CNN为例来说明rank, axes, shape.】</p>
+<h3 id="Shape-Of-A-CNN-Input"><a href="#Shape-Of-A-CNN-Input" class="headerlink" title="Shape Of A CNN Input"></a>Shape Of A CNN Input</h3><p>The shape of a CNN input typically has a length of four. This means that we have a rank-4 tensor with four axes. Each index in the tensor’s shape represents a specific axis, and the value at each index gives us the length of the corresponding axis.</p>
+<p>【CNN的input 是一个rank4-tensor.】</p>
+<p>Each axis of a tensor usually represents some type of real world or logical feature of the input data. If we understand each of these features and their axis location within the tensor, then we can have a pretty good understanding of the tensor data structure overall.</p>
+<p>【tensor的每个axis往往代表着某一个逻辑feature，所以理解features和tensor中axis的位置的关系能帮助我们更好的理解tensor。】</p>
+<h4 id="Image-Height-And-Width"><a href="#Image-Height-And-Width" class="headerlink" title="Image Height And Width"></a>Image Height And Width</h4><p>To represent two dimensions, we need two axes.</p>
+<p>The image height and width are represented on the last two axes.</p>
+<p>【表示图像的height和width，需要2个axes，使用最后两个axes表示。】</p>
+<h4 id="Image-Color-Channels"><a href="#Image-Color-Channels" class="headerlink" title="Image Color Channels"></a>Image Color Channels</h4><p>The next axis represents the color channels. Typical values here are <code>3</code> for RGB images or <code>1</code> if we are working with grayscale images. This color channel interpretation only applies to the input tensor.</p>
+<p>【下一个axis(从右至左)表示图像的color channels（颜色通道，如灰度图像就有1个颜色通道，RGB图像有三个）。】</p>
+<p>【注意：color channel的说法只适用于input tensor。】</p>
+<h4 id="Image-Batches"><a href="#Image-Batches" class="headerlink" title="Image Batches"></a>Image Batches</h4><p>This brings us to the first axis of the four which represents the batch size. In neural networks, we usually work with batches of samples opposed to single samples, so the length of this axis tells us how many samples are in our batch.</p>
+<p>Suppose we have the following shape <code>[3, 1, 28, 28]</code> for a given tensor. Using the shape, we can determine that we have a batch of three images.</p>
+<p>【第一个axis表示batch属性，表明该batch的size。在深度学习中，我们通常使用一批样本，而不是一个单独的样本，所以这一维度表明了我们的batch中有多少样本。】</p>
+<p>tensor：[Batch, Channels, Height, Width]</p>
+<p>Each image has a single color channel, and the image height and width are <code>28 x 28</code> respectively.</p>
+<ol>
+<li>Batch size</li>
+<li>Color channels</li>
+<li>Height</li>
+<li>Width</li>
+</ol>
+<h4 id="NCHW-vs-NHWC-vs-CHWN"><a href="#NCHW-vs-NHWC-vs-CHWN" class="headerlink" title="NCHW vs NHWC vs CHWN"></a>NCHW vs NHWC vs CHWN</h4><p>It’s common when reading API documentation and academic papers to see the <code>B</code> replaced by an <code>N</code>. The <code>N</code> standing for <em>number of samples</em> in a batch.</p>
+<p>【在API文档或学术论文中，N经常会代替代替B，表示the number of samples in a batch。】</p>
+<p>Furthermore, another difference we often encounter in the wild is a <em>reordering</em> of the dimensions. Common orderings are as follows:</p>
+<ul>
+<li><code>NCHW</code></li>
+<li><code>NHWC</code></li>
+<li><code>CHWN</code></li>
+</ul>
+<p>【除此之外，也会经常遇到这些axes的其他顺序。】</p>
+<p>As we have seen, PyTorch uses <code>NCHW</code>, and it is the case that TensorFlow and Keras use <code>NHWC</code> by default (it can be configured). Ultimately, the choice of which one to use depends mainly on performance. Some libraries and algorithms are more suited to one or the other of these orderings.</p>
+<p>【PyTorch 默认使用NCHW，而TensorFlow和Keras使用NHWC】</p>
+<h3 id="Output-Channels-And-Feature-Maps"><a href="#Output-Channels-And-Feature-Maps" class="headerlink" title="Output Channels And Feature Maps"></a>Output Channels And Feature Maps</h3><p>Let’s look at how the interpretation of the color channel axis changes after the tensor is transformed by a convolutional layer.</p>
+<p>Suppose we have three convolutional filters, and lets just see what happens to the channel axis.</p>
+<p>Since we have three convolutional filters, we will have three channel outputs from the convolutional layer. These channels are outputs from the convolutional layer, hence the name output <em>channels opposed</em> to <em>color channels</em>.</p>
+<p>【tensor送入convolutional layer（卷积层）后，color channel 这一axis的长度发生变化。</p>
+<p>【在<a href="#">Post not found: % CNN CNN的介绍文章</a>中解释到，有几个convolutional filters，卷积层输出的tensor就有几个channel（channel代替color channel的表达）。】</p>
+<h4 id="Feature-Maps"><a href="#Feature-Maps" class="headerlink" title="Feature Maps"></a>Feature Maps</h4><p>With the output channels, we no longer have color channels, but modified channels that we call <em>feature maps</em>. These so-called feature maps are the outputs of the convolutions that take place using the input color channels and the convolutional filters.</p>
+<p>Feature maps are the output channels created from the convolutions.</p>
+<p>【卷积层输出tensor的channel维度代替color channels的叫法。】</p>
+<p>【卷积层的输出也叫叫feature maps】</p>
+<h1 id="PyTorch-Tensors"><a href="#PyTorch-Tensors" class="headerlink" title="PyTorch Tensors"></a>PyTorch Tensors</h1><p>When programming neural networks, data preprocessing is often one of the first steps in the overall process, and one goal of data preprocessing is to transform the raw input data into tensor form.</p>
+<p>【数据预处理往往是编写NN的第一步，将原始数据转换为tensor form。】</p>
+<p>Tensor的基本操作见Colab运行笔记链接：<a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/PyTorch%20Tensors%20Explained.ipynb">PyTorch Tensors Explained</a> </p>
+<p>(不会用的也可以直接看<a target="_blank" rel="noopener" href="https://github.com/f1ed/PyTorch-Notebook/blob/master/PyTorch%20Tensors%20Explained.ipynb">github</a> 上的)</p>
+<h2 id="PyTorch-Tensors-Attributes"><a href="#PyTorch-Tensors-Attributes" class="headerlink" title="PyTorch Tensors Attributes"></a>PyTorch Tensors Attributes</h2><ul>
+<li><p>torch.dtype：tensor包含数据类型。</p>
+<p>常见数据类型：</p>
+<table>
+<thead>
+<tr>
+<th>Data type</th>
+<th>dtype</th>
+<th>CPU tensor</th>
+<th>GPU tensor</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>32-bit floating point</td>
+<td>torch.float32</td>
+<td>torch.FloatTensor</td>
+<td>torch.cuda.FloatTensor</td>
+</tr>
+<tr>
+<td>64-bit floating point</td>
+<td>torch.float64</td>
+<td>torch.DoubleTensor</td>
+<td>torch.cuda.DoubleTensor</td>
+</tr>
+<tr>
+<td>16-bit floating point</td>
+<td>torch.float16</td>
+<td>torch.HalfTensor</td>
+<td>torch.cuda.HalfTensor</td>
+</tr>
+<tr>
+<td>8-bit integer (unsigned)</td>
+<td>torch.uint8</td>
+<td>torch.ByteTensor</td>
+<td>torch.cuda.ByteTensor</td>
+</tr>
+<tr>
+<td>8-bit integer (signed)</td>
+<td>torch.int8</td>
+<td>torch.CharTensor</td>
+<td>torch.cuda.CharTensor</td>
+</tr>
+<tr>
+<td>16-bit integer (signed)</td>
+<td>torch.int16</td>
+<td>torch.ShortTensor</td>
+<td>torch.cuda.ShortTensor</td>
+</tr>
+<tr>
+<td>32-bit integer (signed)</td>
+<td>torch.int32</td>
+<td>torch.IntTensor</td>
+<td>torch.cuda.IntTensor</td>
+</tr>
+<tr>
+<td>64-bit integer (signed)</td>
+<td>torch.int64</td>
+<td>torch.LongTensor</td>
+<td>torch.cuda.LongTensor</td>
+</tr>
+</tbody></table>
+</li>
+<li><p>torch.device: tensor数据所分配的设备，如CPU，cuda:0</p>
+</li>
+<li><p>torch.layout: tensor在内存中的存储方式。</p>
+</li>
+</ul>
+<p>As neural network programmers, we need to be aware of the following:</p>
+<ol>
+<li>Tensors contain data of a uniform type (<code>dtype</code>).</li>
+<li>Tensor computations between tensors depend on the <code>dtype</code> and the <code>device</code>.</li>
+</ol>
+<p>【Tensors包含相同类型的数据】</p>
+<p>【Tensors之间的计算取决于他的类型和他所分配的设备】</p>
+<h2 id="Creating-Tensors"><a href="#Creating-Tensors" class="headerlink" title="Creating Tensors"></a>Creating Tensors</h2><p>These are the primary ways of creating tensor objects (instances of the <code>torch.Tensor</code> class), with data (array-like) in PyTorch:</p>
+<p>Creating Tensors with data.</p>
+<p>【四种用数据创建tensor的方式】</p>
+<ol>
+<li><code>torch.Tensor(data)</code></li>
+<li><code>torch.tensor(data)</code></li>
+<li><code>torch.as_tensor(data)</code></li>
+<li><code>torch.from_numpy(data)</code> </li>
+</ol>
+<h3 id="torch-Tensor-Vs-torch-tensor"><a href="#torch-Tensor-Vs-torch-tensor" class="headerlink" title="torch.Tensor() Vs torch.tensor()"></a><code>torch.Tensor()</code> Vs <code>torch.tensor()</code></h3><p>The first option with the uppercase <code>T</code> is the constructor of the <code>torch.Tensor</code> class, and the second option is what we call a <em>factory function</em> that constructs <code>torch.Tensor</code> objects and returns them to the caller.</p>
+<p>However, the factory function <code>torch.tensor()</code> has better documentation and more configuration options, so it gets the winning spot at the moment.</p>
+<p>【<code>torch.Tensor(data)</code> 是 <code>torch.Tensor</code> class的Constructor，而<code>torch.tensor(data)</code> 是生成/返回 torch.Tensor class的函数（factory functions)】</p>
+<p>【因为<code>torch.tensor()</code> 有更多的选项设置，比如可以设置数据类型，所以一般用<code>torch.tensor()</code> 来生成。】</p>
+<h3 id="Default-dtype-Vs-Inferred-dtype"><a href="#Default-dtype-Vs-Inferred-dtype" class="headerlink" title="Default dtype Vs Inferred dtype"></a>Default <code>dtype</code> Vs Inferred <code>dtype</code></h3><p>The difference here arises in the fact that the <code>torch.Tensor()</code> constructor uses the default <code>dtype</code> when building the tensor. The other calls choose a dtype based on the incoming data. This is called <em>type inference</em>. The <code>dtype</code> is inferred based on the incoming data.</p>
+<p>【<code>torch.Tensor()</code> 在生成tensor时，使用的是默认<code>dtype=torch.float32</code> ，而其他三种是使用的引用<code>dtype</code> ，即生成tensor的数据类型和输入的数据类型一致。】</p>
+<h3 id="Sharing-Memory-For-Performance-Copy-Vs-Share"><a href="#Sharing-Memory-For-Performance-Copy-Vs-Share" class="headerlink" title="Sharing Memory For Performance: Copy Vs Share"></a>Sharing Memory For Performance: Copy Vs Share</h3><p><code>torch.Tensor()</code> and <code>torch.tensor()</code> <em>copy</em> their input data while <code>torch.as_tensor()</code> and <code>torch.from_numpy()</code> <em>share</em> their input data in memory with the original input object.</p>
+<p>This sharing just means that the actual data in memory exists in a single place. As a result, any changes that occur in the underlying data will be reflected in both objects, the <code>torch.Tensor</code> and the <code>numpy.ndarray</code>.</p>
+<p>Sharing data is more efficient and uses less memory than copying data because the data is not written to two locations in memory.</p>
+<p>【<code>torch.Tensor()</code> 和 <code>torch.tensor()</code> 在根据data创建tensor时，在内存中额外复制数据】</p>
+<p>【<code>torch.as_tensor()</code> 和 <code>torch.from_numpy()</code> 在根据data创建tensor时，是和原输入数据共享的内存，即原numpy.ndarry的数据改变，相应的tensor也会改变。】</p>
+<table>
+<thead>
+<tr>
+<th>Share Data</th>
+<th>Copy Data</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>torch.as_tensor()</td>
+<td>torch.tensor()</td>
+</tr>
+<tr>
+<td>torch.from_numpy()</td>
+<td>torch.Tensor()</td>
+</tr>
+</tbody></table>
+<p>Some things to keep in mind about memory sharing (it works where it can):</p>
+<ol>
+<li><p>Since <code>numpy.ndarray</code> objects are allocated on the CPU, the <code>as_tensor()</code> function must copy the data from the CPU to the GPU when a GPU is being used.</p>
+<p>【在使用GPU时， <code>as_tensor()</code> 也会将ndarray数据从CPU复制到GPU上。】</p>
+</li>
+<li><p>The memory sharing of <code>as_tensor()</code> doesn’t work with built-in Python data structures like lists.</p>
+<p>【<code>as_tensor()</code> 在Python内置数据结构时不会共享内存】</p>
+</li>
+<li><p>The <code>as_tensor()</code> performance improvement will be greater if there are a lot of back and forth operations between <code>numpy.ndarray</code> objects and tensor objects. </p>
+<p>【<code>as_tensor()</code> 在ndarry和tensor之间大量连续操作时能有效提高性能】</p>
+</li>
+</ol>
+<h3 id="torch-as-tensor-Vs-torch-from-numpy"><a href="#torch-as-tensor-Vs-torch-from-numpy" class="headerlink" title="torch.as_tensor() Vs torch.from_numpy()"></a><code>torch.as_tensor()</code> Vs <code>torch.from_numpy()</code></h3><p>This establishes that <code>torch.as_tensor()</code> and <code>torch.from_numpy()</code> both share memory with their input data. However, which one should we use, and how are they different?</p>
+<p>The <code>torch.from_numpy()</code> function only accepts <code>numpy.ndarray</code>s, while the <code>torch.as_tensor()</code> function accepts a wide variety of array-like objects, including other PyTorch tensors. </p>
+<p>【这两个都是和输入数据共享内存，但 <code>torch.from_numpy()</code> 只能接受<code>numpy.ndarrays</code> 类型的数据，而<code>torch.as_tensor()</code> 能接受array-like(像list, tuple)等类型，所以一般<code>torch.as_tensor()</code> 更常用。】</p>
+<p>If we have a <code>torch.Tensor</code> and we want to convert it to a <code>numpy.ndarray</code></p>
+<p>【用<code>torch.numpy()</code> 把tensor转换为ndarray】</p>
+<hr>
+<p>Creating Tensors without data.</p>
+<p>【还有几种创建常见tensor的方式】</p>
+<ol>
+<li><code>torch.eyes(n)</code> : 创建2-D tensor，即n*n的单位向量。</li>
+<li><code>torch.zeros(shape)</code> : 创建shape=shape的全0tensor。</li>
+<li><code>torch.ones(shape)</code> : 创建全1tensor。</li>
+<li><code>torch.rand(shape)</code> : 创建随机值tensor。</li>
+</ol>
+<h1 id="Tensor-Operation"><a href="#Tensor-Operation" class="headerlink" title="Tensor Operation"></a>Tensor Operation</h1><p>关于Tensor 操作的Colab运行笔记。对照使用最佳。如果打不开也可以看<a target="_blank" rel="noopener" href="https://github.com/f1ed/PyTorch-Notebook">github</a> </p>
+<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Tensor%20Operations%EF%BC%9AReshape.ipynb">Tensor Operations: Reshape</a> </p>
+<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Tensor%20Operations%EF%BC%9AElement-Wise.ipynb">Tensor Operations: Element-wise</a> </p>
+<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Tensor%20Operations%EF%BC%9AElement-Wise.ipynb">Tensor Operation: Reduction and Access</a> </p>
+<p>We have the following high-level categories of operations:</p>
+<ol>
+<li>Reshaping operations</li>
+<li>Element-wise operations</li>
+<li>Reduction operations</li>
+<li>Access operations</li>
+</ol>
+<p>【对tensor的操作主要分为4种：reshape, element-wise, reduction, access】</p>
+<h2 id="Reshape"><a href="#Reshape" class="headerlink" title="Reshape"></a>Reshape</h2><p>As neural network programmers, we have to do the same with our tensors, and usually shaping and reshaping our tensors is a frequent task.</p>
+<p>【reshape在NN编程中是很常见的操作】</p>
+<p>（具体操作见colab运行笔记本:<a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Tensor%20Operations%EF%BC%9AReshape.ipynb">Tensor Operations: Reshape</a> ）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line">t = torch.tensor([</span><br><span class="line">    [<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">    [<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>],</span><br><span class="line">    [<span class="number">3</span>,<span class="number">3</span>,<span class="number">3</span>,<span class="number">3</span>]</span><br><span class="line">], dtype=torch.float32)</span><br><span class="line">t.reshape([<span class="number">2</span>,<span class="number">6</span>])</span><br><span class="line">t.reshape(<span class="number">2</span>,<span class="number">2</span>,<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+<p>Reshaping changes the tensor’s shape but not the underlying data. Our tensor has <code>12</code> elements, so any reshaping must account for exactly <code>12</code> elements.</p>
+<p>【reshape操作不改变底层的数据，只是改变tensor的shape】</p>
+<p> In PyTorch, the <code>-1</code> tells the <code>reshape()</code> function to figure out what the value should be based on the number of elements contained within the tensor.</p>
+<p>【reshape中传入的-1参数，PyTorch可以自动计算该值，因为PyTorch要保证tensor的元素个数不变】</p>
+<h3 id="Squeezing-And-Unsqueezing"><a href="#Squeezing-And-Unsqueezing" class="headerlink" title="Squeezing And Unsqueezing"></a>Squeezing And Unsqueezing</h3><ul>
+<li><p><em>Squeezing</em> a tensor removes the dimensions or axes that have a length of one.</p>
+<p>【Squeezing操作：移除tensor中axis长度为1的维度】</p>
+</li>
+<li><p><em>Unsqueezing</em> a tensor adds a dimension with a length of one.</p>
+<p>【Unsqueezing操作：增加一个axis长度为1的维度】</p>
+</li>
+</ul>
+<p>（具体操作见colab运行笔记本:<a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Tensor%20Operations%EF%BC%9AReshape.ipynb">Tensor Operations: Reshape</a> ）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">t.squeeze()</span><br><span class="line">t.squeeze().unsqueeze(dim=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Concatenation-Tensors"><a href="#Concatenation-Tensors" class="headerlink" title="Concatenation Tensors"></a>Concatenation Tensors</h3><p>We combine tensors using the <code>cat()</code> function, and the resulting tensor will have a shape that depends on the shape of the two input tensors.</p>
+<p>（具体操作见colab运行笔记本:<a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Tensor%20Operations%EF%BC%9AReshape.ipynb">Tensor Operations: Reshape</a> ）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">torch.cat((t1,t2,t3), dim=<span class="number">0</span>)</span><br><span class="line">torch.cat((t1,t2,t3), dim=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Flatten"><a href="#Flatten" class="headerlink" title="Flatten"></a>Flatten</h3><p>这里从CNN的例子看Flatten，CNN的相关细节见：<a href="/2020/04/25/CNN/" title="这篇文章">这篇文章</a></p>
+<p>A tensor flatten operation is a common operation inside convolutional neural networks. This is because convolutional layer outputs that are passed to fully connected layers must be flatted out before the fully connected layer will accept the input.</p>
+<p>【flatten在卷积层网络很常见，因为输入必须flatten后才能连接到一个全连接网络层】</p>
+<p>对于MNIST数据集中18*18的手写数字，在前文说到CNN的输入是<code>[Batch Size, Channels, Height, Width]</code> ，怎么才能flatten tensor的部分axis，而不是全部维度。</p>
+<p>CNN的输入，需要flatten的axes：(C,H,W)</p>
+<p>从dim1维度开始flatten（具体操作见colab运行笔记本:<a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Tensor%20Operations%EF%BC%9AReshape.ipynb">Tensor Operations: Reshape</a> ）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">t.flatten(start_dim=<span class="number">1</span>, end_dim=-<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="Broadcasting-and-Element-Wise"><a href="#Broadcasting-and-Element-Wise" class="headerlink" title="Broadcasting and Element-Wise"></a>Broadcasting and Element-Wise</h2><p>An <em>element-wise</em> operation operates on corresponding elements between tensors.</p>
+<p>【element-wise操作两个tensor之间对应的元素。】</p>
+<h3 id="Broadcasting"><a href="#Broadcasting" class="headerlink" title="Broadcasting"></a>Broadcasting</h3><p>Broadcasting describes how tensors with different shapes are treated during element-wise operations.</p>
+<p>Broadcasting is the concept whose implementation allows us to add scalars to higher dimensional tensors.</p>
+<p>【broadcast描述了不同shape之间的tensor如何进行element-wise操作】</p>
+<p>【broadcast允许我们增加scalars到高维度】</p>
+<p>Let’s think about the <code>t1 + 2</code> operation. Here, the scaler valued tensor is being broadcasted to the shape of <code>t1</code>, and then, the element-wise operation is carried out.</p>
+<p>【在t1+2时，scalar 2实际是先被broadcast到和t1相同的shape, 再执行element-wise操作】</p>
+<p>We have two tensors with different shapes. The goal of broadcasting is to make the tensors have the same shape so we can perform element-wise operations on them.</p>
+<p>（具体操作见colab运行笔记本:<a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Tensor%20Operations%EF%BC%9AElement-Wise.ipynb">Tensor Operations: Element-wise</a> ）</p>
+<h3 id="Broadcasting-Details"><a href="#Broadcasting-Details" class="headerlink" title="Broadcasting Details"></a>Broadcasting Details</h3><p>（具体操作见colab运行笔记本:<a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Tensor%20Operations%EF%BC%9AElement-Wise.ipynb">Tensor Operations: Element-wise</a> ）</p>
+<ul>
+<li><p>Same Shapes: 直接操作</p>
+</li>
+<li><p>Same Rank, Different Shape:</p>
+<ol>
+<li><p>Determine if tensors are compatible（兼容）.</p>
+<p>【两个tensor兼容，才可以对tensor broadcast，再执行element-wise操作】</p>
+<p>We compare the shapes of the two tensors, starting at their last dimensions and working backwards. Our goal is to determine whether each dimension between the two tensors’ shapes is compatible.</p>
+<p>【从最后一个维度向前判断，每个维度是否兼容】</p>
+<p>【判断该维度兼容的条件是满足下面两个条件其一：维度长度相同；或者其中一个为1】</p>
+<p>The dimensions are compatible when either:</p>
+<ul>
+<li>They’re equal to each other.</li>
+<li>One of them is 1.</li>
+</ul>
+</li>
+<li><p>Determine the shape of the resulting tensor.</p>
+<p>【操作的结果是一个新的tensor，结果tensor的每个维度长度是原tensors在该维度的最大值】</p>
+</li>
+</ol>
+</li>
+<li><p>Different Ranks:</p>
+<ol>
+<li><p>Determine if tensors are compatible.(同上)</p>
+<p>When we’re in a situation where the ranks of the two tensors aren’t the same, like what we have here, then we simply substitute a one in for the missing dimensions of the lower-ranked tensor.</p>
+<p>【对低维度的tensor的缺失维度，用1来代替，比如shape为(1,3) 和 ()，低维度的shape变为(1,1)】</p>
+</li>
+<li><p>Determine the shape of the resulting tensor.</p>
+</li>
+</ol>
+</li>
+</ul>
+<h2 id="ArgMax-and-Reduction"><a href="#ArgMax-and-Reduction" class="headerlink" title="ArgMax and Reduction"></a>ArgMax and Reduction</h2><p>A <em>reduction operation</em> on a tensor is an operation that reduces the number of elements contained within the tensor.</p>
+<p>【reduction 操作是能减少tensor元素数量的操作。】</p>
+<p>Reshaping operations gave us the ability to position our elements along particular axes. Element-wise operations allow us to perform operations on elements between two tensors, and reduction operations allow us to perform operations on elements within a single tensor.</p>
+<p>【Reshape操作让我们能沿着某一axis操纵tensor 中的元素位置；Element-wise操作让我们能对tensors之间对应元素进行操作；Reduction操作能让我们对单个tensor间的元素操作。】</p>
+<p>(具体操作见colab笔记本：<a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Tensor%20Operations%EF%BC%9AElement-Wise.ipynb">Tensor Operation: Reduction and Access</a> )</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">t.<span class="built_in">sum</span>()</span><br><span class="line">t.prod()</span><br><span class="line">t.mean()</span><br><span class="line">t.std()</span><br></pre></td></tr></table></figure>
+
+<h3 id="Reducing-Tensors-By-Axes"><a href="#Reducing-Tensors-By-Axes" class="headerlink" title="Reducing Tensors By Axes"></a>Reducing Tensors By Axes</h3><p>只需要对这些方法传一个维度对参数。</p>
+<p>(具体操作见colab笔记本：<a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Tensor%20Operations%EF%BC%9AReduction%20and%20Access.ipynb">Tensor Operation: Reduction and Access</a>   )</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">t.<span class="built_in">sum</span>(dim=<span class="number">0</span>)</span><br><span class="line">t.<span class="built_in">sum</span>(dim=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Argmax"><a href="#Argmax" class="headerlink" title="Argmax"></a>Argmax</h3><p><em>Argmax</em> returns the index location of the maximum value inside a tensor.</p>
+<p>【Argmax返回最大value的index】</p>
+<p>(具体操作见colab笔记本：<a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Tensor%20Operations%EF%BC%9AReduction%20and%20Access.ipynb">Tensor Operation: Reduction and Access</a>  )</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">t.argmax(dim=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="Aceessing-Elements-Inside-Tensors"><a href="#Aceessing-Elements-Inside-Tensors" class="headerlink" title="Aceessing Elements Inside Tensors"></a>Aceessing Elements Inside Tensors</h2><p>The last type of common operation that we need for tensors is the ability to access data from within the tensor.</p>
+<p>【Access操作能获得tensor中的数据，即将tensor中的数据拿出来放在Python内置的数据结构中】</p>
+<p>(具体操作见colab笔记本：<a target="_blank" rel="noopener" href="https://colab.research.google.com/github/f1ed/PyTorch-Notebook/blob/master/Tensor%20Operations%EF%BC%9AReduction%20and%20Access.ipynb">Tensor Operation: Reduction and Access</a> ) </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">t.mean().item()</span><br><span class="line">t.mean(dim=<span class="number">0</span>).tolist()</span><br><span class="line">t.mean(dim=<span class="number">0</span>).numpy()</span><br></pre></td></tr></table></figure>
+
+<h3 id="Advanced-Indexing-And-Slicing"><a href="#Advanced-Indexing-And-Slicing" class="headerlink" title="Advanced Indexing And Slicing"></a>Advanced Indexing And Slicing</h3><p>PyTorch Tensor支持大多数NumPy的index和slicing操作。</p>
+<p>坑：<a target="_blank" rel="noopener" href="https://numpy.org/doc/stable/reference/arrays.indexing.html">https://numpy.org/doc/stable/reference/arrays.indexing.html</a></p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li>挖坑：advanced indexing and slicing: <a target="_blank" rel="noopener" href="https://numpy.org/doc/stable/reference/arrays.indexing.html">https://numpy.org/doc/stable/reference/arrays.indexing.html</a></li>
+</ol>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「PyTorch」：2-Tensors Explained And Operations</p><p><a href="https://f7ed.com/2020/10/20/pytorch-tensors/">https://f7ed.com/2020/10/20/pytorch-tensors/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2020-10-21</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-02-28</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/open-classes/">open-classes, </a><a class="link-muted" rel="tag" href="/tags/DEEPLIZARD/">DEEPLIZARD, </a><a class="link-muted" rel="tag" href="/tags/PyTorch/">PyTorch </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/10/30/unsupervised-learning-pca/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「机器学习-李宏毅」:Unsupervised-PCA</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2020/10/19/pytorch-introduction/"><span class="level-item">「PyTorch」：1-PyTorch Explained</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "bc36606e38474a87a32f16f1ae53213f",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">71</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">139</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Introducing-Tensors"><span class="level-left"><span class="level-item">1</span><span class="level-item">Introducing Tensors</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Tensor-Explained-Data-Structures-of-Deep-Learning"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">Tensor Explained - Data Structures of Deep Learning</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#What-Is-A-Tensor"><span class="level-left"><span class="level-item">1.1.1</span><span class="level-item">What Is A Tensor?</span></span></a></li><li><a class="level is-mobile" href="#Tensors-Are-Generalizations"><span class="level-left"><span class="level-item">1.1.2</span><span class="level-item">Tensors Are Generalizations</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Rank-Axes-And-Shape-Explained"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">Rank, Axes, And Shape Explained</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Rank-And-Indexes"><span class="level-left"><span class="level-item">1.2.1</span><span class="level-item">Rank And Indexes</span></span></a></li><li><a class="level is-mobile" href="#Axes-Of-A-Tensor"><span class="level-left"><span class="level-item">1.2.2</span><span class="level-item">Axes Of A Tensor</span></span></a></li><li><a class="level is-mobile" href="#Shape-Of-A-Tensor"><span class="level-left"><span class="level-item">1.2.3</span><span class="level-item">Shape Of A Tensor</span></span></a></li></ul></li><li><a class="level is-mobile" href="#CNN-Tensors-Shape-Explained"><span class="level-left"><span class="level-item">1.3</span><span class="level-item">CNN Tensors Shape Explained</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Shape-Of-A-CNN-Input"><span class="level-left"><span class="level-item">1.3.1</span><span class="level-item">Shape Of A CNN Input</span></span></a></li><li><a class="level is-mobile" href="#Output-Channels-And-Feature-Maps"><span class="level-left"><span class="level-item">1.3.2</span><span class="level-item">Output Channels And Feature Maps</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#PyTorch-Tensors"><span class="level-left"><span class="level-item">2</span><span class="level-item">PyTorch Tensors</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#PyTorch-Tensors-Attributes"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">PyTorch Tensors Attributes</span></span></a></li><li><a class="level is-mobile" href="#Creating-Tensors"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">Creating Tensors</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#torch-Tensor-Vs-torch-tensor"><span class="level-left"><span class="level-item">2.2.1</span><span class="level-item">torch.Tensor() Vs torch.tensor()</span></span></a></li><li><a class="level is-mobile" href="#Default-dtype-Vs-Inferred-dtype"><span class="level-left"><span class="level-item">2.2.2</span><span class="level-item">Default dtype Vs Inferred dtype</span></span></a></li><li><a class="level is-mobile" href="#Sharing-Memory-For-Performance-Copy-Vs-Share"><span class="level-left"><span class="level-item">2.2.3</span><span class="level-item">Sharing Memory For Performance: Copy Vs Share</span></span></a></li><li><a class="level is-mobile" href="#torch-as-tensor-Vs-torch-from-numpy"><span class="level-left"><span class="level-item">2.2.4</span><span class="level-item">torch.as_tensor() Vs torch.from_numpy()</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Tensor-Operation"><span class="level-left"><span class="level-item">3</span><span class="level-item">Tensor Operation</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Reshape"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">Reshape</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Squeezing-And-Unsqueezing"><span class="level-left"><span class="level-item">3.1.1</span><span class="level-item">Squeezing And Unsqueezing</span></span></a></li><li><a class="level is-mobile" href="#Concatenation-Tensors"><span class="level-left"><span class="level-item">3.1.2</span><span class="level-item">Concatenation Tensors</span></span></a></li><li><a class="level is-mobile" href="#Flatten"><span class="level-left"><span class="level-item">3.1.3</span><span class="level-item">Flatten</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Broadcasting-and-Element-Wise"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">Broadcasting and Element-Wise</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Broadcasting"><span class="level-left"><span class="level-item">3.2.1</span><span class="level-item">Broadcasting</span></span></a></li><li><a class="level is-mobile" href="#Broadcasting-Details"><span class="level-left"><span class="level-item">3.2.2</span><span class="level-item">Broadcasting Details</span></span></a></li></ul></li><li><a class="level is-mobile" href="#ArgMax-and-Reduction"><span class="level-left"><span class="level-item">3.3</span><span class="level-item">ArgMax and Reduction</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Reducing-Tensors-By-Axes"><span class="level-left"><span class="level-item">3.3.1</span><span class="level-item">Reducing Tensors By Axes</span></span></a></li><li><a class="level is-mobile" href="#Argmax"><span class="level-left"><span class="level-item">3.3.2</span><span class="level-item">Argmax</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Aceessing-Elements-Inside-Tensors"><span class="level-left"><span class="level-item">3.4</span><span class="level-item">Aceessing Elements Inside Tensors</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Advanced-Indexing-And-Slicing"><span class="level-left"><span class="level-item">3.4.1</span><span class="level-item">Advanced Indexing And Slicing</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Reference"><span class="level-left"><span class="level-item">4</span><span class="level-item">Reference</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

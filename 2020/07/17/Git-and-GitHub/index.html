@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Tools」:Git and GitHub - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="这篇文章具体讲述了Git工具的基本本地库操作和与远程库交互的基本操作，包括使用GitHub进行团队外的协作开发。"><meta property="og:type" content="blog"><meta property="og:title" content="「Tools」:Git and GitHub"><meta property="og:url" content="https://f7ed.com/2020/07/17/Git-and-GitHub/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="这篇文章具体讲述了Git工具的基本本地库操作和与远程库交互的基本操作，包括使用GitHub进行团队外的协作开发。"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/HN7eDvzddL08yTes6O0fZgqQ.jpeg"><meta property="article:published_time" content="2020-07-17T16:00:00.000Z"><meta property="article:modified_time" content="2022-11-06T02:48:47.881Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Tools"><meta property="article:tag" content="Git"><meta property="article:tag" content="GitHub"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/HN7eDvzddL08yTes6O0fZgqQ.jpeg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2020/07/17/Git-and-GitHub/"},"headline":"「Tools」:Git and GitHub","image":[],"datePublished":"2020-07-17T16:00:00.000Z","dateModified":"2022-11-06T02:48:47.881Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"这篇文章具体讲述了Git工具的基本本地库操作和与远程库交互的基本操作，包括使用GitHub进行团队外的协作开发。"}</script><link rel="canonical" href="https://f7ed.com/2020/07/17/Git-and-GitHub/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Tools」:Git and GitHub</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2020-07-17T16:00:00.000Z" title="2020-07-17T16:00:00.000Z">2020-07-18</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2022-11-06T02:48:47.881Z" title="2022-11-06T02:48:47.881Z">2022-11-06</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Tools/">Tools</a></span><span class="level-item"><i class="far fa-clock"></i> 21 minutes read (About 3104 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>这篇文章具体讲述了Git工具的基本本地库操作和与远程库交互的基本操作，包括使用GitHub进行团队外的协作开发。</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><span id="more"></span>
+
+<h1 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h1><h2 id="Git简介"><a href="#Git简介" class="headerlink" title="Git简介"></a>Git简介</h2><h3 id="Git历史："><a href="#Git历史：" class="headerlink" title="Git历史："></a>Git历史：</h3><p>Linux的代码管理：</p>
+<p>1991 Linus本人手动合并代码</p>
+<p>2002 使用BitKeeper商业软件，授予Linux社区免费使用版本控制</p>
+<p>2005 Linus自己用C语言开发了一个分布式版本控制系统：Git</p>
+<blockquote>
+<p>Linus: Talk is cheap, show me the code.</p>
+</blockquote>
+<p>2008 Github上线</p>
+<hr>
+<p>Git的优势：</p>
+<ul>
+<li><p>大部分操作在本地完成，不需要联网。</p>
+</li>
+<li><p>完整性保证：每次提交进行哈希。</p>
+</li>
+<li><p>尽可能添加数据而不是删除/修改数据，版本都在。</p>
+</li>
+<li><p>分支操作快捷流畅，以快照的形式。</p>
+</li>
+<li><p>与Linux命令全面兼容。</p>
+</li>
+</ul>
+<h3 id="Git的结构"><a href="#Git的结构" class="headerlink" title="Git的结构"></a>Git的结构</h3><img src="https://s1.ax1x.com/2020/07/18/UcvvkQ.png" alt="Git的结构" style="zoom:35%;" />
+
+
+
+<h3 id="Git和代码托管中心"><a href="#Git和代码托管中心" class="headerlink" title="Git和代码托管中心"></a>Git和代码托管中心</h3><p>代码托管中心的任务：维护远程库</p>
+<p>局域网环境：搭建GitLab作为代码托管中心</p>
+<p>外网环境：可以用GitHub和码云作为代码托管中心</p>
+<h3 id="本地库和远程库的交互"><a href="#本地库和远程库的交互" class="headerlink" title="本地库和远程库的交互"></a>本地库和远程库的交互</h3><p>团队内：</p>
+<img src="https://s1.ax1x.com/2020/07/18/UcvxYj.png" alt="团队内交互" style="zoom:35%;" />
+
+
+
+<p>团队外：</p>
+<img src="https://s1.ax1x.com/2020/07/18/Ucvzfs.png" alt="团队外交互" style="zoom:35%;" />
+
+<p>fork：复制一份属于自己的远程库</p>
+<p>开发新的内容后向库的拥有者 pull request拉取请求，原拥有者可以审核，审核通过后执行merge操作合并到自己的远程库的分支上。</p>
+<h2 id="Git命令行基本操作"><a href="#Git命令行基本操作" class="headerlink" title="Git命令行基本操作"></a>Git命令行基本操作</h2><h3 id="本地库初始化"><a href="#本地库初始化" class="headerlink" title="本地库初始化"></a>本地库初始化</h3><ul>
+<li><p>初始化本地库</p>
+<p><code>git init</code> </p>
+</li>
+</ul>
+<p>.git文件存放的是本地库相关的子目录和文件，不要删除和随意修改。</p>
+<h3 id="删除本地git库"><a href="#删除本地git库" class="headerlink" title="删除本地git库"></a>删除本地git库</h3><p>也就是删除本地的<code>.git</code> 文件</p>
+<ul>
+<li>删除本地库：<code>rm -rf .git</code> </li>
+</ul>
+<h3 id="本地库设置签名"><a href="#本地库设置签名" class="headerlink" title="本地库设置签名"></a>本地库设置签名</h3><ul>
+<li><p>形式：</p>
+<p>用户名：</p>
+<p>Email：</p>
+</li>
+<li><p>作用：区分不同开发人员的身份</p>
+</li>
+</ul>
+<p>注：这里设置的签名与远程代码托管中心没有关系。</p>
+<ul>
+<li><p>命令：</p>
+<ul>
+<li><p>项目级别：设置签名仅在本地库起效（如果既有项目级别和用户级别的签名，按照项目级别为准）</p>
+<p>设置用户名命令：<code>git config user.name ***</code></p>
+<p>设置用户邮箱： <code>git config user.email *****@outlook.com</code></p>
+<p>该信息保存在.git/config文件中。</p>
+</li>
+<li><p>用户级别：设置签名在当前操作系统的用户范围</p>
+<p>设置用户名命令：<code>git config --global user.name ***</code></p>
+<p>设置用户邮箱命令：<code>git config --global user.email ****</code></p>
+<p>该消息保存在系统文件~/.gitconfig文件</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="查看状态"><a href="#查看状态" class="headerlink" title="查看状态"></a>查看状态</h3><ul>
+<li><p>查看工作区、暂存区状态。</p>
+<p> <code>git status</code> </p>
+</li>
+</ul>
+<h3 id="本地库版本信息查看"><a href="#本地库版本信息查看" class="headerlink" title="本地库版本信息查看"></a>本地库版本信息查看</h3><p>HEAD: 指针，表示当前版本的位置。</p>
+<p>显示版本：</p>
+<ul>
+<li><p>完整的版本信息记录（包括完整版本哈希值、作者、提交时间）</p>
+<p><code>git log</code> （空格向下翻页；b 向上翻页； q退出显示）</p>
+</li>
+<li><p>一行只显示一个版本，简洁版。</p>
+<p><code>git log --pretty=oneline</code> </p>
+</li>
+<li><p>一行也只显示一个版本，终极简洁版，哈希值也只显示前面的一部分（当作该版本的局部索引）。</p>
+<p><code>git log --oneline</code> </p>
+</li>
+<li><p><code>git reflog</code> ：跟踪本地库的历史更新，可以看到HEAD之后（“未来“）的版本。</p>
+<p>HEAD@{i}：i表示HEAD指针移动到该版本需要后退的步数。</p>
+</li>
+</ul>
+<h3 id="工作区操作：添加-修改-提交-删除"><a href="#工作区操作：添加-修改-提交-删除" class="headerlink" title="工作区操作：添加/修改/提交/删除"></a>工作区操作：添加/修改/提交/删除</h3><p>对于这些命令，其实在使用<code>git status</code> 时，都会有相关提示。</p>
+<ul>
+<li><p>提交到暂存区（增加、修改、删除）：<code>git add &lt;filename&gt;</code> </p>
+</li>
+<li><p>撤销工作区的修改（discard changes in working directory）</p>
+<p><code>git checkout -- &lt;file&gt;</code> </p>
+</li>
+</ul>
+<h3 id="暂存区操作：添加-修改-提交-删除"><a href="#暂存区操作：添加-修改-提交-删除" class="headerlink" title="暂存区操作：添加/修改/提交/删除"></a>暂存区操作：添加/修改/提交/删除</h3><p>对于这些命令，其实在使用<code>git status</code> 时，都会有相关提示。</p>
+<ul>
+<li><p>添加/修改：将工作区的文件添加到暂存区（/或更新暂存区的文件）。</p>
+<p> <code>git add &lt;filename&gt;</code> </p>
+</li>
+<li><p>删除：将文件从暂存区删除</p>
+<p><code>git rm --cached &lt;filename&gt;</code>  </p>
+</li>
+<li><p>提交：将暂存区的文件提交到本地库。（输入提交信息）</p>
+<p><code>git commit -m &lt;message&gt; [filename]</code></p>
+</li>
+<li><p>修改后的提交：提交修改后的文件至本地库（已在暂存区有旧版本），同时更新暂存区和本地库。</p>
+<p><code>git commit -m &lt;message&gt; [filename]</code> </p>
+</li>
+<li><p>修改commit 注释<br><code>git commit --amend</code></p>
+</li>
+</ul>
+<h3 id="版本前进-后退"><a href="#版本前进-后退" class="headerlink" title="版本前进/后退"></a>版本前进/后退</h3><p>本质是HEAD指针的移动。</p>
+<ul>
+<li><p>基于索引操作：版本可以后退和前进。(索引就是reflog形式下的局部哈希值)</p>
+<p><code>git reset --hard [局部索引值]</code>  </p>
+</li>
+<li><p>使用<code>^</code> ： 版本只能往后退 。（基于reflog形式下的步数）</p>
+<p><code>git reset --hard HEAD^^</code> (后退两步)</p>
+</li>
+<li><p>使用<code>~n</code> ：版本往后退n步。</p>
+<p><code>git reset --hard HEAD~3</code> </p>
+</li>
+</ul>
+<p><strong>版本前进/后退reset命令的参数对比：</strong></p>
+<ul>
+<li><p><code>--soft</code></p>
+<ul>
+<li><p>仅仅在本地库移动HEAD指针。</p>
+<p>如下图，显得暂存区和工作区版本比本地库前进了一步。</p>
+<img src="https://s1.ax1x.com/2020/07/18/UcvXTg.png" alt="--soft命令" style="zoom:50%;" />
+</li>
+</ul>
+</li>
+<li><p><code>--mixed</code></p>
+<ul>
+<li><p>在本地库移动HEAD指针</p>
+</li>
+<li><p>并重置暂存区，暂存区和本地库一致。</p>
+<p>如下图，显得工作区版本比本地库和暂存区版本前进了一步。</p>
+<img src="https://s1.ax1x.com/2020/07/18/UcvO0S.png" alt="--mixed命令" style="zoom:50%;" />
+</li>
+</ul>
+</li>
+<li><p><code>--hard</code></p>
+<ul>
+<li>在本地库移动HEAD指针</li>
+<li>重置暂存区</li>
+<li>重置工作区</li>
+</ul>
+</li>
+</ul>
+<h3 id="删除文件后找回"><a href="#删除文件后找回" class="headerlink" title="删除文件后找回"></a>删除文件后找回</h3><p>前提：删除前，文件存在的状态提交到了本地库。</p>
+<p>操作：</p>
+<ul>
+<li><p>删除的操作已经提交到本地库</p>
+<ul>
+<li><p>删除操作：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rm a.txt</span><br><span class="line">git add a.txt</span><br><span class="line">git commit -m &quot;delete a.txt&quot; a.txt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>git reset --hard [历史版本指针位置]</code> </p>
+</li>
+</ul>
+</li>
+<li><p>删除操作未提交到本地库</p>
+<ul>
+<li><p>删除操作：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//工作区删除</span><br><span class="line">rm a.txt</span><br><span class="line">//缓存区也删除</span><br><span class="line">rm a.txt</span><br><span class="line">git add a.txt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>git reset --hard HEAD</code> </p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="比较差异"><a href="#比较差异" class="headerlink" title="比较差异"></a>比较差异</h3><ul>
+<li><p>工作区文件和暂存区文件比较</p>
+<p><code>git diff [filename]</code> </p>
+</li>
+<li><p>暂存区和本地库内容比较</p>
+<p><code>git diff --cached</code> </p>
+</li>
+<li><p>工作区文件和本地库文件比较，指针可以使用<code>HEAD^</code> </p>
+<p><code>git diff [指针] [filename]</code> </p>
+</li>
+<li><p>可以不加文件名，即比较全部文件。</p>
+</li>
+<li><p>任意版本之间的内容比较：</p>
+<p>显示两次差异文件</p>
+<p><code>git diff 版本1hash/指针 版本2hash/指针 --stat</code> </p>
+<p>具体显示差异文件</p>
+<p><code>git diff hash1/指针 hash2/指针 filename</code> </p>
+</li>
+</ul>
+<h2 id="分支管理"><a href="#分支管理" class="headerlink" title="分支管理"></a>分支管理</h2><h3 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h3><p>分支：版本控制过程中，使用多条线同时推进多个任务。 </p>
+<img src="https://s1.ax1x.com/2020/07/18/Ucz94H.png" alt="Ucz94H.png" style="zoom:50%;" />
+
+<p>master: 主版本分支/部署到服务器运行的分支。</p>
+<p>feature_ ：开发其他功能的分支。</p>
+<p>hot_fix: 热修复，bug修复分支。</p>
+<p>分支的好处：</p>
+<ul>
+<li>并行：同时并行推进多个功能开发。</li>
+<li>独立：各个分支在开发过程中，如果有个分支开发失败，不会影响其他分支。</li>
+</ul>
+<h3 id="分支操作：创建-查看-切换-合并"><a href="#分支操作：创建-查看-切换-合并" class="headerlink" title="分支操作：创建/查看/切换/合并"></a>分支操作：创建/查看/切换/合并</h3><ul>
+<li><p>创建分支</p>
+<p><code>git branch &lt;branch name&gt;</code>  </p>
+</li>
+<li><p>删除分支</p>
+<p><code>git branch -d &lt;branch name&gt;</code> </p>
+</li>
+<li><p>删除远程分支：</p>
+<ul>
+<li>查看远程分支：<code>git branch -r</code> </li>
+<li>删除本地的远程跟踪分支：<code>git branch -r -d origin/branch-name</code> </li>
+<li>删除真正的远程分支：<code>git push origin : branch-name</code> </li>
+</ul>
+</li>
+<li><p>查看分支</p>
+<p><code>git branch -v</code> </p>
+</li>
+<li><p>切换分支</p>
+<p><code>git checkout [branch name]</code> </p>
+</li>
+<li><p>合并分支</p>
+<ol>
+<li><p>切换到接受修改的分支（如master）</p>
+<p><code>git checkout [合并到的主分支]</code> </p>
+</li>
+<li><p>执行merge合并操作</p>
+<p><code>git merge [有修改的分支]</code></p>
+</li>
+</ol>
+</li>
+</ul>
+<h3 id="解决合并分支后产生的冲突"><a href="#解决合并分支后产生的冲突" class="headerlink" title="解决合并分支后产生的冲突"></a>解决合并分支后产生的冲突</h3><p>冲突的表现，显示到有冲突的文件：</p>
+<img src="https://s1.ax1x.com/2020/07/18/UczPCd.png" alt="冲突文件内容" style="zoom:50%;" />
+
+
+
+<p>冲突解决：</p>
+<ol>
+<li><p>删除文件中的特殊符号</p>
+</li>
+<li><p>协商再编辑文件</p>
+</li>
+<li><p>添加新文件</p>
+<p><code>git add [filename]</code></p>
+</li>
+<li><p>提交（注意：此时的提交不能带文件名）</p>
+<p><code>git commit -m &quot;message&quot;</code> </p>
+</li>
+</ol>
+<h3 id="rebase：整理分支"><a href="#rebase：整理分支" class="headerlink" title="rebase：整理分支"></a>rebase：整理分支</h3><ul>
+<li>rebase 操作可以把本地未push的分叉提交历史 整理成直线。</li>
+<li>rebase的目的：在查看历史提交的变化时更容易。</li>
+</ul>
+<h2 id="Git-基本原理"><a href="#Git-基本原理" class="headerlink" title="Git 基本原理"></a>Git 基本原理</h2><h3 id="哈希算法"><a href="#哈希算法" class="headerlink" title="哈希算法"></a>哈希算法</h3><p>特点：</p>
+<ul>
+<li>得到的加密密文长度相同。</li>
+<li>算法确定，输入确定后，输出一定确定。</li>
+<li>输入数据发生一点点变化，输出的变化会很大。</li>
+<li>Git底层采用SHA-1算法。</li>
+</ul>
+<p>哈希算法保证了Git的数据完整性。</p>
+<h3 id="Git保存版本的机制"><a href="#Git保存版本的机制" class="headerlink" title="Git保存版本的机制"></a>Git保存版本的机制</h3><p>集中式版本控制工具（如SVN）：保存的信息是每个基本文件和每个文件随时间逐步累积的差异。</p>
+<p>Git是分布式的版本控制工具。</p>
+<p>Git把数据看作是文件系统的快照（可以理解为当前内存版本的文件的索引），每次提交更新时Git对当前内存的全部文件制作一个快照并保存这个快照的索引。如果文件没有修改，Git不会重新存储该文件，只是保留一个连接指向之前存储的文件。</p>
+<p>Git的提交对象：</p>
+<img src="https://s1.ax1x.com/2020/07/18/UcvLm8.png" alt="UcvLm8.png" style="zoom:50%;" />
+
+<p>上图中，每个文件都有一个哈希值/索引，提交时新建一个树结点，其中包含指向每个文件的指针/索引，提交的对象包括该树结点的指针/哈希值。</p>
+<p>Git版本对象链条：</p>
+<img src="https://s1.ax1x.com/2020/07/18/UcvbOf.png" alt="Git版本对象链条" style="zoom:50%;" />
+
+
+
+<p>所以：</p>
+<p>Git 分支的创建：等于新建一个指向版本的指针。</p>
+<img src="https://s1.ax1x.com/2020/07/18/UcvH6P.png" alt="分支创建" style="zoom:50%;" />
+
+
+
+<p>Git分支的切换：改变HEAD指针所指的指针。</p>
+<img src="https://s1.ax1x.com/2020/07/18/Ucv7lt.png" alt="分支切换" style="zoom:50%;" />
+
+
+
+<p>Git分支版本的移动：分支指针的移动。</p>
+<img src="https://s1.ax1x.com/2020/07/18/UcvTSI.png" alt="分支版本移动" style="zoom:50%;" />
+
+<h1 id="GitHub"><a href="#GitHub" class="headerlink" title="GitHub"></a>GitHub</h1><h2 id="基本交互"><a href="#基本交互" class="headerlink" title="基本交互"></a>基本交互</h2><h3 id="创建-查看远程库地址别名"><a href="#创建-查看远程库地址别名" class="headerlink" title="创建/查看远程库地址别名"></a>创建/查看远程库地址别名</h3><p>在GitHub创建远程库后</p>
+<ul>
+<li><p>在本地添加远程库地址别名</p>
+<p><code>git remote add [别名] [https/ssh 地址]</code></p>
+<p><code>git remote add orgin https://...</code>  </p>
+</li>
+<li><p>查看当前所有远程库地址别名</p>
+<p><code>git remote -v</code> </p>
+</li>
+<li><p>移除远程库</p>
+<p><code>git remote remove [别名]</code> </p>
+</li>
+</ul>
+<h3 id="本地库内容推送到远程库"><a href="#本地库内容推送到远程库" class="headerlink" title="本地库内容推送到远程库"></a>本地库内容推送到远程库</h3><p>前提：本地库已添加远程库地址别名。</p>
+<ul>
+<li><p>在本地将本地库推送到远程分支</p>
+<p><code>git push [别名] [分支名]</code> </p>
+<p><code>git push origin master</code> </p>
+</li>
+</ul>
+<h3 id="将远程库克隆到本地库"><a href="#将远程库克隆到本地库" class="headerlink" title="将远程库克隆到本地库"></a>将远程库克隆到本地库</h3><ul>
+<li><code>git clone https/ssh_address</code> </li>
+<li>效果：完整把远程库下载到本地；添加origin作为远程库地址别名；初始化本地库（含有.git文件）</li>
+</ul>
+<h2 id="团队内协作"><a href="#团队内协作" class="headerlink" title="团队内协作"></a>团队内协作</h2><h3 id="团队成员邀请"><a href="#团队成员邀请" class="headerlink" title="团队成员邀请"></a>团队成员邀请</h3><p>项目创建者在项目”Setting”-“Callaborators”里邀请成员。</p>
+<h3 id="拉取：同步本地库"><a href="#拉取：同步本地库" class="headerlink" title="拉取：同步本地库"></a>拉取：同步本地库</h3><ul>
+<li><p>在本地pull操作同步本地库与远程库相同。</p>
+</li>
+<li><p>fetch：查看远程库分支，可以切换至远程库分支，查看远程库分支的文件具体内容，决定是否合并。</p>
+<p><code>git fetch [远程库地址别名] [远程分支名]</code> </p>
+<ul>
+<li><p>切换至远程库分支</p>
+<p><code>git checkout orgin/master</code></p>
+</li>
+</ul>
+</li>
+<li><p>merge：（切换至本地库master分支），合并远程库分支。</p>
+<p><code>git merge [远程库地址别名]/[远程分支名]</code> </p>
+</li>
+<li><p>pull = fetch + merge</p>
+<p><code>git pull [远程库地址别名] [远程分支名]</code> </p>
+</li>
+</ul>
+<p>注：如果是简单的修改，可以直接pull拉取，如果不确定远程库修改内容，可以先fetch后再合并分支。</p>
+<h3 id="本地拉取与远程库冲突"><a href="#本地拉取与远程库冲突" class="headerlink" title="本地拉取与远程库冲突"></a>本地拉取与远程库冲突</h3><ul>
+<li>冲突发生原因：不是基于GitHub远程库的最新版进行修改，就不能push，在修改之前必须pull。</li>
+<li>pull拉取下来后如果进入冲突状态，就按照“分支冲突解决办法”</li>
+</ul>
+<h2 id="跨团队协作"><a href="#跨团队协作" class="headerlink" title="跨团队协作"></a>跨团队协作</h2><ol>
+<li><p>fork操作：复制一份远程库。</p>
+<p>团队外的人，在项目节目点fork，即可fork一份远程库，该远程库的来源是创建该库的开发者，而fork出的远程库的所有者是执行fork操作的人。</p>
+</li>
+<li><p>clone操作：下载到本地库。</p>
+</li>
+<li><p>push操作：本地修改，推送至远程库。</p>
+</li>
+<li><p>pull request 请求：在远程库（代码托管中心GitHub）执行pull request请求，请求合并该修改到原远程库。</p>
+</li>
+<li><p>（原远程库所有者）审核操作：确认是否合并。</p>
+</li>
+</ol>
+<h2 id="SSH登陆"><a href="#SSH登陆" class="headerlink" title="SSH登陆"></a>SSH登陆</h2><ol>
+<li><p>在当前用户的根目录，生产.ssh密钥目录</p>
+<p><code>ssh-keygen -t rsa -C email@address</code> </p>
+</li>
+<li><p>将<code>.ssh/id_rsa.pub</code> 文件的内容复制到GitHub新建ssh密钥的窗口下。</p>
+</li>
+<li><p>创建ssh远程地址别名</p>
+<p><code>git remote add origin ssh_address</code> </p>
+</li>
+</ol>
+<ul>
+<li><p>Git仓库和SSH-key关联</p>
+<p><code>ssh-add &quot;id_rsa address</code> </p>
+</li>
+</ul>
+<h1 id="Git工作流"><a href="#Git工作流" class="headerlink" title="Git工作流"></a>Git工作流</h1><p>待补充[1]</p>
+<h1 id="Gitlab服务器搭建"><a href="#Gitlab服务器搭建" class="headerlink" title="Gitlab服务器搭建"></a>Gitlab服务器搭建</h1><p>待补充[2]</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li>Git工作流待补充</li>
+<li>Gitlab服务器搭建</li>
+</ol>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Tools」:Git and GitHub</p><p><a href="https://f7ed.com/2020/07/17/Git-and-GitHub/">https://f7ed.com/2020/07/17/Git-and-GitHub/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2020-07-18</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2022-11-06</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Tools/">Tools, </a><a class="link-muted" rel="tag" href="/tags/Git/">Git, </a><a class="link-muted" rel="tag" href="/tags/GitHub/">GitHub </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/07/20/Docker/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Tools」：Docker</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2020/07/02/semi-supervised/"><span class="level-item">「机器学习-李宏毅」:Semi-supervised Learning</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "2714593ff8ed55205fa63210d9d19c14",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">71</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">139</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Git"><span class="level-left"><span class="level-item">1</span><span class="level-item">Git</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Git简介"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">Git简介</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Git历史："><span class="level-left"><span class="level-item">1.1.1</span><span class="level-item">Git历史：</span></span></a></li><li><a class="level is-mobile" href="#Git的结构"><span class="level-left"><span class="level-item">1.1.2</span><span class="level-item">Git的结构</span></span></a></li><li><a class="level is-mobile" href="#Git和代码托管中心"><span class="level-left"><span class="level-item">1.1.3</span><span class="level-item">Git和代码托管中心</span></span></a></li><li><a class="level is-mobile" href="#本地库和远程库的交互"><span class="level-left"><span class="level-item">1.1.4</span><span class="level-item">本地库和远程库的交互</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Git命令行基本操作"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">Git命令行基本操作</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#本地库初始化"><span class="level-left"><span class="level-item">1.2.1</span><span class="level-item">本地库初始化</span></span></a></li><li><a class="level is-mobile" href="#删除本地git库"><span class="level-left"><span class="level-item">1.2.2</span><span class="level-item">删除本地git库</span></span></a></li><li><a class="level is-mobile" href="#本地库设置签名"><span class="level-left"><span class="level-item">1.2.3</span><span class="level-item">本地库设置签名</span></span></a></li><li><a class="level is-mobile" href="#查看状态"><span class="level-left"><span class="level-item">1.2.4</span><span class="level-item">查看状态</span></span></a></li><li><a class="level is-mobile" href="#本地库版本信息查看"><span class="level-left"><span class="level-item">1.2.5</span><span class="level-item">本地库版本信息查看</span></span></a></li><li><a class="level is-mobile" href="#工作区操作：添加-修改-提交-删除"><span class="level-left"><span class="level-item">1.2.6</span><span class="level-item">工作区操作：添加/修改/提交/删除</span></span></a></li><li><a class="level is-mobile" href="#暂存区操作：添加-修改-提交-删除"><span class="level-left"><span class="level-item">1.2.7</span><span class="level-item">暂存区操作：添加/修改/提交/删除</span></span></a></li><li><a class="level is-mobile" href="#版本前进-后退"><span class="level-left"><span class="level-item">1.2.8</span><span class="level-item">版本前进/后退</span></span></a></li><li><a class="level is-mobile" href="#删除文件后找回"><span class="level-left"><span class="level-item">1.2.9</span><span class="level-item">删除文件后找回</span></span></a></li><li><a class="level is-mobile" href="#比较差异"><span class="level-left"><span class="level-item">1.2.10</span><span class="level-item">比较差异</span></span></a></li></ul></li><li><a class="level is-mobile" href="#分支管理"><span class="level-left"><span class="level-item">1.3</span><span class="level-item">分支管理</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#分支"><span class="level-left"><span class="level-item">1.3.1</span><span class="level-item">分支</span></span></a></li><li><a class="level is-mobile" href="#分支操作：创建-查看-切换-合并"><span class="level-left"><span class="level-item">1.3.2</span><span class="level-item">分支操作：创建/查看/切换/合并</span></span></a></li><li><a class="level is-mobile" href="#解决合并分支后产生的冲突"><span class="level-left"><span class="level-item">1.3.3</span><span class="level-item">解决合并分支后产生的冲突</span></span></a></li><li><a class="level is-mobile" href="#rebase：整理分支"><span class="level-left"><span class="level-item">1.3.4</span><span class="level-item">rebase：整理分支</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Git-基本原理"><span class="level-left"><span class="level-item">1.4</span><span class="level-item">Git 基本原理</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#哈希算法"><span class="level-left"><span class="level-item">1.4.1</span><span class="level-item">哈希算法</span></span></a></li><li><a class="level is-mobile" href="#Git保存版本的机制"><span class="level-left"><span class="level-item">1.4.2</span><span class="level-item">Git保存版本的机制</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#GitHub"><span class="level-left"><span class="level-item">2</span><span class="level-item">GitHub</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#基本交互"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">基本交互</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#创建-查看远程库地址别名"><span class="level-left"><span class="level-item">2.1.1</span><span class="level-item">创建/查看远程库地址别名</span></span></a></li><li><a class="level is-mobile" href="#本地库内容推送到远程库"><span class="level-left"><span class="level-item">2.1.2</span><span class="level-item">本地库内容推送到远程库</span></span></a></li><li><a class="level is-mobile" href="#将远程库克隆到本地库"><span class="level-left"><span class="level-item">2.1.3</span><span class="level-item">将远程库克隆到本地库</span></span></a></li></ul></li><li><a class="level is-mobile" href="#团队内协作"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">团队内协作</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#团队成员邀请"><span class="level-left"><span class="level-item">2.2.1</span><span class="level-item">团队成员邀请</span></span></a></li><li><a class="level is-mobile" href="#拉取：同步本地库"><span class="level-left"><span class="level-item">2.2.2</span><span class="level-item">拉取：同步本地库</span></span></a></li><li><a class="level is-mobile" href="#本地拉取与远程库冲突"><span class="level-left"><span class="level-item">2.2.3</span><span class="level-item">本地拉取与远程库冲突</span></span></a></li></ul></li><li><a class="level is-mobile" href="#跨团队协作"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">跨团队协作</span></span></a></li><li><a class="level is-mobile" href="#SSH登陆"><span class="level-left"><span class="level-item">2.4</span><span class="level-item">SSH登陆</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Git工作流"><span class="level-left"><span class="level-item">3</span><span class="level-item">Git工作流</span></span></a></li><li><a class="level is-mobile" href="#Gitlab服务器搭建"><span class="level-left"><span class="level-item">4</span><span class="level-item">Gitlab服务器搭建</span></span></a></li><li><a class="level is-mobile" href="#Reference"><span class="level-left"><span class="level-item">5</span><span class="level-item">Reference</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

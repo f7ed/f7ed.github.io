@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Cryptography-MIT6875」: Lecture 14 - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Topics Covered:    Perfect ZK Proof for QR La"><meta property="og:type" content="blog"><meta property="og:title" content="「Cryptography-MIT6875」: Lecture 14"><meta property="og:url" content="https://f7ed.com/2022/08/10/mit6875-lec14/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Topics Covered:    Perfect ZK Proof for QR La"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/mit6875-lec14-thumbnial.png"><meta property="article:published_time" content="2022-08-10T16:00:00.000Z"><meta property="article:modified_time" content="2022-08-15T06:56:48.462Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="ZK Proof"><meta property="article:tag" content="Commitment"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/mit6875-lec14-thumbnial.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2022/08/10/mit6875-lec14/"},"headline":"「Cryptography-MIT6875」: Lecture 14","image":["https://f7ed.com/gallery/thumbnails/mit6875-lec14-thumbnial.png"],"datePublished":"2022-08-10T16:00:00.000Z","dateModified":"2022-08-15T06:56:48.462Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Topics Covered:    Perfect ZK Proof for QR La"}</script><link rel="canonical" href="https://f7ed.com/2022/08/10/mit6875-lec14/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Cryptography-MIT6875」: Lecture 14</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2022-08-10T16:00:00.000Z" title="2022-08-10T16:00:00.000Z">2022-08-11</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2022-08-15T06:56:48.462Z" title="2022-08-15T06:56:48.462Z">2022-08-15</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Cryptography-MIT6875/">Cryptography-MIT6875</a></span><span class="level-item"><i class="far fa-clock"></i> 23 minutes read (About 3426 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><article class="message message-immersive is-info">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="message-body">
+<i class="fas fa-info-circle mr-2"></i>
+In this <a href="/categories/Cryptography-MIT6875">series</a>, I will learn MIT 6.875, <strong>Foundations of Cryptography</strong>, lectured by <strong>Vinod Vaikuntanathan</strong>.
+<br>Any corrections and advice are welcome. ^ - ^
+</div>
+</article>
+
+<p><font color=blue><u><b>Topics Covered: </b></u></font> </p>
+<ul>
+<li>Perfect ZK Proof for QR Language</li>
+<li>Perfect ZK Proof for Graph Isomorphism</li>
+<li>Comp. ZK Proof for 3Coloring</li>
+<li>All NP Languages have Comp. ZK Proofs</li>
+<li>Commitment Schemes</li>
+</ul>
+<span id="more"></span>
+
+ <article class="message message-immersive is-warning"> <div class="message-body"> <i class="fas fa-exclamation-triangle mr-2"></i>Note:  
+
+<p>The first two sections are also posted at the end of last <a href="/2022/08/09/mit6875-lec13/" title="Lecture">Lecture</a>, just for the continuous and complete description.</p>
+ </div> </article> 
+
+<h1 id="ZK-Definition"><a href="#ZK-Definition" class="headerlink" title="ZK Definition"></a>ZK Definition</h1><p>In the previous Lecture is introduced the <strong>definition of honest-verifier Zero-knowledge.</strong></p>
+<p>When the theorem is true, the view gives the <strong>honest verifier</strong> $V$ <strong>nothing</strong> that $V$ couldn’t have it on his own.</p>
+<p>In <strong>real world,</strong> the verifier could be <strong>malicious</strong> that he can do anything he wants.</p>
+<p>Refine the ZK definitions <strong>for any verifier</strong> $V^*$.</p>
+ <article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i> Recap:
+<p>A <strong>language</strong> $\mathcal{L}$  is actually a set of strings which represent true statements.<br>The <strong>view</strong> of $V^*$ is the transcripts and the coins, which contains all the messages going back and forth.</p>
+ </div> </article> 
+
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Perfect Zero-knowledge Definition:</strong></p>
+ </div> <div class="message-body"> 
+
+<p>An interactive Protocol $(P,V)$ is <strong>perfect zero-knowledge</strong> for a language $\mathcal{L}$ if <font color="red"><strong>for every PPT $V^*$,</strong>  </font>there exists a  (expected) poly time simulator $S$ s.t. for every $x\in \mathcal{L}$, the following two distributions are <strong>identical</strong>:</p>
+<ul>
+<li>$\texttt{view}_{V^*}(P,V^*) $</li>
+<li>$\texttt{sim}_S(x,1^\lambda)$ </li>
+</ul>
+ </div> </article> 
+
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Statistical Zero-knowledge Definition:</strong></p>
+ </div> <div class="message-body"> 
+
+<p>An interactive Protocol $(P,V)$ is <strong>statistical zero-knowledge</strong> for a language $\mathcal{L}$  if <font color="red"><strong>for every PPT $V^*$,</strong>  </font>there exists a  (expected) poly time simulator $S$ s.t. for every $x\in \mathcal{L}$, the following two distributions are <strong>statistical indistinguishable</strong>:</p>
+<ul>
+<li>$\texttt{view}_{V^*}(P,V^*) $</li>
+<li>$\texttt{sim}_S(x,1^\lambda) $</li>
+</ul>
+ </div> </article> 
+
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Computational Zero-knowledge Definition:</strong></p>
+ </div> <div class="message-body"> 
+
+<p>An interactive Protocol $(P,V)$ is <strong>computational zero-knowledge</strong> for a language $\mathcal{L}$ if<font color="red"> <strong>for every PPT $V^*$,</strong> </font>there exists a  (expected) poly time simulator $S$ s.t. for every $x\in \mathcal{L}$, the following two distributions are <strong>computationally indistinguishable</strong>:</p>
+<ul>
+<li>$\texttt{view}_{V^*}(P,V^*)$ </li>
+<li>$\texttt{sim}_S(x,1^\lambda) $</li>
+</ul>
+ </div> </article> 
+
+<h1 id="Perfect-ZK-Proof-for-QR-Language"><a href="#Perfect-ZK-Proof-for-QR-Language" class="headerlink" title="Perfect ZK Proof for QR Language"></a>Perfect ZK Proof for QR Language</h1><p>Recap the zero-knowledge proof for QR Language.</p>
+
+
+$\mathcal{L}=\{(N,y):y \textrm{ is a quadratic residue }\mod N\}$. 
+
+
+
+<img src="https://s1.ax1x.com/2022/08/12/vJUBmF.png" alt="ZK Proof for QR" style="zoom:33%;" />
+
+<p>We proved in last Lecture that the QR protocol is honest-verifier zero knowledge.</p>
+<p>Now we only consider the <strong>malicious-verifier zero knowledge.</strong></p>
+<p>The QR protocol is <strong>malicious-verifier zero knowledge</strong>.</p>
+<ul>
+<li>The view of a malicious verifier $V^*$ is $\texttt{view}_{V^*}(P,V^*)=(s,b,z)$.<ul>
+<li>When $V^*$ obtains the $s$, the <strong>only power</strong> that $V^*$ has is to <u>choose the $b$ in a bizarre fashion rather than random.</u></li>
+<li>So the distribution of $b$ is <strong>not random.</strong></li>
+<li>Let $b=V^*(s)$ denote the bizarre thing generated by $V^*$ after receiving $s$.</li>
+</ul>
+</li>
+<li>The simulator $S$ only gets an instance of $(N,y)$ and wants to generate $\texttt{sim}_S((N,y),1^\lambda)=(s,b,y)$.</li>
+</ul>
+<p>In order to produce the same distribution of $b$, the <strong>simulator</strong> $S$ <u>needs to interact with the malicious verifier $V^*$.</u></p>
+<p>It’s sort of a prover which also needs to interact with the verifier.</p>
+<p>The only <strong>distinction</strong> is that the <strong>prover</strong> $P$ has to <u>be online to answer the challenge</u> from the verifier  $V^*$ and the <strong>simulator</strong> $S$ can <u>be offline with the goal of generating the view.</u></p>
+<p><font color=blue><u><b>Claim:</b></u></font> </p>
+<p>The QR protocol is (malicious-verifier) <strong>perfect zero knowledge.</strong></p>
+<p><font color=blue><u><b>Simulator S works as follows:</b></u></font> </p>
+<ol>
+<li>First set $s=z^2/y^b$ for a random $z$ and a random $b$ and “feed” $s$ to $V^*$</li>
+<li>Let $b'=V^*(s)$. (generated by $V^*$ in any bizarre fashion rather than random)</li>
+<li>If $b=b’$, output $(s,b,z)$ and stop.</li>
+<li>Otherwise, go back to step 1 and repeat. (also called “<strong>rewinding</strong>”)</li>
+</ol>
+<p><font color=blue><u><b>Lemma: </b></u></font> </p>
+<ol>
+<li>$S$ runs in expected polynomial-time.</li>
+<li>When $S$ outputs a view, it is <strong>identical</strong> to the view of $V^*$ in a real execution.</li>
+</ol>
+<p>Lemma 1 is well proven.</p>
+<p>The probability of terminating in one iteration is $1/2$ since $b$ is random.</p>
+<p>So the expected iterations is $2$.</p>
+<p><font color=blue><u><b>Proof of Lemma 2:</b></u></font> </p>
+<ul>
+<li>We need to <strong>prove</strong> that the <strong>distribution of every component is identical.</strong></li>
+<li>Real transcript: $\texttt{view}_{V^*}(P,V^*)=(s,b,z)$ <ul>
+<li>$s$ is square as same as random</li>
+<li>$b$ is <u>generated in any bizarre way,</u> i.e. $b=V^*(s)$.</li>
+<li>$z=\sqrt{sy^b}$ is random</li>
+</ul>
+</li>
+<li>Simulated transcript: $\texttt{sim}_S((N,y),1^\lambda)=(s,b,y)$<ul>
+<li>$s=z^2/y^b$ is square as same as random ($(N,y)\in \mathcal{L}$ so $y$ is square)<br>Besides, the distribution of $s$ hides $b$ perfectly.</li>
+<li>$b$ has <strong>the same distribution</strong> with $b’=V^*(s)$.</li>
+<li>$z$ is random</li>
+</ul>
+</li>
+<li>QED</li>
+</ul>
+<p>So far we have proven the QR protocol is (malicious verifier) zero-knowledge.</p>
+<h1 id="ZK-Proof-for-Graph-Isomorphism"><a href="#ZK-Proof-for-Graph-Isomorphism" class="headerlink" title="ZK Proof for Graph Isomorphism"></a>ZK Proof for Graph Isomorphism</h1> <article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i> <b>Recap the Graph Isomorphism Problem:</b>Two graphs $G_0$ and $G_1$ are **isomorphic graphs** if they have the same number of vertices, edges and also the same edge connectivity.
+<p>The graph isomorphism problem is the <strong>computational problem</strong> of determining whether two finite graphs are isomorphic.</p>
+ </div> </article> 
+
+<p>Now we describe the <strong>zero-knowledge proof for the claim</strong> that $G$ and $H$ are isomorphism graphs.</p>
+<img src="https://s1.ax1x.com/2022/08/12/vJal1x.png" alt="Graph-iso Language" style="zoom:33%;" />
+
+<p>The <strong>interaction protocol</strong> is as shown below:</p>
+<img src="https://s1.ax1x.com/2022/08/12/vJaQ91.png" alt="Perfect ZK Proof for Graph-iso" style="zoom:43%;" />
+
+<p>Prover has the <strong>knowledge</strong> that she knows a map $\pi$  such that $H=\pi(G)$.</p>
+<p><font color=blue><u><b>ZK Proof for Graph-iso:</b></u></font> </p>
+<ol>
+<li><strong>Prover</strong>:<ol>
+<li>choose <u>a random permutation</u> $\rho$</li>
+<li><u>generate a new random graph</u> $K$ such that $K=\rho(G)$.</li>
+<li><u>send the graph</u> $K$ to verifier</li>
+</ol>
+</li>
+<li><strong>Verifier</strong>: generate a random challenge bit $b$</li>
+<li><strong>Prover</strong>: has to answer the challenge bit<ol>
+<li>If $b=0$: Prover <u>sends the map</u> $\pi_0=\rho$ such that $K=\pi_0(G)$<br>(prove that she can map $G$ → $K$)</li>
+<li>If $b=1$: Prover <u>sends the map</u> $\pi_1=\pi\circ \rho^{-1}$ such that $H=\pi_1(K)$<br>(prove that she can map $K$ → $H$)</li>
+</ol>
+</li>
+</ol>
+<p><font color=blue><u><b>Completeness:</b></u></font> </p>
+<p><strong>Completeness</strong> is a property of the protocol when $P$ and $V$ are both honest.</p>
+<p>We prove that the verifier will pass the equations and accept it.</p>
+<ul>
+<li>If $b=0$: check $K=\pi_0(G)=\rho(G)=K$.</li>
+<li>If $b=1$: check $H=\pi_1(K)=\pi\rho^{-1}(K)=\pi(G)=H$</li>
+</ul>
+<p><font color=blue><u><b>Soundness:</b></u></font> </p>
+<p><strong>Soundness</strong> is a property of the protocol when $P$ is malicious.</p>
+<p>The <strong>verifier has to be sound</strong> because it has to work against an arbitrary $P$.</p>
+<ul>
+<li><strong>Suppose</strong> $G$ and $H$ are <strong>non-isomorphic</strong>, and <u>the prover could answer both the verifier challenges.</u></li>
+<li>Then the prover both prepares the $\pi_0$ and $\pi_1$ such that $K=\pi_0(G)$ and $H=\pi_1(K)$.<br>(Otherwise, she’ll be caught in half chance.)</li>
+<li>In other words, the prover can get $H=\pi_0\circ\pi_1(G)$, a <strong>contradiction</strong>.</li>
+<li>QED.</li>
+</ul>
+<p><font color=blue><u><b>Perfect Zero Knowledge:</b></u></font> </p>
+<article class="message message-immersive is-warning">  <div class="message-body">  <i class="fas fa-exclamation-triangle mr-2"></i> The following proof is my <strong>own deduction</strong> since the proof is omitted in the lecture.  <br> <strong>Corrections and advice are welcome.</strong>  </div>  </article>
+
+<ul>
+<li>The view of an arbitrary verifier $V^*$ is $\texttt{view}_{V^*}(P,V^*)=(K,b,\pi_b)$. <ul>
+<li>When $V^*$ receives the graph $K$, the <strong>only power</strong> that $V^*$ has is to <u>choose the $b$ in a bizarre fashion rather than random.</u></li>
+<li>So the distribution of $b$ is <strong>not random.</strong></li>
+<li>Let $b=V^*(K)$ denote the bizarre thing generated by $V^*$ after receiving $K$.</li>
+</ul>
+</li>
+<li>The simulator $S$ only gets an instance of $(G,H)$ and wants to generate $\texttt{sim}_S((G,H),1^\lambda)=(K,b,\pi_b)$.</li>
+</ul>
+<p><font color=blue><u><b>Simulator S works as follows:</b></u></font> </p>
+<ol>
+<li>Pick a random permutation $\rho$ and a random $b$.</li>
+<li>Generate a graph $K$ such that<ol>
+<li>If $b=0$: $K=\rho(G)$.<br>Let $\pi_0=\rho$.</li>
+<li>If $b=1$: $K=\rho(H)$, i.e. $H=\rho^{-1}(K)$.<br>Let $\pi_1=\rho^{-1}$.</li>
+</ol>
+</li>
+<li>Feed the graph $K$ to verifier $V^*$</li>
+<li>Let $b’=V^*(K)$</li>
+<li>If $b=b’$, output $(K, b, \pi_b)$ and stop.</li>
+<li>Otherwise, go back to step 1 and repeat.</li>
+</ol>
+ <article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i> Intuition of my proof:
+
+<p>It sort of split the $K$ into two intermediate points, $K_0$ and $K_1$.<br>The <strong>prover</strong> has the knowledge that could map $G$ to $K$ and map $K$ to $H$.<br>The point is that the <strong>simulator</strong> can <strong>simulate the knowledge</strong> that could map $G$ to $K_0$ and map $K_1$ to $H$.</p>
+ </div> </article> 
+
+<p><font color=blue><u><b>Lemma: </b></u></font> </p>
+<ol>
+<li>$S$ runs in expected polynomial-time.</li>
+<li>When $S$ outputs a view, it is <strong>identical</strong> to the view of $V^*$ in a real execution.</li>
+</ol>
+<p>Lemma 1 is well proven.</p>
+<p>The probability of terminating in one iteration is $1/2$ since $b$ is random.</p>
+<p>So the expected iterations is $2$.</p>
+<p><font color=blue><u><b>Proof of Lemma 2: </b></u></font> </p>
+<ul>
+<li>We need to <strong>prove</strong> that the <strong>distribution of every component is identical.</strong></li>
+<li>Real transcript: $\texttt{view}_{V^*}(P,V^*)=(K,b,\pi_b)$ <ul>
+<li>$K$ is a <strong>random</strong> graph since the random $\rho$.</li>
+<li>$b$ is generated <strong>in any bizarre way</strong>, i.e. $b=V^*(s)$.</li>
+<li>$\pi_b$ is a <strong>random</strong> map<ul>
+<li>If $b=0$: $\pi_0=\rho$. → random map</li>
+<li>If $b=1$: $\pi_1=\pi\circ \rho^{-1}$. → random map.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Simulated transcript: $\texttt{sim}_S((G,H),1^\lambda)=(K,b,\pi_b)$<ul>
+<li>$\pi_b$ is a <strong>random map</strong> since $\rho$ is random.<ul>
+<li>If $b=0$: $\pi_0=\rho$.</li>
+<li>If $b=1$: $\pi_1=\rho^{-1}$.</li>
+</ul>
+</li>
+<li>$K$ is a <strong>random graph.</strong><ul>
+<li>If $b=0$, $K=\pi_0(G)=\rho(G)$</li>
+<li>If $b=1$, $K=\pi_1(H)=\rho^{-1}(H)$</li>
+</ul>
+</li>
+<li>$b$ has <strong>the same distribution</strong> with $b’=V^*(s)$.</li>
+</ul>
+</li>
+<li>QED</li>
+</ul>
+<h1 id="Efficient-Prover-given-a-Witness"><a href="#Efficient-Prover-given-a-Witness" class="headerlink" title="Efficient Prover (given a Witness)"></a>Efficient Prover (given a Witness)</h1><p>So far we keep saying that the <strong>prover is unbounded</strong> and the verifier is ppt.</p>
+<p>But there are no unbounded people.</p>
+<p>In both these protocols above, <font color="red"><strong>the (honest) prover is actually polynomial-time</strong> given the NP witness </font> （the square root of $y$ in the case of QR, and the isomorphism in the case of graph-iso).</p>
+<p>Therefore, the <strong>prover and the verifier can both be polynomial-time.</strong></p>
+<p>The only <strong>difference</strong> between the (honest) prover and the verifier is that the <strong>prover</strong> <u>knows some privileged knowledge</u>, a witness or a solution to a problem, that the <strong>verifier dose not know</strong>.</p>
+<p>That’s the common way to reduce the zero-knowledge proofs.</p>
+<p>The thing to point is that <strong>soundness</strong> is nevertheless <u>against any, even computationally unbounded, prover $P^*$.</u></p>
+<h1 id="All-NP-languages-have-Comp-ZK-Proofs"><a href="#All-NP-languages-have-Comp-ZK-Proofs" class="headerlink" title="All NP languages have Comp. ZK Proofs"></a>All NP languages have Comp. ZK Proofs</h1><p>We shows two languages with <strong>perfect ZK proofs</strong>, the QR protocol and the Graph-iso protocol.</p>
+<ul>
+<li><strong>Do all NP languages have perfect ZK proofs ?</strong><ul>
+<li>The theorem[Fortnow’89, Aiello-Hastad’s 87] answered <strong>NO</strong>, unless bizarre stuff happens in complexity theory.</li>
+<li>Technically, the polynomial hierarchy collapses. That is NP = P.</li>
+</ul>
+</li>
+</ul>
+<p>Nevertheless, we can relax the question.</p>
+<ul>
+<li><p><strong>Do all NP languages have ZK proofs ?</strong></p>
+<ul>
+<li><p><strong>Theorem:</strong>  [Goldreich-Micali-Wigderson’87]</p>
+<p>  Assuming <strong>one-way permutations</strong> exist, all of NP has <strong>computational zero-knowledge proofs.</strong></p>
+</li>
+<li><p>It means that every language of NP problem has computational zero-knowledge proof given a witness.</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>Moreover, the assumption can <strong>be relaxed to one-way functions.</strong></p>
+<p>This <strong>theorem</strong> is amazing and it tells us that <u>everything can be proved (in the sense of Euclid) can be proven in zero knowledge!</u></p>
+<hr>
+<p>How to prove the theorem ? We cannot prove every NP problem one by one.</p>
+<p>Luckily, we can prove <strong>NP-Complete Problem</strong> to <u>which every other problem in NP can be reduced.</u></p>
+<p>It turns out that there are a whole of complete problems. </p>
+<p>There is a list of 20 odd problems that came up with in the 70s already and this list keeps increasing. So NP-complete problems is sort of a wealth.</p>
+<p>We are going to pick the <strong>Graph Coloring Problem</strong> and prove it has Comp. ZK Proofs.</p>
+<h1 id="ZK-Proof-for-3Coloring"><a href="#ZK-Proof-for-3Coloring" class="headerlink" title="ZK Proof for 3Coloring"></a>ZK Proof for 3Coloring</h1><p>Here is the <strong>Graph 3Coloring Problem.</strong></p>
+<p>Given a graph and three colors, red blue and green, you’re <u>supposed to assign colors to every vertex</u> such that <strong>no two adjacent vertexes have the same color.</strong> </p>
+<p>(or every two adjacent vertexes have different colors)</p>
+<img src="https://s1.ax1x.com/2022/08/12/vJanAJ.png" alt="3COL" style="zoom:33%;" />
+
+<p>Before proceeding to the zero-knowledge proof of the three-coloring, let’s introduce the <strong>lead-box model.</strong></p>
+<h2 id="The-Lead-box-Model"><a href="#The-Lead-box-Model" class="headerlink" title="The Lead-box Model"></a>The Lead-box Model</h2><p>The lead-box model is as shown below.</p>
+<img src="https://s1.ax1x.com/2022/08/12/vJaKhR.png" alt="The Lead-box" style="zoom:33%;" />
+
+<p><font color=blue><u><b>Lead-box Model: </b></u></font> </p>
+<ul>
+<li>The sender Alice has a bit $b$.<ol>
+<li><strong>Commit</strong> to $b$: put $b$ in a lead-box and locks it, and send the box to receiver.</li>
+<li><strong>Open $b$</strong>: send $b$ together with the key.</li>
+</ol>
+</li>
+<li>Then the receiver Bob can check the thing in box is what Alice claims.</li>
+</ul>
+<p>The lead-box above should be <strong>hiding and binding</strong> $b$.</p>
+<p><font color=blue><u><b>Properties: </b></u></font> </p>
+<ul>
+<li><strong>Hiding</strong> means that <u>the lead-box should completely hide $b$.</u></li>
+<li><strong>Blinding</strong> means that the <u>sender shouldn’t be able to open to $1-b$.</u></li>
+</ul>
+<p>Once the Alice sends the box to Bob, she <u>should not be able to change her mind</u> about what’s inside the box. </p>
+<p>That’ blinding. That’s a <strong>commitment</strong>.</p>
+<p>It can be used for <u>computational zero-knowledge.</u></p>
+<p>It can also be used to <u>ensure fairness.</u></p>
+<p>We will later show <strong>how to implement such a lead-box</strong> (as <strong>a commitment protocol</strong>) <u>using one-way permutations.</u></p>
+<h2 id="ZK-Proof-with-Lead-box-Part-I"><a href="#ZK-Proof-with-Lead-box-Part-I" class="headerlink" title="ZK Proof with Lead-box: Part I"></a>ZK Proof with Lead-box: Part I</h2><p>The language $\mathcal{L}$ is that the graph $G$ is 3-colorable.</p>
+<p><u>Given a 3-colorable witness (solution),</u> it <strong>can be proven in computational zero-knowledge.</strong></p>
+<p>The prover is given the graph $G$ and the <strong>3-colorable witness.</strong></p>
+<p>The verifier is given the graph $G$.</p>
+<img src="https://s1.ax1x.com/2022/08/12/vJauN9.png" alt="have Comp. ZK with a witness" style="zoom:33%;" />
+
+<p>The interaction of ZK proof is as shown below.</p>
+<img src="https://s1.ax1x.com/2022/08/12/vJa3jK.png" alt="Comp. ZK Proof Protocol with lead-box for 3COL" style="zoom:33%;" />
+
+<p><font color=blue><u><b>Interactive Protocol for 3COL: </b></u></font> </p>
+<ol>
+<li>Prover: come up with <strong>a random permutation of the colors</strong>, $\rho:V\rightarrow \{R,G,B\}$. <br>The color of every vertex is <strong>masked</strong> by the random permutation.</li>
+<li>Prover: <strong>commit</strong> to (the color of) every vertex.</li>
+<li>Verifier: pick a random edge $(i,j)$</li>
+<li>Prover: <strong>open</strong> $\rho(i)$ and $\rho(j)$</li>
+<li>Verifier: <strong>check</strong><ol>
+<li>Check the openings that $\rho(i)$ and $\rho(j)$ are what Alice claims.</li>
+<li>Chek the $\rho(i),\rho(j)\in \{R,G,B\}$ </li>
+<li>Check: $\rho(i)\ne \rho(j)$</li>
+</ol>
+</li>
+</ol>
+<p>The <strong>completeness</strong> is well proven.</p>
+<p><font color=blue><u><b>Soundness: </b></u></font> </p>
+<p><strong>Soundness</strong> is the property of the protocol against <strong>dishonest</strong> prover $P$.</p>
+<ul>
+<li>If the graph is <strong>not 3COL</strong>, <u>in every 3-coloring (that $P$ commits to)</u>, <strong>there is some edge</strong> whose end-points <strong>have the same color.</strong></li>
+<li>$V$ will <strong>catch this edge and reject</strong> with probability $\ge 1/|E|$.</li>
+<li>In one time:<ul>
+<li>the verifier accepts with probability $\le1-1/|E|$.</li>
+</ul>
+</li>
+<li>Repeat $|E|\cdot \lambda$ times:<ul>
+<li>he verifier accepts with probability $\le (1-1/|E|)^{|E|\cdot \lambda}\le 2^{-\lambda}$.</li>
+<li>which is <strong>negligible</strong>.</li>
+<li>QED</li>
+</ul>
+</li>
+</ul>
+<p>Moreover, the proof is <strong>Computational Zero-knowledge.</strong></p>
+<p>The <strong>key reason</strong> of zero-knowledge is the <u>prover commits to all colors</u> (of the vertices) <strong>but only open two colors (of the vertexes).</strong></p>
+<p>It <strong>leaks nothing to the verifier</strong> since the <u>colors have been randomly permuted.</u></p>
+<p>So the prover gives zero-knowledge to the verifier.</p>
+<p>We will elaborate the Comp. Zero-knowledge in the following Part II.</p>
+<hr>
+<p>More <strong>analysis into the first message</strong>(the message in the lead-box).</p>
+<p>If the first message <strong>dose not exis</strong>t, the proof is <strong>not sound.</strong></p>
+<p>The malicious prover can always answer “red” and “blue” because the verifier cannot check what Alice claims without the commitment.</p>
+<p>If the first message are <strong>not in the lead-box</strong>, the proof is <strong>not zero-knowledge.</strong></p>
+<h2 id="Commitment-Schemes"><a href="#Commitment-Schemes" class="headerlink" title="Commitment Schemes"></a>Commitment Schemes</h2><p>The lead-box is indeed a <strong>commitment protocol.</strong></p>
+<p>The Commitment Protocol $(S,R)$ works as follows.</p>
+<img src="https://s1.ax1x.com/2022/08/12/vJa1c6.png" alt="Commitment Protocol" style="zoom:33%;" />
+
+<p><font color=blue><u><b>Commitment Protocol $(S,R)$: </b></u></font> </p>
+<ul>
+<li>There are two parties, sender $S$ and receiver $R$.</li>
+<li>Sender $S$ <strong>commits to a bit</strong> $b$, so the protocol is instanced to $(S(b,1^\lambda),R(1^\lambda))$.<ul>
+<li>Let $\texttt{dec}$ be the <strong>sender’s output</strong>, decommitment.</li>
+<li>Let $\texttt{com}$ be the <strong>receiver’s output</strong>, commitment.</li>
+</ul>
+</li>
+<li>Sender $S$ <strong>opens</strong> $b$<ul>
+<li>$S$ sends $b$ together with  $\texttt{dec}$.</li>
+</ul>
+</li>
+<li>Receiver $R$ <strong>checks</strong> $b$ using $\texttt{dec}$.</li>
+</ul>
+<p><font color=blue><u><b>Properties of Commitment Protocol:</b></u></font> </p>
+<ol>
+<li><strong>Completeness</strong>: $R$ always accepts in an honest execution.</li>
+<li><strong>Computational Hiding</strong>: <ul>
+<li>For <strong>every possibly malicious</strong> (PPT) $R^*$, $\texttt{view}_{R^*}(S(0),R^*)\approx_c\texttt{view}_{R^*}(S(1),R^*)$ 
+    (the view of $R^*$   is $(\texttt{com},b,\texttt{dec})$) </li>
+</ul>
+</li>
+<li><strong>Perfect Binding</strong>: <ul>
+<li>For <strong>every possibly malicious</strong>  $S^*$, let $\texttt{com}$ be the receiver’s output in an execution of $(S^*, R)$. </li>
+<li>There is no pair of decommitments $(\texttt{dec}_0,\texttt{dec}_1)$ s.t. $R$ accepts both $(\texttt{com},0,\texttt{dec}_0)$ and $(\texttt{com},1,\texttt{dec}_1)$.</li>
+</ul>
+</li>
+</ol>
+<p>Completeness is the property of the commitment protocol when $S$ and $R$ are honest.</p>
+<p>Computational Hiding  is the property of commitment protocol against malicious $R^*$.</p>
+<p>Perfect Binding is the property of commitment protocol against malicious $S^*$.</p>
+<h3 id="A-Commitment-Scheme-from-any-OWP"><a href="#A-Commitment-Scheme-from-any-OWP" class="headerlink" title="A Commitment Scheme from any OWP"></a>A Commitment Scheme from any OWP</h3><p>There is a commitment scheme starting from any OWP as follows.</p>
+<img src="https://s1.ax1x.com/2022/08/12/vJaJBD.png" alt="Commitment Scheme from any OWP" style="zoom:33%;" />
+
+<p><font color=blue><u><b>Commitment Protocol $(S,R)$ from OWP: </b></u></font> </p>
+<ul>
+<li><p>Sender $S$ <strong>commits</strong> to bit $b$</p>
+<ol>
+<li>Pick a random $r$ as the <strong>decommitment</strong>, $\texttt{dec}=r$.</li>
+<li>Compute the <strong>commitment</strong> $\texttt{com}=(f(r),HCB(r)\oplus b)$.</li>
+<li>Send the commitment to $R$.</li>
+</ol>
+</li>
+<li><p>Sender $S$ <strong>opens</strong> $b$</p>
+<ol>
+<li>Send $(b,r)$ to $R$, $r$ as the $\texttt{dec}$.</li>
+</ol>
+</li>
+<li><p>Receiver $R$ <strong>checks</strong> $b$ using $\texttt{dec}$.</p>
+<ul>
+<li>Let $\texttt{com}=(x,y)$</li>
+</ul>
+<ol>
+<li>Check $f(r)=x$.</li>
+<li>Check $HCB(r)\oplus b=y$.</li>
+</ol>
+</li>
+</ul>
+<p>This commitment scheme has completeness, comp. hiding and perfect binding.</p>
+<p><font color=blue><u><b>Properties of Commitment Scheme: </b></u></font></p>
+<ul>
+<li><strong>Completeness</strong> is well proven.</li>
+<li><strong>Computational Hiding</strong> can <u>be proven by the hardcore bit property.</u><ul>
+<li>As for any arbitrary receiver $R^*$, it is hard to compute $HCB(r)$ given $f(r)$ since $f$ is OWP.</li>
+<li>We say that the hardcore bit of $f(r)$ computational hides the bit $b$.</li>
+</ul>
+</li>
+<li>The point in <strong>Perfect Binding</strong> is that <u>$f$ is a permutation.</u><ul>
+<li>If $x=f(r)$ is fixed, then $r$ is fixed. There is no other $r’$ such that $f(r’)=f(r)$.</li>
+<li>Then $HCB(r)$ is fixed, and the bit $b$ is fixed since $y$ is fixed.</li>
+<li>That’s perfect binding.</li>
+</ul>
+</li>
+</ul>
+<h2 id="ZK-Proof-with-Commitment-Part-II"><a href="#ZK-Proof-with-Commitment-Part-II" class="headerlink" title="ZK Proof with Commitment: Part II"></a>ZK Proof with Commitment: Part II</h2><p>Replace the lead-box with the commitment protocol.</p>
+<ul>
+<li><strong>Commitment</strong> to $\rho(k)$ is $\texttt{com}(\rho(k);r_k)$ where $r_k$ is the random.</li>
+<li><strong>Decommitment</strong> to $\rho(k)$ is $r_k$.</li>
+</ul>
+<img src="https://s1.ax1x.com/2022/08/12/vJaGnO.png" alt="Comp. ZK Proof for 3COL with Commitment Scheme" style="zoom:33%;" />
+
+<p>Why is this protocol zero-knowledge?</p>
+<p><font color=blue><u><b>Comp.  Zero-knowledge:</b></u></font> </p>
+<p>We dive into a malicious-verifier zero-knowledge.</p>
+<ul>
+<li>What can an arbitrary verifier $V^*$ do ?<ul>
+<li>He can see all these commitments to</li>
+<li>He can pick an arbitrary edge in bizarre fashion.</li>
+</ul>
+</li>
+<li><strong>Real transcript</strong> of malicious $V^*$: $\texttt{view}_{V^*}(P,V^*)=\left(\{\texttt{com}_k(\rho(k);r_k)\}_{k=1}^{n},(i,j),(\texttt{dec}_i,\texttt{dec}_j)\right)$. <ul>
+<li>The <strong>commitment to every color</strong> (of the vertex): $\texttt{com}_k(\rho(k);r_k)$</li>
+<li>The <strong>edge</strong> chosen in bizarre fashion: $(i,j)=V^*(\{\texttt{com}_k\})$ </li>
+<li>The <strong>decommitment</strong>: $(\texttt{dec}_i,\texttt{dec}_j)$.</li>
+</ul>
+</li>
+</ul>
+<p><font color=blue><u><b>Simulator S works as follows:</b></u></font></p>
+<ol>
+<li>First pick a random edge $(i^*,j^*)$.<br><u>Color this edge with random, different colors.</u><br><u>Color all other edges red.</u></li>
+<li>Feed the commitments of the colors to $V^*$ and get edge $(i,j)=V^*(\{\texttt{com}_k\})$.</li>
+<li>If $(i,j)=(i^*,j^*)$, output the commitments and the openings $r_i$ and $r_j$ as the <strong>simulated transcript</strong>.</li>
+<li>If $(i,j)\ne(i^*,j^*)$, go back to step 1 and repeat. </li>
+</ol>
+<p>The <strong>key reason</strong> why it works is that the <u>prover commits to all colors (of the vertices) but only open two colors (of the vertexes).</u><br>It <strong>leaks nothing to the verifier</strong> since the <u>colors have been randomly permuted.</u></p>
+<p>So the prover gives zero-knowledge to the verifier.</p>
+<p><font color=blue><u><b>Lemma: </b></u></font> </p>
+<ol>
+<li>Assuming the commitments is hiding, $S$ runs in expected polynomial-time.</li>
+<li>When $S$ outputs a view, it is <strong>computationally indistinguishable</strong> to the view of $V^*$ in a real execution.</li>
+</ol>
+<p><font color=blue><u><b>Proof of Lemma 2: </b></u></font> </p>
+<p>Analysis the distribution of real transcript and simulated transcript.</p>
+<ul>
+<li>Real transcript: $\texttt{view}_{V^*}(P,V^*)=\left(\{\texttt{com}_k\}_{k=1}^{n},(i,j),(\texttt{dec}_i,\texttt{dec}_j)\right)$ <ul>
+<li>The commitments are <strong>computationally random</strong> since the computational hiding property.</li>
+<li>The distribution of $(i,j)$ is in bizarre fashion.</li>
+<li>The decommitments are random.</li>
+</ul>
+</li>
+<li>Simulated transcript: $\texttt{sim}_{S}(G)=\left(\{\texttt{com}_k\}_{k=1}^{n},(i^*,j^*),(\texttt{dec}_i,\texttt{dec}_j)\right)$ <ul>
+<li>The commitments are <strong>computationally random</strong> since the computational hiding property.</li>
+<li>The distribution  of $(i^*,j^*)$ is same as $(i,j)=V^*(\{\texttt{com}_k\})$. </li>
+<li>The decommitments are random.</li>
+</ul>
+</li>
+</ul>
+<h2 id="Examples-of-NP-Assertions"><a href="#Examples-of-NP-Assertions" class="headerlink" title="Examples of NP Assertions"></a>Examples of NP Assertions</h2><ul>
+<li><strong>My public key is well-formed.</strong><br>e.g. in RSA, prove the public key is $N$, a product of two primes together with an $e$ that is relatively to $\varphi(N)$.</li>
+<li><strong>Encrypted bitcoin (or Zcash): “I have enough money to pay you.”</strong><br>e.g. I will publish an encryption of my bank account and prove to you that my balance is $\ge \$X$. </li>
+<li><strong>Running programs on encrypted inputs</strong>: Given $Enc(x)$ and $y$, prove that $y=\textrm{PROG}(x)$.</li>
+</ul>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Cryptography-MIT6875」: Lecture 14</p><p><a href="https://f7ed.com/2022/08/10/mit6875-lec14/">https://f7ed.com/2022/08/10/mit6875-lec14/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2022-08-11</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2022-08-15</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/ZK-Proof/">ZK Proof, </a><a class="link-muted" rel="tag" href="/tags/Commitment/">Commitment </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2022/08/15/mit6875-lec15/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Cryptography-MIT6875」: Lecture 15</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2022/08/08/mit6875-lec13/"><span class="level-item">「Cryptography-MIT6875」: Lecture 13</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "367f9a6104e724a46473321ef773f2af",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">71</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">139</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#ZK-Definition"><span class="level-left"><span class="level-item">1</span><span class="level-item">ZK Definition</span></span></a></li><li><a class="level is-mobile" href="#Perfect-ZK-Proof-for-QR-Language"><span class="level-left"><span class="level-item">2</span><span class="level-item">Perfect ZK Proof for QR Language</span></span></a></li><li><a class="level is-mobile" href="#ZK-Proof-for-Graph-Isomorphism"><span class="level-left"><span class="level-item">3</span><span class="level-item">ZK Proof for Graph Isomorphism</span></span></a></li><li><a class="level is-mobile" href="#Efficient-Prover-given-a-Witness"><span class="level-left"><span class="level-item">4</span><span class="level-item">Efficient Prover (given a Witness)</span></span></a></li><li><a class="level is-mobile" href="#All-NP-languages-have-Comp-ZK-Proofs"><span class="level-left"><span class="level-item">5</span><span class="level-item">All NP languages have Comp. ZK Proofs</span></span></a></li><li><a class="level is-mobile" href="#ZK-Proof-for-3Coloring"><span class="level-left"><span class="level-item">6</span><span class="level-item">ZK Proof for 3Coloring</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#The-Lead-box-Model"><span class="level-left"><span class="level-item">6.1</span><span class="level-item">The Lead-box Model</span></span></a></li><li><a class="level is-mobile" href="#ZK-Proof-with-Lead-box-Part-I"><span class="level-left"><span class="level-item">6.2</span><span class="level-item">ZK Proof with Lead-box: Part I</span></span></a></li><li><a class="level is-mobile" href="#Commitment-Schemes"><span class="level-left"><span class="level-item">6.3</span><span class="level-item">Commitment Schemes</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#A-Commitment-Scheme-from-any-OWP"><span class="level-left"><span class="level-item">6.3.1</span><span class="level-item">A Commitment Scheme from any OWP</span></span></a></li></ul></li><li><a class="level is-mobile" href="#ZK-Proof-with-Commitment-Part-II"><span class="level-left"><span class="level-item">6.4</span><span class="level-item">ZK Proof with Commitment: Part II</span></span></a></li><li><a class="level is-mobile" href="#Examples-of-NP-Assertions"><span class="level-left"><span class="level-item">6.5</span><span class="level-item">Examples of NP Assertions</span></span></a></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

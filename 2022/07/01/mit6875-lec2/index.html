@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Cryptography-MIT6875」: Lecture 2 - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^        Science wins either way.  Topics:  How to"><meta property="og:type" content="blog"><meta property="og:title" content="「Cryptography-MIT6875」: Lecture 2"><meta property="og:url" content="https://f7ed.com/2022/07/01/mit6875-lec2/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^        Science wins either way.  Topics:  How to"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/mit6875-lec2-banner.png"><meta property="article:published_time" content="2022-07-01T16:00:00.000Z"><meta property="article:modified_time" content="2022-08-12T04:27:26.264Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Cryptography"><meta property="article:tag" content="MIT6875"><meta property="article:tag" content="Perfect Indistinguishability"><meta property="article:tag" content="Shannon&#039;s lower bound"><meta property="article:tag" content="Computational Indistinguishability"><meta property="article:tag" content="PRG"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/mit6875-lec2-banner.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2022/07/01/mit6875-lec2/"},"headline":"「Cryptography-MIT6875」: Lecture 2","image":["https://f7ed.com/gallery/thumbnails/mit6875-lec2-banner.png"],"datePublished":"2022-07-01T16:00:00.000Z","dateModified":"2022-08-12T04:27:26.264Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^        Science wins either way.  Topics:  How to"}</script><link rel="canonical" href="https://f7ed.com/2022/07/01/mit6875-lec2/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Cryptography-MIT6875」: Lecture 2</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2022-07-01T16:00:00.000Z" title="2022-07-01T16:00:00.000Z">2022-07-02</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2022-08-12T04:27:26.264Z" title="2022-08-12T04:27:26.264Z">2022-08-12</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Cryptography-MIT6875/">Cryptography-MIT6875</a></span><span class="level-item"><i class="far fa-clock"></i> 19 minutes read (About 2915 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><article class="message message-immersive is-info">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="message-body">
+<i class="fas fa-info-circle mr-2"></i>
+In this <a href="/categories/Cryptography-MIT6875">series</a>, I will learn MIT 6.875, <strong>Foundations of Cryptography</strong>, lectured by <strong>Vinod Vaikuntanathan</strong>.
+<br>Any corrections and advice are welcome. ^ - ^
+</div>
+</article>
+
+
+
+
+<blockquote>
+<p>Science wins either way.</p>
+</blockquote>
+<p>Topics:</p>
+<ul>
+<li>How to circumvent Shannon’s lower bound: the computational adversary</li>
+<li>Definition of computational security</li>
+<li>The definition of pseudorandom generators(PRG)</li>
+</ul>
+<span id="more"></span>
+
+<h1 id="Recap"><a href="#Recap" class="headerlink" title="Recap"></a>Recap</h1><p>In the previous blog, we define <u>two equivalent definitions of security</u>, Perfect Secrecy and Perfect Indistinguishability, with the setting of an arbitrary computationally unbounded adversary.</p>
+<ul>
+<li>Perfect Secrecy: A posteriori = A priori<br>For all $m, c$:   $\operatorname{Pr}[\mathcal{M}=m\mid \operatorname{E}(\mathcal{K,M)}=c] = \operatorname{Pr}[\mathcal{M}=m]$  </li>
+<li>Perfect Indistinguishability:<br>For all $m_0, m_1, c$:   $\operatorname{Pr}[ \operatorname{E}(\mathcal{K,m_0)}=c] = \operatorname{Pr}[\operatorname{E}(\mathcal{K,m_1)}=c]$ </li>
+</ul>
+<p>Although the definitions above are equivalent, sometime one is <strong>more convenient</strong> to work with than the other.</p>
+<p>We mentioned that the perfect secrecy is achievable using one-time pad. However, the <u>keys are as long as messages in one-time pad.</u></p>
+<p>Worse still, in Shannon’s theorem, <strong>for any perfectly secure scheme</strong>, <u>the key space must be larger than or equal to the message space</u>, i.e. $\mathcal{|K|\ge|M|}$.</p>
+<p>This is known as Shannon’s conundrum. </p>
+<p>Therefore, the gist of this blog is <strong>how we can overcome Shannon’s conundrum</strong>.</p>
+<h1 id="Computational-Security"><a href="#Computational-Security" class="headerlink" title="Computational Security"></a>Computational Security</h1><p>Before that, I’ll introduce two mathematical definitions to instantiate Perfect Indistinguishability.</p>
+<h2 id="Perfect-Indistinguishability"><a href="#Perfect-Indistinguishability" class="headerlink" title="Perfect Indistinguishability"></a>Perfect Indistinguishability</h2><p>As mentioned in the previous blog, Perfect Indistinguishability is substantially a formalization of the Turing test.</p>
+<img src="https://s1.ax1x.com/2022/07/02/j3p3jg.png" alt="Perfect Indistinguishability" style="zoom:37%;" />
+
+<p>There are two worlds, world 0 and world 1. The two worlds both sample the key $k$ from the key space $\mathcal{K}$, and the world 0 uses $k$ to encrypt $m$ while world 1 uses $k$ to encrypt $m’$.</p>
+<p>The adversary called EVE is a <strong>distinguisher</strong> that <u>gets the $c$ and tries to guess which world she’s in.</u></p>
+<p><strong>Perfect Indistinguishability:</strong></p>
+  
+
+For all $m_0, m_1, c$:  $\operatorname{Pr}[ \operatorname{E}(\mathcal{K,m_0)}=c] = \operatorname{Pr}[\operatorname{E}(\mathcal{K,m_1)}=c]$
+
+  
+
+<p>There are two mathematical definitions to instantiate Perfect Indistinguishability.</p>
+<p><font color=blue><u><b><i>The First Def: </i></b></u></font></p>
+<p>The probability that EVE think <u>she is in World 0</u> is the same. </p>
+  
+
+$\begin{array}{l}\text{For all EVE and all  }m_0, m_1:\\  \operatorname{Pr}[k\leftarrow \mathcal{K}; c=E(k,m_0):\mathrm{EVE}(c)=0] = \operatorname{Pr}[k\leftarrow \mathcal{K}; c=E(k,m_1):\mathrm{EVE}(c)=0]\end{array}$ 
+
+  
+
+<p><font color=blue><u><b><i>The Second Def: </i></b></u></font></p>
+<p>The probability of <u>EVE guessing correctly which world</u> she is in is exactly half. </p>
+  
+
+$\begin{array}{l}\text{For all EVE and all  }m_0, m_1:\\  \operatorname{Pr}[k\leftarrow \mathcal{K}; b\leftarrow \{0,1\};c=E(k,m_b):\mathrm{EVE}(c)=b] = 1/2\end{array}$
+
+  
+
+<h2 id="Key-Idea-Computationally-Bounded-Adversaries"><a href="#Key-Idea-Computationally-Bounded-Adversaries" class="headerlink" title="Key Idea: Computationally Bounded Adversaries"></a>Key Idea: Computationally Bounded Adversaries</h2><p>Now, back to the question of how to overcome Shannon’s conundrum.</p>
+<p>The key idea is we relax the adversary to an arbitrary <strong>computationally bounded adversary</strong>.</p>
+<h2 id="Computational-Indistinguishability-take-1"><a href="#Computational-Indistinguishability-take-1" class="headerlink" title="Computational Indistinguishability (take 1)"></a>Computational Indistinguishability (take 1)</h2><p>In order to define the computationally bounded adversary (or, Computational Indistinguishability), I’ll introduce the <strong>axiom of modern crypto</strong> that <u>Feasible Computation = Probabilistic Polynomial-time.</u></p>
+<h3 id="The-Axiom-of-Modern-Crypto-p-p-t"><a href="#The-Axiom-of-Modern-Crypto-p-p-t" class="headerlink" title="The Axiom of Modern Crypto: p.p.t"></a>The Axiom of Modern Crypto: p.p.t</h3><p>Feasible Computation = Probabilistic polynomial-time</p>
+<ul>
+<li><strong>p.p.t.</strong> is the abbreviation for <strong>Probabilistic Polynomial-time</strong></li>
+<li>It’s a polynomial in a security parameter n (in next subsection).</li>
+</ul>
+<p>So, in the scenario of Secure Communication mentioned above, <strong>Alice and Bob</strong> are <u>fixed</u> p.p.t. algorithms while <strong>Eve</strong> is <u>any</u> p.p.t.  algorithm.</p>
+<h3 id="Toy-Definition-with-p-p-t"><a href="#Toy-Definition-with-p-p-t" class="headerlink" title="Toy Definition with p.p.t."></a>Toy Definition with p.p.t.</h3><p>Let’s attempt to define Computational Indistinguishability with p.p.t..</p>
+<img src="https://s1.ax1x.com/2022/07/02/j3pnAI.png" alt="Computational Indistinguishability with p.p.t." style="zoom:37%;" />
+
+<p>There are two worlds again, world 0 and world 1.The <strong>only difference</strong> from the unbounded case is that t<u>he adversary is a <strong>p.p.t.</strong> distinguisher.</u></p>
+<p>Write it as a mathematical definition.</p>
+<p><font color=blue><u><b><i>Toy Def: </i></b></u></font></p>
+  
+
+$\begin{array}{l}\text{For all p.p.t EVE and all  }m_0, m_1:\\  \operatorname{Pr}[k\leftarrow \mathcal{K}; c=E(k,m_0):\mathrm{EVE}(c)=0] = \operatorname{Pr}[k\leftarrow \mathcal{K}; c=E(k,m_1):\mathrm{EVE}(c)=0]\end{array}$
+
+  
+
+<h3 id="Not-Feasible"><a href="#Not-Feasible" class="headerlink" title="Not Feasible"></a>Not Feasible</h3><p>However, it’s still subject to Shannon’s impossibility which means the <u>key space must be larger than or equal to the message space</u> for any scheme  s.t. the Toy Def.</p>
+<p>Prove it by <strong>contradiction</strong> same with the proof of Shannon’s Theorem.</p>
+<p><strong>Proof:</strong></p>
+<p>Assume the contradiction that the <u>key is n bits</u> and the <u>message is n+1 bits</u>, i.e. $\mathcal{|K|&lt;|M|}$.</p>
+<img src="https://s1.ax1x.com/2022/07/02/j3pK4P.png" alt="still subject to Shannon’s impossibility" style="zoom:37%;" />
+
+<ul>
+<li><p>If we pick any $c\in \mathcal{C}$ and decrypt $c$ with all distinct keys, there are at most $|\mathcal{K}|$ possible messages.<br>The <u>possible message space is the blue part</u> in the left ellipse which the size is at most $|\mathcal{K}|$ and less than $\mathcal{|M|}$.</p>
+</li>
+<li><p>Assume $m_0$ is inside the possible message space (inside the blue part) while $m_1$ is outside the possible message space.</p>
+</li>
+<li><p>Consider Eve that picks a random key k and</p>
+<ul>
+<li>output 0 if  $\mathrm{D}(k,c)=m_0$ (w.p $\ge 1/2^n$)<br>It’s possible because $m_0$ is inside the blue part.</li>
+<li>output 1 if  $\mathrm{D}(k,c)=m_1$ (w.p $=0$)<br>It’s impossible.</li>
+<li>output  a random bit if neither holds. (w.p $=1/2$)</li>
+</ul>
+</li>
+<li><p>Hence, the probability of <u>EVE guessing correctly</u> which world she is in is more than half.  </p>
+   
+    $\begin{array}{l}\text{There exist EVE and  }m_0, m_1:\\  \operatorname{Pr}[k\leftarrow \mathcal{K}; b\leftarrow \{0,1\};c=E(k,m_b):\mathrm{EVE}(c)=b] = 1/2 + 1/2^n\end{array}$  
+
+     
+
+</li>
+</ul>
+<h2 id="Computational-Indistinguishability-take-2"><a href="#Computational-Indistinguishability-take-2" class="headerlink" title="Computational Indistinguishability (take 2)"></a>Computational Indistinguishability (take 2)</h2><p>For the purpose of circumventing the Shannon’s lower bound, I’ll introduce a new notion.</p>
+<h3 id="Negligible-Functions"><a href="#Negligible-Functions" class="headerlink" title="Negligible Functions"></a>Negligible Functions</h3><p>Informally, <strong>Negligible Functions</strong> are functions that <u>grow slower than $1/p(n)$</u> for any polynomial $p$.</p>
+<p><font color=blue><u><b>Definition of Negligible Functions: </b></u></font></p>
+<p>A <strong>function</strong> $\mu :\mathbb{N} \rightarrow \mathbb{R}$ is <strong>negligible</strong> if for <u>every polynomial function</u> $p$, there exists an $n_0$ s.t.</p>
+<p>for all $n&gt;n_0$:</p>
+<p>$$<br>\mu(n) &lt; 1/p(n)<br>$$</p>
+<p>The <strong>key property</strong> of negligible function is that events that occur with <strong>negligible</strong> probability <u>look to poly-time algorithms</u> like they <u>never occur</u>.</p>
+<blockquote>
+<p>Examples:<br>Is $\mu$ negligible ?</p>
+<ul>
+<li>$\mu(n)=1/n^{100}$ if  $n$ is prime.<br>No, choose $p(n)=n^{200}$.</li>
+<li>$\mu(n)=1/2^n$<br>Yes.</li>
+</ul>
+</blockquote>
+<p>Let $\mu(n)$  be a <u>negligible</u> function and $q(n)$ a <u>polynomial</u> function.<br>Then $\mu(n)q(n)$ is <strong>negligible</strong> function.  ( Run the event $q(n)$ times）</p>
+<h3 id="Security-Parameter-n"><a href="#Security-Parameter-n" class="headerlink" title="Security Parameter: n"></a>Security Parameter: n</h3><p>Security Parameter $n$ (sometimes $\lambda$) always appears in papers.</p>
+<p>What the hell is it ?</p>
+<p><strong>Security Parameter</strong> is used to measure <u>how secure your system is.</u> </p>
+<p><strong>Security Parameter</strong> is sort of <u>an input</u> to all these algorithms to  instantiate them. </p>
+<p>So <u>runtimes &amp; success probabilities</u> are measured as <u>a function of $n$.</u></p>
+<ul>
+<li>We want <u>honest parties</u> run in time (<strong>fixed</strong>) polynomial in $n$.</li>
+<li>We want <u>adversaries</u> run in time (<strong>arbitrary</strong>) polynomial in $n$, and should have <strong>success probability</strong> <u>negligible in $n$.</u></li>
+</ul>
+<h3 id="Definition"><a href="#Definition" class="headerlink" title="Definition"></a>Definition</h3><p>Now we can define Computational Indistinguishability <u>with p.p.t and negligible function.</u></p>
+<p><font color=blue><u><b><i>Definition: </i></b></u></font> </p>
+  
+
+$
+\begin{array}{l}\text { For all p.p.t EVE, there is a negligible function } \mu \text { s.t. for all } m_{0}, m_{1}: \\ \operatorname{Pr}\left[k \leftarrow \mathcal{K} ; b \leftarrow\{0,1\} ; c=E\left(k, m_{b}\right): \operatorname{EVE}(c)=b\right] \leq 1 / 2+\mu(n)\end{array}
+$ 
+
+  
+
+<p>Hence, the probability of <u>EVE guessing correctly</u> which world she is in <u>is substantially half,</u> which  is half <u>plus a negligible function of security parameter.</u></p>
+<h1 id="Pseudorandom-Generators-PRG"><a href="#Pseudorandom-Generators-PRG" class="headerlink" title="Pseudorandom Generators (PRG)"></a>Pseudorandom Generators (PRG)</h1><p>In the section, I’ll introduce our first crypto tool: <strong>Pseudorandom Generators</strong> (PRG).</p>
+<p>Before that, I want to ask a question. Can you take <u>10 random bits as input</u> and <strong>deterministically</strong> generate <u>20 bits of randomness as output</u> ?</p>
+<p>No, you <strong>cannot</strong> generate randomness out of nothing.</p>
+<p>Informally, Pseudo-random Generators are <strong>deterministic</strong> programs that <u>stretch a “<strong>truly random</strong>” seed</u> into a (much) <u>longer sequence of “<strong>seeming random</strong>” bits.</u></p>
+<img src="https://s1.ax1x.com/2022/07/02/j3pZBd.png" alt="informally def" style="zoom:33%;" />
+
+<p>There are more questions after having the informal definition.</p>
+<p>How to define “seeming random” ? Can such a G exist ?</p>
+<h2 id="3-Equiv-Definitions-of-PRG"><a href="#3-Equiv-Definitions-of-PRG" class="headerlink" title="3 Equiv. Definitions of PRG"></a>3 Equiv. Definitions of PRG</h2><p>For the first question that <u>how to define a strong pseudo-random number generator</u>, there are three equivalent definitions. </p>
+<p><font color=blue><u><b>Def 1 [Indistinguishability]</b></u></font></p>
+<p>“No polynomial-time algorithm can distinguish between the output of a PRG on a random seed vs. a truly random string.”</p>
+<p>= “as good as” a truly random string for all practical purpose.</p>
+<p><font color=blue><u><b>Def 2 [Next-bit Unpredictability]</b></u></font></p>
+<p>“No polynomial-time algorithm can predict the (i+1)th bit of the output of a PRG given the first i bits, better than chance 1/2.”</p>
+<p><font color=blue><u><b>Def 3 [Incompressibility]</b></u></font></p>
+<p>“No polynomial-time algorithm can compress the output of the PRG into a shorter string”</p>
+<p>All three definitions are equivalent!</p>
+<p>In this blog, I’ll just elaborate[*详尽说明; explain] the first definition of indistinguishability.</p>
+<p>The other two definitions and the proof will be elaborated in following blog.</p>
+<h2 id="Def-1-Indistinguishability"><a href="#Def-1-Indistinguishability" class="headerlink" title="Def 1: Indistinguishability"></a>Def 1: Indistinguishability</h2><p><font color=blue><u><b>Def 1 [Indistinguishability]</b></u></font> </p>
+<p>A <strong>deterministic</strong> polynomial-time computable function   ${G}:\{0,1\}^n\rightarrow \{0,1\}^m$   is a PRG if:</p>
+<ol>
+<li>It is <strong>expanding</strong>: $m&gt;n$ and</li>
+<li>for every <strong>p.p.t.</strong> algorithm D (called a distinguisher or a statistical test) if there is a <strong>negligible function</strong> ${\mu}$ such that:  
+    $$
+    |\operatorname{Pr}[D({G(U_n)})=1]-\operatorname{Pr}[D({U_m})=1]|={\mu(n)}
+    $$
+    
+      
+ Notation: $U_n$(resp. $U_m$) denotes the random distribution on $n$-bit (resp. $m$-bit) strings; $m$ is shorthand for $m(n)$.</li>
+</ol>
+<hr>
+<p>First of all, PRG is a <u>deterministic polynomial-time computable function</u> which can <u>expand</u> $n$ bits to $m$  bits. $m$ is shorthand for $m(n$) and $m&gt;n$.</p>
+<p>There are two worlds, world 1 and world 2. </p>
+<img src="https://s1.ax1x.com/2022/07/02/j3peHA.png" alt="distinguisher" style="zoom:33%;" />
+
+<p><strong>World 1</strong> is the <u>pseudorandom world</u> which <u>samples a truly random</u> $n$-bit string from $U_n$ and <u>expands it</u> to a $m$-bit string using PRG $G$, and output the expanded $m$-bit string as $y$.</p>
+<p><strong>World 0</strong> is the <u>truly random world</u> which <u>sample a truly random</u> $m$-bit string from $U_m$, and output the sampled $m$-bit string as $y$.</p>
+<p>The adversary is a p.p.t <strong>distinguisher</strong> that <u>gets the $y$ and tries to tell which world she’s in.</u></p>
+<h3 id="Why-good"><a href="#Why-good" class="headerlink" title="Why good ?"></a>Why good ?</h3><p>Why is this a good definition ?</p>
+<p>It’s good for all applications. As long as we can find truly random seeds, can replace true randomness by the <u>output of PRG(seed)</u> in any (polynomial-time) application.</p>
+<p>If the application behaves differently, then it <u>constitutes a (polynomial-time) statistical test</u> between PRG(seed) and a truly random strings.</p>
+<h2 id="PRG-can-Overcome-Shannon’s-Conundrum"><a href="#PRG-can-Overcome-Shannon’s-Conundrum" class="headerlink" title="PRG can Overcome Shannon’s Conundrum"></a>PRG can Overcome Shannon’s Conundrum</h2><p>PRG can overcome Shannon’s conundrum. That is, we can encrypt $n+1$ bits using an $n$-bit key.</p>
+<h3 id="How-to-achieve-it"><a href="#How-to-achieve-it" class="headerlink" title="How to achieve it ?"></a>How to achieve it ?</h3><p>The scheme consists of three algorithms.</p>
+<ul>
+<li>$Gen(1^n)$: generate a random n-bit key $k$</li>
+<li>$Enc(k,m)$ where $m$ is a $m(n)$-bit message:<ol>
+<li>Expand $k$ into a $(n+1)$-bit pseudorandom string $k’=G(k)$</li>
+<li>One time pad with $k’$: $c = k’\oplus m$</li>
+</ol>
+</li>
+<li>$Dec(k, c)$: output $G(k)\oplus c$</li>
+</ul>
+<p>$G$ is a public and deterministic p.p.t. function, so Alice and Bob can both calculate the one-time pad key $k’=G(k)$.</p>
+<p><font color=blue><u><b>Correctness: </b></u></font></p>
+<p>$Dec(k,c)=G(k)\oplus c = G(k)\oplus G(k)\oplus m = m$</p>
+<p>The correctness is easily proved. </p>
+<p>The scheme is <strong>under the assumption</strong> that $G$ <u>is a pseudorandom generator.</u></p>
+<p>Hence, if there exists a PRG, we can move beyond Shannon’s.</p>
+<h3 id="Security-Analysis"><a href="#Security-Analysis" class="headerlink" title="Security Analysis"></a>Security Analysis</h3><p>The most important thing is to prove the scheme is <strong>computational secure</strong>.</p>
+<p>Recall the definitions of computational indistinguishability and pseudorandom generator.</p>
+<hr>
+<p><font color=blue><u><b><i>Def of Computational Indistinguishability:</i></b></u></font> </p>
+  
+
+$\begin{array}{l}\text{For all {p.p.t} EVE, {there is a negligible function} }{\mu }\\ \text{s.t. for all } m_0, m_1:\\  \operatorname{Pr}[k\leftarrow \mathcal{K}; b\leftarrow \{0,1\};c=E(k,m_b):\mathrm{EVE}(c)=b] \le 1/2 + \mu(n)\end{array}$ 
+
+  
+
+<hr>
+<p><font color=blue><u><b><i>Def of PRG [Indistinguishability]:</i></b></u></font></p>
+<p>A <strong>deterministic</strong> polynomial-time computable function   ${G}:\{0,1\}^n\rightarrow \{0,1\}^m$   is a PRG if:</p>
+  
+
+$\begin{array}{l}\text{For all {p.p.t} EVE, {there is a negligible function} }{\mu }\text{ s.t. for all } m_0, m_1:\\  |\operatorname{Pr}[D({G(U_n)})=1]-\operatorname{Pr}[D({U_m})=1]|={\mu(n)}\quad ,m>n\end{array}$ 
+  
+
+<hr>
+<p>The following  proof is maybe your first <strong>reduction</strong>.</p>
+<p>The scheme is under <strong>the assumption</strong> that $G$ <u>is a pseudorandom generator.</u></p>
+<p>Hence, the thing <strong>we want to prove</strong> is <u>if $G$ is a pseudorandom generator,  then the scheme is computational secure.</u></p>
+<p><strong>Proof:</strong></p>
+<p>We want to <strong>prove the contradiction</strong> for simplicity that <u>if the scheme doesn’t satisfy the computational indistinguishability, then the assumption doesn’t hold</u>, i.e. $G$ is not a PRG.</p>
+<ul>
+<li><p>Suppose for contradiction that there is a p.p.t. $\operatorname{EVE}$, a polynomial function $p$ and $m_0, m_1$ s.t.</p>
+  
+   
+    $\operatorname{Pr}[k\leftarrow \mathcal{K}; b\leftarrow \{0,1\};c=Enc(k,m_b):\mathrm{EVE}(c)=b] \ge 1/2 + p(n)$ 
+      
+</li>
+<li><p><u>Case 1:</u> If $\operatorname{EVE}$ is a <strong>distinguisher for the scheme</strong>, instantiate it.</p>
+<ul>
+<li> $\rho = \operatorname{Pr}[k\leftarrow \{0,1\}^n; b\leftarrow \{0,1\};c=G(k)\oplus m_b:\mathrm{EVE}(c)=b] \ge 1/2 + p(n)$   </li>
+<li>The probability of $\operatorname{EVE}$ guessing correctly which world she is in is <u>more than half.</u></li>
+<li>As a result, $\operatorname{EVE}$ is able to distinguish case 1.</li>
+</ul>
+</li>
+<li><p><u>Case 2:</u> If EVE is a <strong>distinguisher for one-time pad</strong>, instantiate it.</p>
+<ul>
+<li> $\rho' = \operatorname{Pr}[k'\leftarrow \{0,1\}^{n+1}; b\leftarrow \{0,1\};c=k'\oplus m_b:\mathrm{EVE}(c)=b] = 1/2  \;(+\mu(n))$  
+       </li>
+<li>The probability of $\operatorname{EVE}$ guessing correctly which world she is in is <u>substantially half.</u></li>
+<li>As a result, $\operatorname{EVE}$ cannot distinguish case 2.</li>
+</ul>
+</li>
+<li><p>Then we can construct <strong>a distinguisher $\operatorname{EVE’}$ for $G$</strong> using distinguisher $\operatorname{EVE}$.</p>
+<ul>
+<li>A <strong>distinguisher for PRG</strong> is to get $y$ and try to tell <u>whether $y$ is from the pseudorandom world and the truly random world.</u></li>
+<li><u>Construct $\operatorname{EVE}’$:</u><br>Get as input a string $y$, run $\operatorname{EVE}(y\oplus m_b)$ for a random $b$, and let $\operatorname{EVE}$’s output be $b’$. Output “PRG” if $b=b’$ and “RANDOM” otherwise.<ol>
+<li>Run $\operatorname{EVE}(y\oplus m_b)$ for a random $b$</li>
+<li>Let $b’:=\operatorname{EVE}(y\oplus m_b)$</li>
+<li> $\operatorname{EVE}'(y)=\begin{cases} \text{PRG},& b=b'\\ \text{RANDOM},& \text{otherwise}\end{cases}$   </li>
+</ol>
+</li>
+<li>If $y$ <u>is from the pseudorandom world,</u><ul>
+<li>$\operatorname{EVE}$ is trying to <u>distinguish the Case 1</u> when running $\operatorname{EVE}(y\oplus m_b)$ for a random $b$.</li>
+<li>The probability of $\operatorname{EVE}(y\oplus m_b)$ <u>guessing $b$ correctly, i.e. $b’=b$,  is more than half.</u></li>
+<li>$\operatorname{Pr}[\operatorname{EVE’}\text{ outputs PRG}\mid y\text{ is pseudorandom}]=\rho \ge 1/2 + 1/p(n)$</li>
+</ul>
+</li>
+<li>If $y$ is <u>from the truly random world,</u><ul>
+<li>$\operatorname{EVE}$ is trying to <u>distinguish the Case 2</u> when running $\operatorname{EVE}(y\oplus m_b)$ for a random $b$.</li>
+<li>The probability of $\operatorname{EVE}(y\oplus m_b)$ <u>guessing $b$ correctly, i.e. $b’=b$,  is substantially half.</u></li>
+<li>$\operatorname{Pr}[\operatorname{EVE’}\text{ outputs RANDOM}\mid y\text{ is random}]=\rho’ = 1/2$</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Hence, <u>the advantage of $\operatorname{EVE}’$ distinguishing for $G$ is</u>   
+$\operatorname{Pr}[\operatorname{EVE'}\text{ outputs PRG}\mid y\text{ is pseudorandom}]-\operatorname{Pr}[\operatorname{EVE'}\text{ outputs RANDOM}\mid y\text{ is random}]\ge 1/p(n)$  , which proves $G$ is not a PRG.</p>
+</li>
+<li><p>QED.</p>
+</li>
+</ul>
+<p>So far we have proven it that $G$ is not a PRG if the scheme is not (computational) secure which also means <u>the scheme is (computational) secure if there exists a PRG $G$.</u></p>
+<p>We make a <strong>reduction</strong> from <u>whether the scheme is (computational) secure to whether PRGs exist.</u> It’s a simple but typical reduction. The reductions will be more intricate but the principle remains same.</p>
+<h3 id="Two-Questions-to-PRG"><a href="#Two-Questions-to-PRG" class="headerlink" title="Two Questions to PRG"></a>Two Questions to PRG</h3><p>As a consequence, the proof of security comes back to PRGs.</p>
+<p>There are two questions to PRGs</p>
+<ul>
+<li>Q1: Do PRGs exist ?</li>
+<li>Q2: How do we encrypt longer messages or many messages with a fixed key ?</li>
+</ul>
+<p>The next subsection will answer the first question Q1 while Q2 will be answered in following blog.</p>
+<h2 id="Q1-Do-PRGs-Exist"><a href="#Q1-Do-PRGs-Exist" class="headerlink" title="Q1: Do PRGs Exist ?"></a>Q1: Do PRGs Exist ?</h2><p>Do PRGs exist ?</p>
+<blockquote>
+<p>If P=NP, PRGs do not exist.</p>
+</blockquote>
+<p>I believe P$\ne$NP so I believe PRGs do exist.</p>
+<p>There are two methodologies to construct PRGs, the practical methodology and the foundational mehodology.</p>
+<p>Rigndael (AES) is designed by the practical methodology, but this course is more about the foundational methodology.</p>
+<h3 id="The-Practical-Methodology"><a href="#The-Practical-Methodology" class="headerlink" title="The Practical Methodology"></a>The Practical Methodology</h3><ol>
+<li><p>Start from a design framework.<br>A <strong>practical truth</strong> is appropriately chosen <u>functions composed appropriately many times look random.</u>  For example, if you repeat the knot many and many times, then you will get a  random line ball. </p>
+ <img src="https://s1.ax1x.com/2022/07/02/j3puNt.png" alt="knot repeatly" style="zoom:25%;" />
+</li>
+<li><p>Come up with a candidate construction.<br>e.g. the construction of Rijndael (AES) .</p>
+ <img src="https://s1.ax1x.com/2022/07/02/j3pQ9f.png" alt="AES" style="zoom:33%;" />
+</li>
+<li><p>Do extensive cryptanalysis.</p>
+ <img src="https://s1.ax1x.com/2022/07/02/j3p1gS.png" alt="Untitled" style="zoom:35%;" /> 
+
+</li>
+</ol>
+<h3 id="The-Foundational-Methodology"><a href="#The-Foundational-Methodology" class="headerlink" title="The Foundational Methodology"></a>The Foundational Methodology</h3><p>The maxim is reducing to simpler primitives.</p>
+<p>Construct one-way function (OWF) from well-studied and  average-case hard problems.</p>
+<p>Then create the thriving world of cryptography based on OWF.</p>
+<img src="https://s1.ax1x.com/2022/07/02/j3pl38.png" alt="Thriving World of Cryptography" style="zoom:33%;" />
+
+<blockquote>
+<p>“Science wins either way” ——Silvio Micali</p>
+</blockquote>
+<p>There is a PRG candidate from the average-case hardness of subset-sum.</p>
+<p><u><b>A PRG Candidate from the average-case hardness of Subset-sum:</b></u> </p>
+<p>$G(a_1,\dots,a_n,x_1,\dots,x_n)=(a_1,\dots,a_n,\sum_{i=1}^n x_i a_i \mod{2^{n+1}})$</p>
+<p>where $a_i$ are random $(n+1)$-bit numbers, and $x_i$ are random bits.</p>
+<p>Nevertheless, there exists a better way to construct PRG.</p>
+<p><font color=red><u><b>Beautiful Function: </b></u></font></p>
+<p>If $G$ is one-way function, then $G$ is a PRG.</p>
+<p>If lattice problems are hard on the worst-case, $G$ is a PRG.</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Cryptography-MIT6875」: Lecture 2</p><p><a href="https://f7ed.com/2022/07/01/mit6875-lec2/">https://f7ed.com/2022/07/01/mit6875-lec2/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2022-07-02</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2022-08-12</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Cryptography/">Cryptography, </a><a class="link-muted" rel="tag" href="/tags/MIT6875/">MIT6875, </a><a class="link-muted" rel="tag" href="/tags/Perfect-Indistinguishability/">Perfect Indistinguishability, </a><a class="link-muted" rel="tag" href="/tags/Shannon-s-lower-bound/">Shannon&#039;s lower bound, </a><a class="link-muted" rel="tag" href="/tags/Computational-Indistinguishability/">Computational Indistinguishability, </a><a class="link-muted" rel="tag" href="/tags/PRG/">PRG </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2022/07/05/mit6875-lec3/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Cryptography-MIT6875」: Lecture 3</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2022/06/29/mit6875-lec1/"><span class="level-item">「Cryptography-MIT6875」: Lecture 1</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "24cc6deb04af96ddfd2398ff1151006b",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">71</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">139</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Recap"><span class="level-left"><span class="level-item">1</span><span class="level-item">Recap</span></span></a></li><li><a class="level is-mobile" href="#Computational-Security"><span class="level-left"><span class="level-item">2</span><span class="level-item">Computational Security</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Perfect-Indistinguishability"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">Perfect Indistinguishability</span></span></a></li><li><a class="level is-mobile" href="#Key-Idea-Computationally-Bounded-Adversaries"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">Key Idea: Computationally Bounded Adversaries</span></span></a></li><li><a class="level is-mobile" href="#Computational-Indistinguishability-take-1"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">Computational Indistinguishability (take 1)</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#The-Axiom-of-Modern-Crypto-p-p-t"><span class="level-left"><span class="level-item">2.3.1</span><span class="level-item">The Axiom of Modern Crypto: p.p.t</span></span></a></li><li><a class="level is-mobile" href="#Toy-Definition-with-p-p-t"><span class="level-left"><span class="level-item">2.3.2</span><span class="level-item">Toy Definition with p.p.t.</span></span></a></li><li><a class="level is-mobile" href="#Not-Feasible"><span class="level-left"><span class="level-item">2.3.3</span><span class="level-item">Not Feasible</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Computational-Indistinguishability-take-2"><span class="level-left"><span class="level-item">2.4</span><span class="level-item">Computational Indistinguishability (take 2)</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Negligible-Functions"><span class="level-left"><span class="level-item">2.4.1</span><span class="level-item">Negligible Functions</span></span></a></li><li><a class="level is-mobile" href="#Security-Parameter-n"><span class="level-left"><span class="level-item">2.4.2</span><span class="level-item">Security Parameter: n</span></span></a></li><li><a class="level is-mobile" href="#Definition"><span class="level-left"><span class="level-item">2.4.3</span><span class="level-item">Definition</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Pseudorandom-Generators-PRG"><span class="level-left"><span class="level-item">3</span><span class="level-item">Pseudorandom Generators (PRG)</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#3-Equiv-Definitions-of-PRG"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">3 Equiv. Definitions of PRG</span></span></a></li><li><a class="level is-mobile" href="#Def-1-Indistinguishability"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">Def 1: Indistinguishability</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Why-good"><span class="level-left"><span class="level-item">3.2.1</span><span class="level-item">Why good ?</span></span></a></li></ul></li><li><a class="level is-mobile" href="#PRG-can-Overcome-Shannon’s-Conundrum"><span class="level-left"><span class="level-item">3.3</span><span class="level-item">PRG can Overcome Shannon’s Conundrum</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#How-to-achieve-it"><span class="level-left"><span class="level-item">3.3.1</span><span class="level-item">How to achieve it ?</span></span></a></li><li><a class="level is-mobile" href="#Security-Analysis"><span class="level-left"><span class="level-item">3.3.2</span><span class="level-item">Security Analysis</span></span></a></li><li><a class="level is-mobile" href="#Two-Questions-to-PRG"><span class="level-left"><span class="level-item">3.3.3</span><span class="level-item">Two Questions to PRG</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Q1-Do-PRGs-Exist"><span class="level-left"><span class="level-item">3.4</span><span class="level-item">Q1: Do PRGs Exist ?</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#The-Practical-Methodology"><span class="level-left"><span class="level-item">3.4.1</span><span class="level-item">The Practical Methodology</span></span></a></li><li><a class="level is-mobile" href="#The-Foundational-Methodology"><span class="level-left"><span class="level-item">3.4.2</span><span class="level-item">The Foundational Methodology</span></span></a></li></ul></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

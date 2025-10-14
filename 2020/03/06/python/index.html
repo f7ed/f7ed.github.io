@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Python」：Module &amp; Method - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="长期记录帖：关于遇到过的那些Python 的Packets &amp;amp; Module &amp;amp; Method &amp;amp; Attribute。中英记录。"><meta property="og:type" content="blog"><meta property="og:title" content="「Python」：Module &amp; Method"><meta property="og:url" content="https://f7ed.com/2020/03/06/python/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="长期记录帖：关于遇到过的那些Python 的Packets &amp;amp; Module &amp;amp; Method &amp;amp; Attribute。中英记录。"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/77538838_p0_master1200.jpg"><meta property="article:published_time" content="2020-03-06T16:00:00.000Z"><meta property="article:modified_time" content="2020-07-03T08:42:56.875Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Python"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/77538838_p0_master1200.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2020/03/06/python/"},"headline":"「Python」：Module & Method","image":["https://f7ed.com/gallery/thumbnails/77538838_p0_master1200.jpg"],"datePublished":"2020-03-06T16:00:00.000Z","dateModified":"2020-07-03T08:42:56.875Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"长期记录帖：关于遇到过的那些Python 的Packets &amp; Module &amp; Method &amp; Attribute。中英记录。"}</script><link rel="canonical" href="https://f7ed.com/2020/03/06/python/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Python」：Module &amp; Method</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2020-03-06T16:00:00.000Z" title="2020-03-06T16:00:00.000Z">2020-03-07</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2020-07-03T08:42:56.875Z" title="2020-07-03T08:42:56.875Z">2020-07-03</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Python/">Python</a></span><span class="level-item"><i class="far fa-clock"></i> 18 minutes read (About 2625 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>长期记录帖：关于遇到过的那些Python 的Packets &amp; Module &amp; Method &amp; Attribute。中英记录。</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><span id="more"></span>
+
+<h1 id="Tricky"><a href="#Tricky" class="headerlink" title="Tricky"></a>Tricky</h1><h2 id="list-comprehension"><a href="#list-comprehension" class="headerlink" title="list comprehension"></a>list comprehension</h2><ul>
+<li><p>List comprehension provides a concise way to create lists. </p>
+<ul>
+<li>e.g. : squares = [x**2 for x in range(10)]</li>
+</ul>
+</li>
+<li><p>A list comprehension consists of brackets containing an expression followed by a for clause, then zero or more <em>for</em> or <em>if</em> clauses. The result will be a new list resulting from evaluating the expression in the context of the for and if clauses which follow it.</p>
+<ul>
+<li>e.g. : Double loop: [(x,y) for x in [1,2,3] for y in [3,1,4] if x != y]<ul>
+<li>输出7个</li>
+</ul>
+</li>
+<li>e.g. : (Using zip() to loop together): [(x, y) for x,y in zip([1,2,3], [3,1,4]) if x!=y]<ul>
+<li>输出2个</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="Python-Build-function"><a href="#Python-Build-function" class="headerlink" title="Python-Build function"></a>Python-Build function</h1><h2 id="print"><a href="#print" class="headerlink" title="print"></a>print</h2><ul>
+<li>print(*objects, sep=’ ‘, end=’\n’, file=sys.stdout)</li>
+</ul>
+<h2 id="len"><a href="#len" class="headerlink" title="len"></a>len</h2><ul>
+<li>Return the length(the number of items) of an object.</li>
+</ul>
+<h2 id="str-format"><a href="#str-format" class="headerlink" title="str.format()"></a>str.format()</h2><ul>
+<li>字符串格式化</li>
+<li>eg:<ul>
+<li>“{} {}”.format(“Hello”,”World)</li>
+<li>‘Hello World’</li>
+</ul>
+</li>
+</ul>
+<h2 id="zip-iterables"><a href="#zip-iterables" class="headerlink" title="zip(*iterables)"></a>zip(*iterables)</h2><ul>
+<li><p>Make an iterator that aggregates【聚集】 elements from each of the iterales.</p>
+</li>
+<li><p>Returns an iterator of tuples, where the i-th tuple contains the i-th element from each of the argument sequences or iterables. The iterator stops when the shortest input iterable is exhausted. </p>
+<p>【返回一个元组的迭代器】</p>
+</li>
+<li><p>使用zip可以同时对多个迭代器进行迭代</p>
+</li>
+</ul>
+<h2 id="enumerate"><a href="#enumerate" class="headerlink" title="enumerate"></a>enumerate</h2><ul>
+<li><p>Enumerate is a built-in funciton of Python. It allows us to loop over something and have an automatic counter.</p>
+</li>
+<li><p>e.g. </p>
+<ul>
+<li><p>for counter, value in enumerate(some_list):</p>
+<p>print(counter, value)</p>
+</li>
+</ul>
+</li>
+<li><p>e.g. : an optional argument: tell enumerate from where to start the index.</p>
+<ul>
+<li><p>for c, value in enumerate(my_list, 1):</p>
+<p>print(c, value)</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="with-open-path-as-f"><a href="#with-open-path-as-f" class="headerlink" title="with open(path) as f:"></a>with open(path) as f:</h2><ul>
+<li><p>由于读写文件都可能产生IOError，一旦出错，后面的f.close()就不会调用。</p>
+</li>
+<li><p>用try……finally来实现，比较麻烦。</p>
+<p>try:</p>
+<p>​    f = open(path, ‘r’)</p>
+<p>​    print(f.read())</p>
+<p>finally:</p>
+<p>​    if f:</p>
+<p>​        f.close()</p>
+</li>
+<li><p>用with as 简化</p>
+<p>with open(path, ‘r’) as f:</p>
+<p>​    print(f.read())</p>
+</li>
+</ul>
+<h1 id="numpy"><a href="#numpy" class="headerlink" title="numpy"></a>numpy</h1><h2 id="numpy-argsort"><a href="#numpy-argsort" class="headerlink" title="numpy.argsort"></a>numpy.argsort</h2><ul>
+<li><p>numpy.argsort(a, axis=-1, kind=None, order=None)</p>
+</li>
+<li><p>Returns the indices that would sort an array.</p>
+<p>Perform an indirect sort along the given axis using the algorithm specified by the kind keyword. It returns an array of indices of the same shape as a that index data along the given axis in sorted order.</p>
+</li>
+<li><p>Parameters:</p>
+<ul>
+<li><p><strong>a</strong> :array_like.</p>
+</li>
+<li><p><strong>axis</strong> : int or None, optional</p>
+<p>Axis along which to sort. The default is -1(the last axis). 【默认按照最后一个维度】</p>
+<ul>
+<li>2-D: axis = 0按列排序</li>
+<li>2-D: axis = 1 按行排序</li>
+</ul>
+</li>
+<li><p><strong>kind</strong> :{‘quicksort’, ‘mergesort’, ‘heapsort’, ‘stable’}, optional</p>
+<p>The default is ‘quicksort’</p>
+</li>
+</ul>
+</li>
+<li><p>Return: index_array: ndarray, int.【返回的是降序排列的索引数组】</p>
+<ul>
+<li><p>e.g.:</p>
+<p>x = np.array([5, 1, 2])</p>
+<p>np.argsort(x)  # 降序</p>
+<p>array([1,2,0])</p>
+<p>np.argsort(-x) # 升序</p>
+<p>array([0,2,1])</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="Linear-algebra-numpy-linalg"><a href="#Linear-algebra-numpy-linalg" class="headerlink" title="Linear algebra(numpy.linalg)"></a>Linear algebra(numpy.linalg)</h2><h3 id="numpy-dot"><a href="#numpy-dot" class="headerlink" title="numpy.dot"></a>numpy.dot</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.dot.html">numpy.dot(a,b)</a> </li>
+<li>Dot product of two arrays.<ul>
+<li>If both a and b are 1-D arrays, it is inner porduct of vectors.</li>
+<li>If both a and b are 2-D arrays, it is matrix multiplication, but using matmul is preferred.</li>
+<li>Id either a or b is 0-D(scalar), it is equivalent to multiply and using numpy.multiply(a, b) or a*b is preferred.</li>
+<li>……</li>
+</ul>
+</li>
+</ul>
+<h3 id="numpy-matmul"><a href="#numpy-matmul" class="headerlink" title="numpy.matmul"></a>numpy.matmul</h3><ul>
+<li>Matrix product of two arrays.</li>
+<li>numpy.matmul(x1, x2)</li>
+</ul>
+<h3 id="numpy-linalg-inv-a"><a href="#numpy-linalg-inv-a" class="headerlink" title="numpy.linalg.inv(a)"></a>numpy.linalg.inv(a)</h3><ul>
+<li><p>Compute the inverse of a matrix.</p>
+<p>Given a square matrix a, return the matrix ainv satisfying dot(a, ainv) = dot(ainv, a) = eye(a.shape[0])/</p>
+</li>
+<li><p>numpy.linalg.inv(a)</p>
+</li>
+<li><p>Parameters:</p>
+<ul>
+<li><strong>a</strong> :(…, M, M) array_like. Matrix to e inverted.</li>
+</ul>
+</li>
+<li><p>Return: ainv.</p>
+</li>
+</ul>
+<h3 id="numpy-linalg-svd"><a href="#numpy-linalg-svd" class="headerlink" title="numpy.linalg.svd"></a>numpy.linalg.svd</h3><ul>
+<li><p>numpy.linalg.svd(a, full_matrices=True,  compute_uv=True, hermitian=False)</p>
+</li>
+<li><p>Singular Value Decomposition</p>
+</li>
+<li><p>矩阵的奇异值分解</p>
+<p>A = u @ s @ vh</p>
+<p>u, vh是标准正交矩阵, inv(u) = uh</p>
+<p>s是对角矩阵</p>
+</li>
+<li><p>Parameters:</p>
+<ul>
+<li><p><strong>a</strong> :array_like, a real or complex array with a.ndim &gt;=2</p>
+</li>
+<li><p><strong>full_matrices</strong> :bool, optional. True(default)</p>
+<p>If True, u and vh have the shapes(…, M, M) and (…, N, N), respectively.</p>
+<p>Otherwise, the shapes are(…, M, K) and (…, K, N), respectively, where K = min(M,N)</p>
+</li>
+<li><p><strong>compute_uv</strong> : bool, optional.True(default)</p>
+<p>Whether or not to compute u and vh in addition to s.【注，vh就是v的转置】</p>
+</li>
+</ul>
+</li>
+<li><p>Return：</p>
+<ul>
+<li>u: array</li>
+<li>s: array</li>
+<li>vh:array</li>
+</ul>
+</li>
+</ul>
+<h2 id="numpy-zeros"><a href="#numpy-zeros" class="headerlink" title="numpy.zeros"></a>numpy.zeros</h2><ul>
+<li><p>numpy.zeros(shape, dtype=float, order=’C’)</p>
+</li>
+<li><p>Return a new array of given shape and type, filled with zeros.</p>
+</li>
+<li><p>parameters:</p>
+<ul>
+<li><strong>shape</strong>:  int or truple of ints. e.g.,(2,3) or 2</li>
+<li><strong>dtype</strong>: data-type, optional.(Defaults is numpy.float64)</li>
+<li><strong>oder</strong>: optional</li>
+</ul>
+</li>
+<li><p>Returns: out ndarray</p>
+</li>
+</ul>
+<h2 id="numpy-full"><a href="#numpy-full" class="headerlink" title="numpy.full"></a>numpy.full</h2><ul>
+<li>numpy.full(shape, fill_value, dtype=None)</li>
+<li>Return a new array of given shape and type, filled with fill_value.</li>
+<li>parameters:<ul>
+<li><strong>shape</strong> :int or sequence of ints<ul>
+<li>(2,3) or 2</li>
+</ul>
+</li>
+<li><strong>fill_value</strong> :scalar</li>
+<li><strong>dtype</strong> :data-type, optional</li>
+</ul>
+</li>
+</ul>
+<h2 id="numpy-arange"><a href="#numpy-arange" class="headerlink" title="numpy.arange"></a>numpy.arange</h2><ul>
+<li><p>numpy.arange([start, ]stop, [step, ]dtype=None)</p>
+</li>
+<li><p>Return evenly spaced values within a given interval.</p>
+</li>
+<li><p>parameters:</p>
+<ul>
+<li><strong>start</strong>: number, optional. (Defaults is 0)</li>
+<li><strong>stop</strong> :number. <strong>[start,stop)</strong></li>
+<li><strong>step</strong> :number, optional(Defaults is 1)</li>
+<li><strong>dtype</strong> :</li>
+</ul>
+</li>
+<li><p>Returns :ndarray </p>
+</li>
+<li><p>differ with built-in range function</p>
+<ul>
+<li>numpy.arange returnan ndarray rathan than a list.</li>
+<li>numpy.arange’s step can be float.</li>
+</ul>
+</li>
+</ul>
+<h2 id="numpy-meshgrid"><a href="#numpy-meshgrid" class="headerlink" title="numpy.meshgrid"></a>numpy.meshgrid</h2><ul>
+<li>numpy.meshgrid(x, y)</li>
+<li>生成用x向量为行，y向量为列的矩阵（坐标系）</li>
+<li>返回 X矩阵和Y矩阵<ul>
+<li>X矩阵：网格上所有点的x值</li>
+<li>Y矩阵：网格上所有点的y值</li>
+</ul>
+</li>
+<li>e.g., X, Y = np.meshgrid(x, y) 【X,Y 都是网格点坐标矩阵】</li>
+</ul>
+<h2 id="numpy-genfromtext"><a href="#numpy-genfromtext" class="headerlink" title="numpy.genfromtext"></a>numpy.genfromtext</h2><ul>
+<li><p>numpy.genfromtxt (fname, delimiter=None)</p>
+</li>
+<li><p>Load data from a text file, with missing values handled as specified. </p>
+<p>Each line past the first <em>skip_header</em> lines is split at the delimiter character, and characters following the <em>comments</em> characters are discarded.</p>
+</li>
+<li><p>Parameters:</p>
+<ul>
+<li><strong>fname</strong> :file, str, list of str, generator.</li>
+<li><strong>dtype</strong> :dtype, optional. </li>
+<li><strong>delimiter</strong> :str, int, or sequence, optional. <ul>
+<li>(default = whitespace)</li>
+<li>The strin used to separate values. </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Python的列表读取处理数据很慢，numpy.genfromtext就很棒。</p>
+</li>
+</ul>
+<h2 id="numpy-isnan"><a href="#numpy-isnan" class="headerlink" title="numpy.isnan"></a>numpy.isnan</h2><ul>
+<li>numpy.isnan(x)</li>
+<li>Test element-wise for NaN(Not a number) and return result as a boolean array.</li>
+<li>Parameters:<ul>
+<li><strong>x</strong> :array_like</li>
+</ul>
+</li>
+<li>Returns:  y:ndarray or bool.<ul>
+<li>True where x is NaN, false otherwise.</li>
+</ul>
+</li>
+</ul>
+<h2 id="numpy-empty"><a href="#numpy-empty" class="headerlink" title="numpy.empty"></a>numpy.empty</h2><ul>
+<li>nmpy.empty(shape, dtype=float, order=’C’)</li>
+<li>Return a new arry of given shape and type, without initializing entries.</li>
+<li>Parameters:<ul>
+<li><strong>shape</strong> :int or tuple of int</li>
+<li><strong>dtype</strong> :data-type,optional<ul>
+<li>Default is numpy.float64.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Returns: <ul>
+<li>out: ndarray</li>
+</ul>
+</li>
+</ul>
+<h2 id="numpy-reshape"><a href="#numpy-reshape" class="headerlink" title="numpy.reshape"></a>numpy.reshape</h2><ul>
+<li>numpy.reshape(a, newshape, order=’C’)</li>
+<li>Gives a new shape to an array without changing its data.【改变张量的shape，不改变张量的数据】</li>
+<li>Parameters:<ul>
+<li><strong>a</strong> : array-like</li>
+<li><strong>newshape</strong> : int or tuple of ints<ul>
+<li>One shape dimension can be -1. The value is inferred from the length of the array and remaning dimensions.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Returns: reshaped_array:ndarray</li>
+</ul>
+<h2 id="numpy-mean"><a href="#numpy-mean" class="headerlink" title="numpy.mean"></a>numpy.mean</h2><ul>
+<li>numpy.mean(a, axis=None)</li>
+<li>Compute the arithmetic mean along the specifiied axis.(the average of the array elements)</li>
+<li>Parameters:<ul>
+<li><strong>a</strong> : array_like</li>
+<li><strong>axis</strong> ：None or int or tuple of ints, optional<ul>
+<li>Axis or axes along which the means are computed.</li>
+<li>axis=0 ：沿行的垂直往下（列）</li>
+<li>axis=1 ：沿列的方向水平向右（行）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="numpy-std"><a href="#numpy-std" class="headerlink" title="numpy.std"></a>numpy.std</h2><ul>
+<li>numpy.std(a, axis=None,)</li>
+<li>Compute the standard deviation along the specified axis.【标准差】</li>
+<li>Parameters:<ul>
+<li><strong>a</strong> :array_like</li>
+<li><strong>axis</strong> :Axis or axes along which the means are computed.</li>
+</ul>
+</li>
+</ul>
+<h2 id="numpy-shape"><a href="#numpy-shape" class="headerlink" title="numpy.shape"></a>numpy.shape</h2><ul>
+<li>attribute</li>
+<li>Tuple of array dimensions.</li>
+</ul>
+<h2 id="numpy-concatenate"><a href="#numpy-concatenate" class="headerlink" title="numpy.concatenate"></a>numpy.concatenate</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.concatenate.html">numpy.concatenate((a1, a2, …), axis=0)</a> </li>
+<li>Join a sequence of arrays along an existing axis.</li>
+<li>Parameters: <ul>
+<li><strong>a1, a2, …</strong> :sequence of array_like<ul>
+<li>The arrays must have the same shape, excepting in the dimension corresponding to axis.【除了axia方向，其他维度的shape要相同】</li>
+<li>If axis is None, arrays are flattened before use.【值为None，就先将向量变成一维的】</li>
+<li>Default=0</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="numpy-ndarray-astype"><a href="#numpy-ndarray-astype" class="headerlink" title="numpy.ndarray.astype"></a>numpy.ndarray.astype</h2><ul>
+<li>method</li>
+<li><a target="_blank" rel="noopener" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.astype.html">numpy.ndarray.astype(dtype)</a></li>
+<li>Copy of the array cast to a specified type.【强制转换数据类型】</li>
+<li>Parameters:<ul>
+<li><strong>dtype</strong> : str or dtype</li>
+</ul>
+</li>
+</ul>
+<h2 id="numpy-ones"><a href="#numpy-ones" class="headerlink" title="numpy.ones"></a>numpy.ones</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ones.html">numpy.ones(shape, dtype=None)</a></li>
+<li>Return a new array of given shape and type, filled with ones.</li>
+<li>Parameters:<ul>
+<li><strong>shape</strong> : int or sequence of ints.</li>
+<li><strong>dtype</strong> : data-type, optional</li>
+</ul>
+</li>
+</ul>
+<h2 id="numpy-array"><a href="#numpy-array" class="headerlink" title="numpy.array"></a>numpy.array</h2><ul>
+<li><p>numpy.array(object, dtype = none)</p>
+</li>
+<li><p>Create an array</p>
+</li>
+<li><p>Parameters:</p>
+<ul>
+<li><p><strong>object</strong> :array_like</p>
+<p>An array, any object exposing the array interface, an object whose <em>array</em> method returns an array, or any(nested) sequence.</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="numpy-ndarray-运算"><a href="#numpy-ndarray-运算" class="headerlink" title="numpy ndarray 运算"></a>numpy ndarray 运算</h2><ul>
+<li>[[1]]*3 = [[1],[1],[1]]</li>
+<li>A * B 元素相乘</li>
+<li>numpy.dot(A, B) 矩阵相乘</li>
+</ul>
+<h2 id="numpy-power"><a href="#numpy-power" class="headerlink" title="numpy.power"></a>numpy.power</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.power.html">numpy.power(x1, x2)</a> </li>
+<li>First array elements raised to powers from second array.</li>
+<li>Parameters:<ul>
+<li><strong>x1</strong> :array_like .<ul>
+<li>The bases.</li>
+</ul>
+</li>
+<li><strong>x2</strong> :array_like<ul>
+<li>The exponents. </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="numpy-sum"><a href="#numpy-sum" class="headerlink" title="numpy.sum"></a>numpy.sum</h2><ul>
+<li>numpy.sum(a, axis=None, dtype=None)</li>
+<li>Sum of arrays elements over a given axis.</li>
+<li>Parameters:<ul>
+<li><strong>a</strong> :array_like<ul>
+<li>Elements to sum.</li>
+</ul>
+</li>
+<li><strong>axis</strong> :None or int or tuple of ints, optional<ul>
+<li>Axis or axes along which a sum is perfomed.</li>
+<li>The default, None, will sum all of the elementsof the input array.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="numpy-transpose"><a href="#numpy-transpose" class="headerlink" title="numpy.transpose"></a>numpy.transpose</h2><ul>
+<li><p>numpy.transpose(a, axes=None)</p>
+</li>
+<li><p>Permute the dimensions of the array.【tensor的维度换位】</p>
+</li>
+<li><p>Parameters:</p>
+<ul>
+<li><strong>a</strong> : array_like</li>
+<li><strong>axes</strong> : list of ints, optinal<ul>
+<li>Default, reverse the dimensions.</li>
+<li>Otherwise permute the axes according to the values given.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Returns : ndarray</p>
+</li>
+<li><p>张量a的shape是(10,2,15), numpy.transport(2,0,1)的shape就是(15,10,2)</p>
+</li>
+<li><p>对于一维：行向量变成列向量</p>
+</li>
+<li><p>对于二维：矩阵的转置</p>
+</li>
+</ul>
+<h2 id="numpy-save"><a href="#numpy-save" class="headerlink" title="numpy.save"></a>numpy.save</h2><ul>
+<li><p><a target="_blank" rel="noopener" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.save.html">numpy.save(file, arr)</a> </p>
+</li>
+<li><p>Save an array to a binary file in Numpy .npy format.</p>
+</li>
+<li><p>Parameters:</p>
+<ul>
+<li><p><strong>file</strong> :file, str, or pathlib</p>
+</li>
+<li><p><strong>arr</strong> :array_like</p>
+<p>Array data to be saved.</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="numpy-clip"><a href="#numpy-clip" class="headerlink" title="numpy.clip"></a>numpy.clip</h2><ul>
+<li>Clip(limit) the values in an array</li>
+<li>numpy.clip(a, a_min, a_max)</li>
+<li>Parameters:<ul>
+<li><strong>a</strong> :array_like</li>
+<li><strong>a_min</strong> : scalar or array_like</li>
+<li><strong>a_max</strong> :scalar or array_like</li>
+</ul>
+</li>
+</ul>
+<h2 id="numpy-around"><a href="#numpy-around" class="headerlink" title="numpy.around"></a>numpy.around</h2><ul>
+<li><p>Evenly round to the given number of decimals(十进制)</p>
+</li>
+<li><p>numpy.around(a)</p>
+</li>
+<li><p>Parameters：</p>
+<ul>
+<li><strong>a</strong> :array_like</li>
+</ul>
+</li>
+<li><p>Notes: For values exactly halfway between rounded decimal values, Numpy rounds to the nearest even values.</p>
+<p>【这什么意思呢？ 就是说对于0.5的这种，为了统计上平衡，不会全部向上取整或者向下取整，会向最近的偶数取整，around（2.5）=2】</p>
+</li>
+</ul>
+<h2 id="numpy-log"><a href="#numpy-log" class="headerlink" title="numpy.log"></a>numpy.log</h2><ul>
+<li>The natural logarithm log is the inverse of exponential functions, so that log(exp(x))=x.</li>
+<li>numpy.log(x)</li>
+<li>Parameters:<ul>
+<li><strong>x</strong> : array_like</li>
+</ul>
+</li>
+</ul>
+<h2 id="numpy-ndarray-T"><a href="#numpy-ndarray-T" class="headerlink" title="numpy.ndarray.T"></a>numpy.ndarray.T</h2><ul>
+<li>attribute, the transpose array.</li>
+<li>ndarray.T</li>
+</ul>
+<h2 id="numpy-random-shuffle"><a href="#numpy-random-shuffle" class="headerlink" title="numpy.random.shuffle"></a>numpy.random.shuffle</h2><ul>
+<li><p>Modify a sequence in-space by shufflng its contents.</p>
+<p>This function only shuffles the array along the first axis of a multi-diensional array. The order of sub-arrays is changed but their contents remains the same.</p>
+</li>
+<li><p>numpy.random.shuffle(x)</p>
+</li>
+<li><p>Parameters:</p>
+<ul>
+<li><strong>x</strong> : array_like</li>
+</ul>
+</li>
+<li><p><strong>e.g. shuffle two list, X and Y, together.</strong> <strong>【以相同的顺序打乱两个array】</strong></p>
+<ul>
+<li><p>np.random.seed(0)</p>
+<p>randomize = np.arrange(len(X))</p>
+<p>np.random.shuffle(randomize)</p>
+<p>return X[randomize], Y[randomize]</p>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="sklearn"><a href="#sklearn" class="headerlink" title="sklearn"></a>sklearn</h1><h2 id="skelearn-linear-model-LinearRegression"><a href="#skelearn-linear-model-LinearRegression" class="headerlink" title="skelearn.linear_model.LinearRegression"></a>skelearn.linear_model.LinearRegression</h2><ul>
+<li>class sklearn.linear_model.LinearRegression(fit_intercept=True, normalize=False, copy_X=True, n_jobs=None)</li>
+<li>Ordinary least squares Linear Regress(最小二乘法回归运算)</li>
+<li>Parameters:<ul>
+<li><strong>fit_intercept</strong> :bool, optional, defalut True【True：需要bias的截距项】</li>
+<li><strong>normalize</strong> :bool, optional, default False 【True：对样本做feature scaling】</li>
+</ul>
+</li>
+<li>Attributes：<ul>
+<li><strong>coef_</strong> :array of shape(n_features) 【权重】</li>
+<li><strong>intercept_</strong> :bias </li>
+</ul>
+</li>
+<li>Methods：<ul>
+<li><strong>fit(self,X,y[,sample_weight])</strong> :Fit linear model<ul>
+<li>e.g. , LinearRegression().fit(x_data, y_data)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="matplotlib-pyplot"><a href="#matplotlib-pyplot" class="headerlink" title="matplotlib.pyplot"></a>matplotlib.pyplot</h1><h2 id="matplotlib-pyplot-contourf"><a href="#matplotlib-pyplot-contourf" class="headerlink" title="matplotlib.pyplot.contourf"></a>matplotlib.pyplot.contourf</h2><ul>
+<li><p>contour and contourf draw contour lines and filled contours, respectively.【一个画等高线，一个填充等高线/轮廓】</p>
+</li>
+<li><p>contour([X, Y, ] Z, [levels], **kwargs)</p>
+</li>
+<li><p>Parameters</p>
+<ul>
+<li><p><strong>X, Y</strong>: The coordinates of the values in Z. A and Y must both be 2-D with the sanme shape as Z(e.g. created via numpy.meshgrid), or they must both be 1-D such that len(X) == M is the number of columns in Z and len(Y) = N is the number of rows in Z.</p>
+<p>【X，Y要么是由像numpy.mershgrid(x, y) 生成的网格点坐标矩阵，要么X，Y是（基）向量，X向量是x轴的，对应到Z矩阵，是Z矩阵的列数，Y向量同理】</p>
+</li>
+<li><p><strong>Z</strong> ：array-like(N,M)</p>
+</li>
+<li><p><strong>levels</strong> : int or array-like, optional. Determines the number and positions of contour lines / religions.【划分多少块等高区域】</p>
+</li>
+<li><p><strong>alpha</strong> :float, optional. Between 0(transparent) and 1(opaque).【透明度】</p>
+</li>
+<li><p><strong>cmap</strong> :str or Colormap, optional.</p>
+</li>
+</ul>
+</li>
+<li><p>e.g., pyplot.contourf(x, y, Z, 50, alpha=0.5, cmap=pyplot.get_cmap(‘jet’))【‘jet’是常用的那种红橙黄绿青蓝紫】</p>
+</li>
+</ul>
+<h2 id="matplotlib-pyplot-plot"><a href="#matplotlib-pyplot-plot" class="headerlink" title="matplotlib.pyplot.plot"></a>matplotlib.pyplot.plot</h2><ul>
+<li>plot([x], y, [fmt], <em>, data=None, *</em>kwargs)</li>
+<li>The coordinates of the points or line nodes are given by x, y.</li>
+<li>Parameters:<ul>
+<li><strong>x, y</strong> :array-like or scalar.</li>
+<li><strong>fmt</strong> :str, optional. A format string.<ul>
+<li>e.g., ‘.’, point marker. ‘-‘, solid line style. ‘–’,dashed line style. ‘b’, blue.</li>
+</ul>
+</li>
+<li><strong>ms/markersize</strong> : float</li>
+<li><strong>lw/linewidth</strong> :float</li>
+<li><strong>color</strong> :</li>
+</ul>
+</li>
+</ul>
+<h2 id="matplotlib-pyplot-xlim"><a href="#matplotlib-pyplot-xlim" class="headerlink" title="matplotlib.pyplot.xlim"></a>matplotlib.pyplot.xlim</h2><ul>
+<li>xlim(<em>args, *</em>kwargs)</li>
+<li>Get or set the x limits of the current axes.</li>
+<li>e.g. <ul>
+<li>left, right = xlim() :get</li>
+<li>xlim(left, right) :set</li>
+</ul>
+</li>
+</ul>
+<h2 id="matplotlib-pyplot-show"><a href="#matplotlib-pyplot-show" class="headerlink" title="matplotlib.pyplot.show"></a>matplotlib.pyplot.show</h2><ul>
+<li>show(<em>args, *</em>kwargs)</li>
+<li>display a figure.</li>
+</ul>
+<h2 id="matplotlib-pyplot-vlines"><a href="#matplotlib-pyplot-vlines" class="headerlink" title="matplotlib.pyplot.vlines"></a>matplotlib.pyplot.vlines</h2><ul>
+<li>Plot vertical lines.</li>
+<li>vlines(x, ymin, ymax, color=’k’, linestyles=’solid’)</li>
+<li>Parameters:<ul>
+<li><strong>x</strong> :scalar or 1D array_like</li>
+<li><strong>ymin, ymax</strong> :scalar or 1D array_like</li>
+</ul>
+</li>
+</ul>
+<h2 id="matplotlib-pyplot-hlines"><a href="#matplotlib-pyplot-hlines" class="headerlink" title="matplotlib.pyplot.hlines"></a>matplotlib.pyplot.hlines</h2><ul>
+<li>Plot horizontal lines.</li>
+<li>vlines(y, xmin, xmax, color=’k’, linestyles=’solid’)</li>
+<li>Parameters:<ul>
+<li><strong>y</strong> :scalar or 1D array_like</li>
+<li><strong>xmin, xmax</strong> :scalar or 1D array_like</li>
+</ul>
+</li>
+</ul>
+<h2 id="matplotlib-pyplot-savefig"><a href="#matplotlib-pyplot-savefig" class="headerlink" title="matplotlib.pyplot.savefig"></a>matplotlib.pyplot.savefig</h2><ul>
+<li>Save the current figure.</li>
+<li>savefig(fname)</li>
+<li>Parameters:<ul>
+<li><strong>fname</strong> :str ot Pathlike</li>
+</ul>
+</li>
+</ul>
+<h2 id="matplotlib-pyplot-legend"><a href="#matplotlib-pyplot-legend" class="headerlink" title="matplotlib.pyplot.legend"></a>matplotlib.pyplot.legend</h2><ul>
+<li>Place a lengend on the axes.</li>
+<li>e.g. : legend() Labeling exisiting plot elements<ul>
+<li>plt.plot(train_loss)</li>
+<li>plt.plot(dev_loss)</li>
+<li>plt.legend([‘train’, ‘dev’])</li>
+</ul>
+</li>
+<li>e.g. : le</li>
+</ul>
+<h1 id="sys"><a href="#sys" class="headerlink" title="sys"></a>sys</h1><h2 id="sys-argv"><a href="#sys-argv" class="headerlink" title="sys.argv[]"></a>sys.argv[]</h2><ul>
+<li>python a.py data.csv<ul>
+<li>sys.argv = [‘a.py’, ‘data.csv’]</li>
+</ul>
+</li>
+</ul>
+<h2 id="重定向到文件"><a href="#重定向到文件" class="headerlink" title="重定向到文件"></a>重定向到文件</h2><ul>
+<li><p>f = open(‘out.csv’, ‘w’)</p>
+<p>sys.stdout = f</p>
+<p>print(‘此时print掉用的就是文件对象的write方法’)</p>
+</li>
+</ul>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Python」：Module &amp; Method</p><p><a href="https://f7ed.com/2020/03/06/python/">https://f7ed.com/2020/03/06/python/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2020-03-07</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2020-07-03</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Python/">Python </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/03/08/Adagrad-demo/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">Adagrag-demo</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2020/03/03/stanford-crypto-intro/"><span class="level-item">「Cryptography-Boneh」：Introduction</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "3c9f411d497d7fd46d460995a58ae3c8",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">71</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">139</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Tricky"><span class="level-left"><span class="level-item">1</span><span class="level-item">Tricky</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#list-comprehension"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">list comprehension</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Python-Build-function"><span class="level-left"><span class="level-item">2</span><span class="level-item">Python-Build function</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#print"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">print</span></span></a></li><li><a class="level is-mobile" href="#len"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">len</span></span></a></li><li><a class="level is-mobile" href="#str-format"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">str.format()</span></span></a></li><li><a class="level is-mobile" href="#zip-iterables"><span class="level-left"><span class="level-item">2.4</span><span class="level-item">zip(*iterables)</span></span></a></li><li><a class="level is-mobile" href="#enumerate"><span class="level-left"><span class="level-item">2.5</span><span class="level-item">enumerate</span></span></a></li><li><a class="level is-mobile" href="#with-open-path-as-f"><span class="level-left"><span class="level-item">2.6</span><span class="level-item">with open(path) as f:</span></span></a></li></ul></li><li><a class="level is-mobile" href="#numpy"><span class="level-left"><span class="level-item">3</span><span class="level-item">numpy</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#numpy-argsort"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">numpy.argsort</span></span></a></li><li><a class="level is-mobile" href="#Linear-algebra-numpy-linalg"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">Linear algebra(numpy.linalg)</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#numpy-dot"><span class="level-left"><span class="level-item">3.2.1</span><span class="level-item">numpy.dot</span></span></a></li><li><a class="level is-mobile" href="#numpy-matmul"><span class="level-left"><span class="level-item">3.2.2</span><span class="level-item">numpy.matmul</span></span></a></li><li><a class="level is-mobile" href="#numpy-linalg-inv-a"><span class="level-left"><span class="level-item">3.2.3</span><span class="level-item">numpy.linalg.inv(a)</span></span></a></li><li><a class="level is-mobile" href="#numpy-linalg-svd"><span class="level-left"><span class="level-item">3.2.4</span><span class="level-item">numpy.linalg.svd</span></span></a></li></ul></li><li><a class="level is-mobile" href="#numpy-zeros"><span class="level-left"><span class="level-item">3.3</span><span class="level-item">numpy.zeros</span></span></a></li><li><a class="level is-mobile" href="#numpy-full"><span class="level-left"><span class="level-item">3.4</span><span class="level-item">numpy.full</span></span></a></li><li><a class="level is-mobile" href="#numpy-arange"><span class="level-left"><span class="level-item">3.5</span><span class="level-item">numpy.arange</span></span></a></li><li><a class="level is-mobile" href="#numpy-meshgrid"><span class="level-left"><span class="level-item">3.6</span><span class="level-item">numpy.meshgrid</span></span></a></li><li><a class="level is-mobile" href="#numpy-genfromtext"><span class="level-left"><span class="level-item">3.7</span><span class="level-item">numpy.genfromtext</span></span></a></li><li><a class="level is-mobile" href="#numpy-isnan"><span class="level-left"><span class="level-item">3.8</span><span class="level-item">numpy.isnan</span></span></a></li><li><a class="level is-mobile" href="#numpy-empty"><span class="level-left"><span class="level-item">3.9</span><span class="level-item">numpy.empty</span></span></a></li><li><a class="level is-mobile" href="#numpy-reshape"><span class="level-left"><span class="level-item">3.10</span><span class="level-item">numpy.reshape</span></span></a></li><li><a class="level is-mobile" href="#numpy-mean"><span class="level-left"><span class="level-item">3.11</span><span class="level-item">numpy.mean</span></span></a></li><li><a class="level is-mobile" href="#numpy-std"><span class="level-left"><span class="level-item">3.12</span><span class="level-item">numpy.std</span></span></a></li><li><a class="level is-mobile" href="#numpy-shape"><span class="level-left"><span class="level-item">3.13</span><span class="level-item">numpy.shape</span></span></a></li><li><a class="level is-mobile" href="#numpy-concatenate"><span class="level-left"><span class="level-item">3.14</span><span class="level-item">numpy.concatenate</span></span></a></li><li><a class="level is-mobile" href="#numpy-ndarray-astype"><span class="level-left"><span class="level-item">3.15</span><span class="level-item">numpy.ndarray.astype</span></span></a></li><li><a class="level is-mobile" href="#numpy-ones"><span class="level-left"><span class="level-item">3.16</span><span class="level-item">numpy.ones</span></span></a></li><li><a class="level is-mobile" href="#numpy-array"><span class="level-left"><span class="level-item">3.17</span><span class="level-item">numpy.array</span></span></a></li><li><a class="level is-mobile" href="#numpy-ndarray-运算"><span class="level-left"><span class="level-item">3.18</span><span class="level-item">numpy ndarray 运算</span></span></a></li><li><a class="level is-mobile" href="#numpy-power"><span class="level-left"><span class="level-item">3.19</span><span class="level-item">numpy.power</span></span></a></li><li><a class="level is-mobile" href="#numpy-sum"><span class="level-left"><span class="level-item">3.20</span><span class="level-item">numpy.sum</span></span></a></li><li><a class="level is-mobile" href="#numpy-transpose"><span class="level-left"><span class="level-item">3.21</span><span class="level-item">numpy.transpose</span></span></a></li><li><a class="level is-mobile" href="#numpy-save"><span class="level-left"><span class="level-item">3.22</span><span class="level-item">numpy.save</span></span></a></li><li><a class="level is-mobile" href="#numpy-clip"><span class="level-left"><span class="level-item">3.23</span><span class="level-item">numpy.clip</span></span></a></li><li><a class="level is-mobile" href="#numpy-around"><span class="level-left"><span class="level-item">3.24</span><span class="level-item">numpy.around</span></span></a></li><li><a class="level is-mobile" href="#numpy-log"><span class="level-left"><span class="level-item">3.25</span><span class="level-item">numpy.log</span></span></a></li><li><a class="level is-mobile" href="#numpy-ndarray-T"><span class="level-left"><span class="level-item">3.26</span><span class="level-item">numpy.ndarray.T</span></span></a></li><li><a class="level is-mobile" href="#numpy-random-shuffle"><span class="level-left"><span class="level-item">3.27</span><span class="level-item">numpy.random.shuffle</span></span></a></li></ul></li><li><a class="level is-mobile" href="#sklearn"><span class="level-left"><span class="level-item">4</span><span class="level-item">sklearn</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#skelearn-linear-model-LinearRegression"><span class="level-left"><span class="level-item">4.1</span><span class="level-item">skelearn.linear_model.LinearRegression</span></span></a></li></ul></li><li><a class="level is-mobile" href="#matplotlib-pyplot"><span class="level-left"><span class="level-item">5</span><span class="level-item">matplotlib.pyplot</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#matplotlib-pyplot-contourf"><span class="level-left"><span class="level-item">5.1</span><span class="level-item">matplotlib.pyplot.contourf</span></span></a></li><li><a class="level is-mobile" href="#matplotlib-pyplot-plot"><span class="level-left"><span class="level-item">5.2</span><span class="level-item">matplotlib.pyplot.plot</span></span></a></li><li><a class="level is-mobile" href="#matplotlib-pyplot-xlim"><span class="level-left"><span class="level-item">5.3</span><span class="level-item">matplotlib.pyplot.xlim</span></span></a></li><li><a class="level is-mobile" href="#matplotlib-pyplot-show"><span class="level-left"><span class="level-item">5.4</span><span class="level-item">matplotlib.pyplot.show</span></span></a></li><li><a class="level is-mobile" href="#matplotlib-pyplot-vlines"><span class="level-left"><span class="level-item">5.5</span><span class="level-item">matplotlib.pyplot.vlines</span></span></a></li><li><a class="level is-mobile" href="#matplotlib-pyplot-hlines"><span class="level-left"><span class="level-item">5.6</span><span class="level-item">matplotlib.pyplot.hlines</span></span></a></li><li><a class="level is-mobile" href="#matplotlib-pyplot-savefig"><span class="level-left"><span class="level-item">5.7</span><span class="level-item">matplotlib.pyplot.savefig</span></span></a></li><li><a class="level is-mobile" href="#matplotlib-pyplot-legend"><span class="level-left"><span class="level-item">5.8</span><span class="level-item">matplotlib.pyplot.legend</span></span></a></li></ul></li><li><a class="level is-mobile" href="#sys"><span class="level-left"><span class="level-item">6</span><span class="level-item">sys</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#sys-argv"><span class="level-left"><span class="level-item">6.1</span><span class="level-item">sys.argv[]</span></span></a></li><li><a class="level is-mobile" href="#重定向到文件"><span class="level-left"><span class="level-item">6.2</span><span class="level-item">重定向到文件</span></span></a></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

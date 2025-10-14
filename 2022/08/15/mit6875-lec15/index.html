@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Cryptography-MIT6875」: Lecture 15 - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Topics Covered:    Sequential vs Parallel Rep"><meta property="og:type" content="blog"><meta property="og:title" content="「Cryptography-MIT6875」: Lecture 15"><meta property="og:url" content="https://f7ed.com/2022/08/15/mit6875-lec15/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Topics Covered:    Sequential vs Parallel Rep"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/mit6875-lec15-thumbnial.png"><meta property="article:published_time" content="2022-08-15T16:00:00.000Z"><meta property="article:modified_time" content="2022-08-24T12:15:03.027Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="ZK"><meta property="article:tag" content="PoK"><meta property="article:tag" content="NIZK"><meta property="article:tag" content="3COL"><meta property="article:tag" content="Random Oracle Model"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/mit6875-lec15-thumbnial.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2022/08/15/mit6875-lec15/"},"headline":"「Cryptography-MIT6875」: Lecture 15","image":["https://f7ed.com/gallery/thumbnails/mit6875-lec15-thumbnial.png"],"datePublished":"2022-08-15T16:00:00.000Z","dateModified":"2022-08-24T12:15:03.027Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Topics Covered:    Sequential vs Parallel Rep"}</script><link rel="canonical" href="https://f7ed.com/2022/08/15/mit6875-lec15/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Cryptography-MIT6875」: Lecture 15</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2022-08-15T16:00:00.000Z" title="2022-08-15T16:00:00.000Z">2022-08-16</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2022-08-24T12:15:03.027Z" title="2022-08-24T12:15:03.027Z">2022-08-24</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Cryptography-MIT6875/">Cryptography-MIT6875</a></span><span class="level-item"><i class="far fa-clock"></i> 12 minutes read (About 1801 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><article class="message message-immersive is-info">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="message-body">
+<i class="fas fa-info-circle mr-2"></i>
+In this <a href="/categories/Cryptography-MIT6875">series</a>, I will learn MIT 6.875, <strong>Foundations of Cryptography</strong>, lectured by <strong>Vinod Vaikuntanathan</strong>.
+<br>Any corrections and advice are welcome. ^ - ^
+</div>
+</article>
+
+<p><font color=blue><u><b>Topics Covered: </b></u></font> </p>
+<ul>
+<li>Sequential vs Parallel Repetition: reduce soundness error</li>
+<li>Proof of Knowledge<ul>
+<li>PoK of DLOG</li>
+</ul>
+</li>
+<li>Non-Interactive ZK(NIZK)<ul>
+<li>NIZK in The Random Oracle Model<ul>
+<li>NIZK for 3COL</li>
+</ul>
+</li>
+<li>NIZK in The Common Random String Model (<a href="/2022/08/23/mit6875-lec16/" title="Lecture 16">Lecture 16</a>)</li>
+</ul>
+</li>
+</ul>
+<span id="more"></span>
+
+<h1 id="Recap"><a href="#Recap" class="headerlink" title="Recap"></a>Recap</h1><p>Recap <strong>NP Proofs.</strong></p>
+<p>Give NP Proofs for the NP-complete problem of <u>graph 3-coloring.</u></p>
+<img src="https://s1.ax1x.com/2022/08/24/vcbuUU.png" alt="NP Proof for 3COL" style="zoom:33%;" />
+
+<ul>
+<li>Prover $P$: has a <u>witness</u>, the 3-coloring of $G$.</li>
+<li>$P$ gives the proof, <u>the solution to 3-coloring</u> of $G$, to $V$.</li>
+<li>Verifier $V$ checks:<ul>
+<li>only 3 colors are used</li>
+<li>any two vertices connected by an edge are colored differently.</li>
+</ul>
+</li>
+</ul>
+<p>The verify learned <u>the graph $G$ is 3-colorable and the 3-coloring solution.</u></p>
+<p>So NP proofs reveal too much information.</p>
+<p>With <strong>Zero-knowledge (Interactive) Proofs</strong>, the verifier can only learns the graph $G$ is 3-colorable without knowing the solution.</p>
+<img src="https://s1.ax1x.com/2022/08/24/vcbAvn.png" alt="ZK Proof for 3COL" style="zoom:33%;" />
+
+<ul>
+<li>Prover $P$:<ol>
+<li><u>permute</u> the colors</li>
+<li><u>commit</u> to each color</li>
+<li>send all the commitments to the verifier.</li>
+</ol>
+</li>
+<li>Verifier $V$: pick a random edge</li>
+<li>Prover $P$: open the vertices of the edge.</li>
+<li>Verifier $V$ checks the openings &amp; the colorings of two vertices are different.</li>
+</ul>
+<p>Besides, we proved the 3COL Protocol is completeness, soundness and zero-knowledge in previous <a href="/2022/08/11/mit6875-lec14/" title="blog">blog</a>.</p>
+<ul>
+<li><strong>Completeness</strong>: For every $G\in 3COL$, $V$ accepts $P$’s proof.</li>
+<li><strong>Soundness</strong>: For every $G\notin 3COL$ and any cheating $P^*$, $V$ rejects $P^*$’s proof with probability $\ge 1-neg(n)$. </li>
+<li><strong>Zero-knowledge</strong>: For every cheating $V^*$, there is a PPT simulator $S$ such that for every $G\in 3COL$, $S$ simulates the view of $V^*$.</li>
+</ul>
+<h1 id="Sequential-vs-Parallel-Repetition"><a href="#Sequential-vs-Parallel-Repetition" class="headerlink" title="Sequential vs Parallel Repetition"></a>Sequential vs Parallel Repetition</h1><p>The 3COL protocol <u>has a large soundness error</u> of $1-1/|E|$, the probability that $V$ accepts even though $G\notin 3COL$.</p>
+<h2 id="Reducing-Soundness-Error"><a href="#Reducing-Soundness-Error" class="headerlink" title="Reducing Soundness Error"></a>Reducing Soundness Error</h2> <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Theorem:</strong></p>
+ </div> <div class="message-body"> 
+
+<p><strong>Sequential Repetition</strong> reduces soundness error for interactive proofs, and <u>preserves the ZK property.</u></p>
+ </div> </article> 
+
+<p>But it brings about the <strong>problem</strong> that <u>it costs a lot of rounds.</u></p>
+<p>An alternative way is parallel repetition.</p>
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Theorem [Goldreich-Krawczyk’90]:</strong></p>
+ </div> <div class="message-body"> 
+
+<p><strong>Parallel Repetition</strong> also reduces soundness error for interactive proofs.</p>
+<p>It is also <strong>honest-verifier ZK</strong>, but <u>dose not</u>, in general, <u>preserve the ZK property.</u></p>
+ </div> </article> 
+
+<p>Note: Preserving the ZK property in general means that it is ZK <u>against malicious verifier.</u></p>
+ <article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>There is <b>an intuitive interpretation</b> to the theorem.[Goldreich-Krawczyk’90] 
+
+<p>The interaction in parallel repetition is $P$ sends all first message in parallel and $V$ <u>response at once with all second messages …</u></p>
+<ul>
+<li><p>If $V$ is <strong>honest verifier</strong>, he indeed dose not look at the commitments, and just <u>picks the random edges independently</u>, which is the same with the sequential repetition.</p>
+</li>
+<li><p>But when $V^*$ is <strong>malicious verifier</strong>, there is no reason that $V^*$ picks the edge independently.<br>$V^*$ can apply a giant hash function and <u>do some bizarre thing to pick these dependent edges.</u></p>
+</li>
+</ul>
+<p>Intuitively, it’s harder to simulate such a thing.</p>
+<p>The <strong>simulator’s strategy in parallel repetition:</strong></p>
+<ol>
+<li><p>$S$ feeds some made up first messages to $V^*$.</p>
+</li>
+<li><p>$V^*$ picks the edges in bizarre manners.</p>
+</li>
+<li><p>$S$ only can answer exactly one challenge.</p>
+</li>
+</ol>
+<p>The <strong>key reason</strong> is the <u>challenge space is exponentially large</u> and the <u>probability of hitting that made up challenge is negligible.</u><br>So this simulation strategy goes down the drain.</p>
+ </div> </article> 
+
+<p>This theorem tells that <strong>some protocols in parallel repetition is not zero-knowledge</strong> against malicious verifier.</p>
+<p>And the following theorem tells us that <u>the parallel repetition of 3COL protocol is not zero-knowledge</u> if we run it in many and many times in parallel.</p>
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Theorem [Holmgren-Lombardi-Rothblum’s21]:</strong></p>
+ </div> <div class="message-body"> 
+
+<p>Parallel Repetition of the (Goldreich-Micali-Wigderson) 3COL protocol is <strong>not</strong> zero-knowledge.</p>
+ </div> </article> 
+
+<p>Fortunately, we have zero-knowledge protocols <strong>in const rounds</strong> with <u>exponentially small soundness error</u>, rather in a million rounds.</p>
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Theorem [Goldreich-Kahan’95]:</strong></p>
+ </div> <div class="message-body"> 
+
+<p>There is a <strong>constant-round</strong> ZK proof system for 3COL (will exponentially small soundness error), assuming discrete logarithms are hard.</p>
+ </div> </article> 
+
+<h1 id="Proofs-of-Knowledge"><a href="#Proofs-of-Knowledge" class="headerlink" title="Proofs of Knowledge"></a>Proofs of Knowledge</h1><p>So far, we focus on the <strong>decision problem</strong>: $y\in \mathcal{L}$  or $y\notin \mathcal{L}$.</p>
+<p>(e.g. $y$ is quadratic residue $\mod N$ or it is not.)</p>
+<p>Here is a <strong>different scenario</strong> that <u>Alice has the knowledge</u>, the discrete log of $y$ assuming $g$ is a generator.</p>
+<p>And Alice wants to <u>convince Bob the discrete log of $y$ always exists.</u></p>
+<img src="https://s1.ax1x.com/2022/08/24/vcbF3j.png" alt="Knowledge is the discrete log" style="zoom:33%;" />
+
+<p>In this scenario the <strong>prover wants to convince the verifier</strong> that <u>she knows a solution to a problem</u>, e.g. that she knows the discrete log of $y$.</p>
+<p>It is difficult to formulate it as the decision problem.</p>
+<p>It is <strong>Proof of Knowledge.</strong></p>
+<p>Likewise, we can define the completeness, soundness and zero-knowledge.</p>
+<img src="https://s1.ax1x.com/2022/08/24/vcbC4g.png" alt="Proof of Knowledge" style="zoom:33%;" />
+
+<ul>
+<li><strong>Completeness</strong>: When Alice and Bob run the protocol where Alice has input $x$, Bob outputs accept.</li>
+<li><strong>Soundness</strong>: <font color="red">How to define soundness that Alice dose not have the knowledge ?</font><br>It is difficult to <strong>formulate the leak of knowledge.</strong></li>
+<li><strong>Zero-knowledge</strong>: There is a simulator that, given only $y$, outputs a view of Bob that is indistinguishable from his view in an interaction with Alice.</li>
+</ul>
+<h2 id="Extractor"><a href="#Extractor" class="headerlink" title="Extractor"></a>Extractor</h2><p>The <strong>main idea of Goldreich</strong> is that <u>if Alice knows $x$, there must be a way to “extract it from her”.</u></p>
+<p>It’s not about putting diodes on her brain. [*diode 二极管]</p>
+<p>It’s sort of talking to Alice.</p>
+ <article class="message is-info"> <div class="message-header"> 
+
+<p><strong>Definition of Proof of Knowledge:</strong></p>
+ </div> <div class="message-body"> 
+
+<p>For any cheating$P^*$, if the prover can convince the verifier that the discrete log of $y$  always exist such that  $\operatorname{Pr}[\langle P^*,V\rangle(y)=\textrm{accept}]\ge \varepsilon$, then there exists an <strong>extractor</strong> $E$ such that $\operatorname{Pr}[E^{P^*}(y)=x \text{ s.t. }y=g^x]\ge \varepsilon'\approx \varepsilon$.</p>
+ </div> </article> 
+
+<p>The extractor is indeed the <strong>expected ppt adversary.</strong></p>
+ <article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i> 
+
+<p>The definition of PoK is proposed in <strong><a target="_blank" rel="noopener" href="https://www.wisdom.weizmann.ac.il/~oded/PSX/pok.pdf">On Defining Proofs of Knowledge</a></strong> by Mihir Bellare and Oded Goldreich.</p>
+ </div> </article> 
+
+<p>We will not dig into the definition but give an example of PoK.</p>
+<h2 id="ZK-Proof-of-Knowledge-of-Discrete-Log"><a href="#ZK-Proof-of-Knowledge-of-Discrete-Log" class="headerlink" title="ZK Proof of Knowledge of Discrete Log."></a>ZK Proof of Knowledge of Discrete Log.</h2><p>The protocol is as follows.</p>
+<img src="https://s1.ax1x.com/2022/08/24/vcbiCQ.png" alt="ZK Proof of Knowledge of DLOG" style="zoom:33%;" />
+
+<p><font color=blue><u><b>ZK Proof of Knowledge of DLOG:</b></u></font> </p>
+<ol>
+<li>Prover: Pick a random $r$ and send $z=g^r$ to Verifier.</li>
+<li>Verifier: Pick a random challenge $c$</li>
+<li>Prover: Answer the challenge<ol>
+<li>If $c=0$: send $s=r$ </li>
+<li>If $c=1$: send $s=r+x$</li>
+</ol>
+</li>
+<li>Verifier: Accept iff $g^s=z\cdot y^c$.</li>
+</ol>
+<p>The above protocol is completeness, soundness and zero-knowledge.</p>
+<p>The completeness and zero-knowledge is well proven.</p>
+<p><font color=blue><u><b><i>Completeness: </i></b></u></font> </p>
+<ul>
+<li>If the prover has the discrete log of $y$, the verifier accepts with probability 1.</li>
+<li>$g^s=g^{r+cx}=g^r\cdot (g^{x})^c=z\cdot y^c$</li>
+</ul>
+<p><font color=blue><u><b><i>Zero-knowledge: </i></b></u></font> </p>
+<ul>
+<li>The real view of $V^*$ is $\texttt{view}_{V^*}=(z,c,s)$ </li>
+<li>The simulator works as follows<ol>
+<li>Generate $z=g^s/y^c$ for a random $s$ and a random $c$.</li>
+<li>Feed $z$ to verifier and get the challenge $c^*=V^*(z)$. </li>
+<li>If $c^*=c$, output as the simulated transcript.</li>
+<li>If $c^*\ne c$, back to step 1 and repeat.</li>
+</ol>
+</li>
+<li>The simulated view is <strong>identical</strong> to the view in real execution.</li>
+</ul>
+<p><font color=blue><u><b><i>Soundness: </i></b></u></font> </p>
+<ul>
+<li><p>The <strong>key</strong> is to <u>construct an extractor by the contradiction.</u></p>
+</li>
+<li><p>If the protocol is of <strong>soundness</strong>, the cheating prover $P^*$ can convince the verifier with probability $1/2$.</p>
+</li>
+<li><p>Assume for the <strong>contradiction</strong> that $P^*$ <u>convinces the verifier with probability $\ge 1/2+1/poly$.</u></p>
+</li>
+<li><p>Then the prover $P^*$ <u>should prepare for both challenges.</u></p>
+</li>
+<li><p>It’s easy to <strong>extract</strong> the discrete log of $y$ form $P^*$.</p>
+  <img src="https://s1.ax1x.com/2022/08/24/vcb9US.png" alt="Extractor" style="zoom:33%;" />
+
+<ol>
+<li>Runs $P^*$ with $c=0$ and gets $s_0$.</li>
+<li><u>Rewind</u> $P^*$ to the first message.</li>
+<li>Runs $P^*$ with $c=1$ and gets $s_1$.</li>
+</ol>
+<ul>
+<li>By <strong>contradiction</strong>, $g^{s_0}=z$ and $g^{s_1}=zy$ with probability $1/poly$.</li>
+<li>That is $g^{s_1-s_0}=y$ w.p. $1/poly$.</li>
+<li>So $s_1-s_0$ is the discrete log of $y$ w.p. $1/poly$.</li>
+</ul>
+</li>
+</ul>
+<p>It’s known as Schnorr proof, or Schnorr Signature.</p>
+ <article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i> <a target="_blank" rel="noopener" href="https://mit6875.github.io/PAPERS/Schnorr-POK-DLOG.pdf">Efficient Signature Generation by Smart Cards</a>  </div> </article> 
+
+<h1 id="Non-Interactive-ZK"><a href="#Non-Interactive-ZK" class="headerlink" title="Non-Interactive ZK"></a>Non-Interactive ZK</h1><p>Let’s proceed to the next topic.</p>
+<p>Can we make proofs <strong>non-interactive</strong> again ?</p>
+<p>The <strong>advantages</strong> of <strong>Non-Interactive ZK (NIZK)</strong>:</p>
+<ol>
+<li>$V$ <u>dose not need to be online</u> during the proof process.</li>
+<li>Proofs are <u>not ephemeral</u>, can stay into the future.[*ephemeral 短暂的]</li>
+</ol>
+<h2 id="NIZK-is-Impossible"><a href="#NIZK-is-Impossible" class="headerlink" title="NIZK is Impossible"></a>NIZK is Impossible</h2><p>Firstly, we claim that <strong>NIZK is impossible.</strong></p>
+<p>Suppose there were an <u>NIZK proof system for 3COL.</u></p>
+<p>The NIZK proof is of completeness and zero-knowledge, but <strong>NOT sound.</strong></p>
+<p><font color=blue><u><b>Proof:</b></u></font> </p>
+<ol>
+<li><p><strong>Completeness</strong>: When $G$ is in 3COL, $V$ accepts the proof $\pi$.</p>
+ <img src="https://s1.ax1x.com/2022/08/24/vcbkgs.png" alt="completeness" style="zoom:33%;" />
+</li>
+<li><p><strong>Zero Knowledge</strong>: PPT <strong>simulator</strong> $S$, <u>given only G​ in 3COL</u>, produces an indistinguishable proof $\tilde{\pi}$.<br>In particular, $V$ accepts $\tilde{\pi}$.</p>
+ <img src="https://s1.ax1x.com/2022/08/24/vcbZD0.png" alt="zk" style="zoom:33%;" />
+</li>
+<li><p>Imagine running the <strong>Simulator</strong> $S$ on a $\underline{G\notin 3COL}$.<br>It produces a proof $\tilde{\pi}$ which the verifier still accepts!</p>
+ <img src="https://s1.ax1x.com/2022/08/24/vcqNyn.png" alt="simulator S for G notin 3COL" style="zoom:33%;" />
+
+<p> Because $S$ and $V$ are PPT.<br> They together <strong>cannot tell if the input graph is 3COL</strong> or not without the witness.</p>
+</li>
+<li><p>Therefore, $S$ is indeed <strong>a cheating prover!</strong><br>It <u>can produce a proof for a $G\notin 3COL$ that the verifier nevertheless accepts.</u></p>
+ <img src="https://s1.ax1x.com/2022/08/24/vcbVuq.png" alt="S is indeed a cheating prover" style="zoom:33%;" />
+</li>
+<li><p>Ergo, the proof system is <strong>NOT SOUND.</strong></p>
+</li>
+</ol>
+<h2 id="Two-Roads-to-NIZK"><a href="#Two-Roads-to-NIZK" class="headerlink" title="Two Roads to NIZK"></a>Two Roads to NIZK</h2><p>But we can <u>achieve NIZK under some models.</u></p>
+<p>There are two roads to NIZK.</p>
+<ol>
+<li>Random Oracle Model &amp; Fiat-Shamir Transform</li>
+<li>Common Random String Model</li>
+</ol>
+<h2 id="NIZK-Random-Oracle-Model"><a href="#NIZK-Random-Oracle-Model" class="headerlink" title="NIZK: Random Oracle Model"></a>NIZK: Random Oracle Model</h2><p>As discussed before <strong>randomness of verifier</strong> for ZK proofs is necessary.</p>
+<p>Otherwise, it is not interactive.</p>
+<p>More discussion about randomness.<br>Give an example in <strong>ZK proof of knowledge for discrete log.</strong><br>The protocol is <strong>not sound</strong> if $P^*$ <u>knows the random challenge $c$ beforehand.</u></p>
+<img src="https://s1.ax1x.com/2022/08/24/vcbnET.png" alt="PoK for DLOG" style="zoom:25%;" />
+
+<ul>
+<li><p>If $P^*$ knows $c=0$ beforehand, it’s useless.</p>
+</li>
+<li><p>If $P^*$ knows $c=1$ beforehand,</p>
+<ol>
+<li>Send $z=g^s/y$ for random $s$.</li>
+<li>Send $s$.</li>
+</ol>
+</li>
+</ul>
+<h3 id="NIZK-for-3COL"><a href="#NIZK-for-3COL" class="headerlink" title="NIZK for 3COL"></a>NIZK for 3COL</h3><p>Consider NIZK Proof for 3COL.</p>
+<p>Start with the <strong>parallel repetition of 3COL protocol.</strong></p>
+<p>It is complete, has exponentially small soundness error, and is hones-verifier ZK.</p>
+<img src="https://s1.ax1x.com/2022/08/24/vcbebV.png" alt="ZK Proof for 3COL" style="zoom:33%;" />
+
+<p>Similarly, the randomness is necessary. </p>
+<p>Otherwise, the cheating prover can make up message $a$, $z$ beforehand.</p>
+<p>However, the protocol can be <strong>non-interactive in the random oracle model.</strong></p>
+ <article class="message message-immersive is-primary"> <div class="message-body"> <i class="fas fa-info-circle mr-2"></i>Recap Random Oracle Model
+
+<a href="/2022/08/04/mit6875-lec12/" title="[Lecture 12]">[Lecture 12]</a>
+
+<p>In random oracle model, the only way to compute $H$ is by calling the oracle.<br>We can consider it as a very complicated <u>public function</u>, e.g. SHA-3.<br>Moreover, we can consider the public function as a proxy to a random function. </p>
+ </div> </article> 
+
+<p>But in the <strong>Random Oracle Heuristic world</strong>, the only way to compute $H$, virtually a black box, is by  <u>calling the oracle.</u></p>
+<img src="https://s1.ax1x.com/2022/08/24/vcbK5F.png" alt="NIZK in Random Oracle Model" style="zoom:33%;" />
+
+<p><font color=blue><u><b> Fiat and Shamir (1986): </b></u></font>  </p>
+<p>Let $c=H(a)$. Now the prover <strong>can compute the challenge herself!</strong></p>
+<p>It is potentially harmful for soundness.</p>
+<p>But in random oracle model for $H$, it can <strong>prove soundness.</strong></p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Cryptography-MIT6875」: Lecture 15</p><p><a href="https://f7ed.com/2022/08/15/mit6875-lec15/">https://f7ed.com/2022/08/15/mit6875-lec15/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2022-08-16</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2022-08-24</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/ZK/">ZK, </a><a class="link-muted" rel="tag" href="/tags/PoK/">PoK, </a><a class="link-muted" rel="tag" href="/tags/NIZK/">NIZK, </a><a class="link-muted" rel="tag" href="/tags/3COL/">3COL, </a><a class="link-muted" rel="tag" href="/tags/Random-Oracle-Model/">Random Oracle Model </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2022/08/22/mit6875-lec16/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Cryptography-MIT6875」: Lecture 16</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2022/08/10/mit6875-lec14/"><span class="level-item">「Cryptography-MIT6875」: Lecture 14</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "0908fe2b7b3b7a570bfc5851fe512e63",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">71</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">139</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Recap"><span class="level-left"><span class="level-item">1</span><span class="level-item">Recap</span></span></a></li><li><a class="level is-mobile" href="#Sequential-vs-Parallel-Repetition"><span class="level-left"><span class="level-item">2</span><span class="level-item">Sequential vs Parallel Repetition</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Reducing-Soundness-Error"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">Reducing Soundness Error</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Proofs-of-Knowledge"><span class="level-left"><span class="level-item">3</span><span class="level-item">Proofs of Knowledge</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Extractor"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">Extractor</span></span></a></li><li><a class="level is-mobile" href="#ZK-Proof-of-Knowledge-of-Discrete-Log"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">ZK Proof of Knowledge of Discrete Log.</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Non-Interactive-ZK"><span class="level-left"><span class="level-item">4</span><span class="level-item">Non-Interactive ZK</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#NIZK-is-Impossible"><span class="level-left"><span class="level-item">4.1</span><span class="level-item">NIZK is Impossible</span></span></a></li><li><a class="level is-mobile" href="#Two-Roads-to-NIZK"><span class="level-left"><span class="level-item">4.2</span><span class="level-item">Two Roads to NIZK</span></span></a></li><li><a class="level is-mobile" href="#NIZK-Random-Oracle-Model"><span class="level-left"><span class="level-item">4.3</span><span class="level-item">NIZK: Random Oracle Model</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#NIZK-for-3COL"><span class="level-left"><span class="level-item">4.3.1</span><span class="level-item">NIZK for 3COL</span></span></a></li></ul></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

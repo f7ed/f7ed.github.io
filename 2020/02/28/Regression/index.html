@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「机器学习-李宏毅」：Regression - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="在YouTube上看台大李宏毅老师的课，看完Regression讲座的感受就是： 好想去抓Pokemon！！！ 这篇文章将总结李宏毅老师Regression的讲座，并尝试实现其demo。"><meta property="og:type" content="blog"><meta property="og:title" content="「机器学习-李宏毅」：Regression"><meta property="og:url" content="https://f7ed.com/2020/02/28/Regression/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="在YouTube上看台大李宏毅老师的课，看完Regression讲座的感受就是： 好想去抓Pokemon！！！ 这篇文章将总结李宏毅老师Regression的讲座，并尝试实现其demo。"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/Paul.jpg"><meta property="article:published_time" content="2020-02-28T16:00:00.000Z"><meta property="article:modified_time" content="2020-07-03T08:43:13.142Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Machine-Learning"><meta property="article:tag" content="open-classes"><meta property="article:tag" content="Regression"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/Paul.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2020/02/28/Regression/"},"headline":"「机器学习-李宏毅」：Regression","image":["https://f7ed.com/gallery/thumbnails/Paul.jpg"],"datePublished":"2020-02-28T16:00:00.000Z","dateModified":"2020-07-03T08:43:13.142Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"在YouTube上看台大李宏毅老师的课，看完Regression讲座的感受就是： 好想去抓Pokemon！！！ 这篇文章将总结李宏毅老师Regression的讲座，并尝试实现其demo。"}</script><link rel="canonical" href="https://f7ed.com/2020/02/28/Regression/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「机器学习-李宏毅」：Regression</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2020-02-28T16:00:00.000Z" title="2020-02-28T16:00:00.000Z">2020-02-29</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2020-07-03T08:43:13.142Z" title="2020-07-03T08:43:13.142Z">2020-07-03</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E6%9D%8E%E5%AE%8F%E6%AF%85/">机器学习-李宏毅</a></span><span class="level-item"><i class="far fa-clock"></i> 20 minutes read (About 3006 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p> 在<a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=fegAeph9UaA">YouTube上看台大李宏毅老师的课</a>，看完Regression讲座的感受就是： 好想去抓Pokemon！！！<br> 这篇文章将总结李宏毅老师Regression的讲座，并尝试实现其demo。 </p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><span id="more"></span>
+
+<!--toc-->
+<h1 id="Regression（回归）"><a href="#Regression（回归）" class="headerlink" title="Regression（回归）"></a>Regression（回归）</h1><h2 id="Define"><a href="#Define" class="headerlink" title="Define"></a>Define</h2><p><strong>Regression</strong>：是找到一个$function$，进行预测。对输入的feature，输出一个$Scalar$(数值，标量)。</p>
+<h2 id="Example-Application"><a href="#Example-Application" class="headerlink" title="Example Application"></a>Example Application</h2><p><a target="_blank" rel="noopener" href="https://imgchr.com/i/3rgUIg"><img src="https://s2.ax1x.com/2020/02/28/3rgUIg.md.png" alt="3rgUIg.md.png"></a></p>
+<p>Look for a $function$</p>
+<ul>
+<li><p>Stock Market Forecast（股票预测）</p>
+<p>$input$：过去的股价信息</p>
+<p>$output$：明天的股价平均值（$Scalar$)</p>
+</li>
+<li><p>Self-Driving Car(自动驾驶)</p>
+<p>$input$：路况信息</p>
+<p>$output$：方向盘角度（$Scalar$)</p>
+</li>
+<li><p>Recommendation（推荐系统）</p>
+<p>$input$：使用者A、商品B</p>
+<p>$output$：使用者A购买商品B的可能性</p>
+</li>
+</ul>
+<p>可见，$input$都是一些特征信息，$output$都是一个标量数值，这就是Regression。</p>
+<h1 id="Regression-Case-Pokenmon"><a href="#Regression-Case-Pokenmon" class="headerlink" title="Regression Case: Pokenmon"></a>Regression Case: Pokenmon</h1><blockquote>
+<p>看完这节课，感想：好想去抓宝可梦QAQ</p>
+</blockquote>
+<p>预测一个pokemon进化后的CP（Combat Power，战斗力）值。</p>
+<p>为什么要预测呐？</p>
+<p>如果进化后的CP值高，就进化他，不然就把他当糖果，因为宝可梦很难抓的。（？没玩过，我也不懂o r z）</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/3rgNdS"><img src="https://s2.ax1x.com/2020/02/28/3rgNdS.md.png" alt="3rgNdS.md.png"></a></p>
+<ul>
+<li><p>上图妙蛙种子的信息(可能的$input$)：</p>
+<p>$x_{cp}$：CP值</p>
+<p>$x_s$:物种</p>
+<p>$x_{hp}$:生命值</p>
+<p>$x_w$:重量</p>
+<p>$x_h$:高度</p>
+</li>
+<li><p>output：进化后的CP值。</p>
+</li>
+</ul>
+<blockquote>
+<p>$x_{cp}$：用下标表示一个object的component。</p>
+<p>$x^1$：用上标表示一个完整的object。</p>
+</blockquote>
+<h2 id="Step-1-找一个Model（function-set）"><a href="#Step-1-找一个Model（function-set）" class="headerlink" title="Step 1: 找一个Model（function set）"></a>Step 1: 找一个Model（function set）</h2><p><strong>Model</strong> ：$y = b + w \cdot x_{cp}$</p>
+<p>假设用上式作为我们的Model，那么这些函数： $
+\begin{aligned}
+&\mathrm{f}_{1}: \mathrm{y}=10.0+9.0 \cdot \mathrm{x}_{\mathrm{cp}}\\
+&f_{2}: y=9.8+9.2 \cdot x_{c p}\\
+&f_{3}: y=-0.8-1.2 \cdot x_{c p}
+\end{aligned}
+$ 等都属于这个集合，但是显然像$f_3$这种函数是bad，CP值不可能是负数。bad functions 很多，所以在下面的步骤，会说明如何判别一个函数的好坏，自动的选出最好的那个 $function$。</p>
+<p>把Model 1一般化，得到线代中的 <strong>Linear Model</strong>：$y = b+\sum w_ix_i$ </p>
+<p>$x_i$：x的feature</p>
+<p>$b$：bias,偏置值</p>
+<p>$w_i$：weight，权重</p>
+<h2 id="Step-2-判别Goodness-of-Function-Training-Data"><a href="#Step-2-判别Goodness-of-Function-Training-Data" class="headerlink" title="Step 2: 判别Goodness of Function(Training Data)"></a>Step 2: 判别Goodness of Function(Training Data)</h2><h3 id="Training-Data"><a href="#Training-Data" class="headerlink" title="Training Data"></a>Training Data</h3><p>假定使用<strong>Model</strong> ：$y = b + w \cdot x_{cp}$</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/3rgtZ8"><img src="https://s2.ax1x.com/2020/02/28/3rgtZ8.md.png" alt="3rgtZ8.md.png"></a></p>
+<p>Training Data：十只宝可梦，用向量的形式表示。</p>
+<p>使用Training data来judge the goodness of function.。</p>
+<h3 id="Loss-Function-损失函数"><a href="#Loss-Function-损失函数" class="headerlink" title="Loss Function(损失函数)"></a>Loss Function(损失函数)</h3><p>概率论：做线性回归，一般使用最小二乘法。一般回归，大多使用极大似然估计。</p>
+<p><strong>Loss function $L$</strong> ：$L(f)=L(w,b)=\sum_{n=1}^{10}(\hat{y}^n-(b+w\cdot x_{cp}^n))^2$</p>
+<p>其中的 $\hat{y}^n-(b+w\cdot x_{cp}^n)$是Estimation error(估测误差)</p>
+<p><strong>Loss Function的意义</strong>：它的 $input$是一个 $function$，它的 $output$体现了how bad it is,这个函数有多糟/好。</p>
+<h3 id="Figure-the-Result"><a href="#Figure-the-Result" class="headerlink" title="Figure the Result"></a>Figure the Result</h3><p><a target="_blank" rel="noopener" href="https://imgchr.com/i/3rgJqf"><img src="https://s2.ax1x.com/2020/02/28/3rgJqf.md.png" alt="3rgJqf.md.png"></a></p>
+<p>上图横纵坐标是函数 $L$的参数 $w 、b$，图中的每一个point都是一个 $function $。</p>
+<p> color：体现函数的输出，越红越大，说明选择的函数越bad。</p>
+<p>所以我们要选择紫色区域结果最小的函数。</p>
+<p>而这个得到best function的过程是可以通过无数次迭代实现的。（重复的迭代当时是交给计算机做了）</p>
+<h2 id="Step-3-迭代找出Best-Function"><a href="#Step-3-迭代找出Best-Function" class="headerlink" title="Step 3:迭代找出Best Function"></a>Step 3:迭代找出Best Function</h2>$L(w,b)=\sum_{n=1}^{10}(\hat{y}^n-(b+w\cdot x_{cp}^n))^2$ 
+
+<p>找到Best Function: $f^{*}=\arg \min _{f} L(f)$</p>
+<p>也就是找到参数 $w^{*},b^{*}=\arg \min_{w,b} L(w,b)=\arg \min_{w,b}\sum_{n=1}^{10}(\hat{y}^n-(b+w\cdot x_{cp}^n))^2$ </p>
+<blockquote>
+<p>arg ：argument,变元</p>
+<p>arg min：使之最小的变元</p>
+<p>arg max：使之最大的变元</p>
+</blockquote>
+<p>据悉，线性回归的参数可以用线性代数的知识，解出closed-form solution（解析解），我先挖个坑QAQ，以后来填这块知识。[1]</p>
+<p>在机器学习中，只要<strong>$L$函数可微分</strong>， 即可用Gradient Descent（梯度下降）的方法来求解。</p>
+<h3 id="Gradient-Decent（梯度下降）"><a href="#Gradient-Decent（梯度下降）" class="headerlink" title="Gradient Decent（梯度下降）"></a>Gradient Decent（梯度下降）</h3><p>和概率论中的梯度下降估计参数的原理相同，只是计算机不能直接解出方程的解，所以计算机的方法是迭代。</p>
+<h3 id="考虑一个参数w"><a href="#考虑一个参数w" class="headerlink" title="考虑一个参数w*"></a>考虑一个参数w*</h3><p>$w^*=\arg \min_w L(w)$</p>
+<p><strong>步骤：</strong></p>
+<ol>
+<li><p>随机选取一个初始值 $w^0$</p>
+</li>
+<li><p>计算 $ \frac{{\rm d}L}{{\rm d}w}|_{w=w^0}$   &nbsp; &nbsp; $\begin{equation}
+   w^{1} \leftarrow w^{0}-\left.\eta \frac{d L}{d w}\right|_{w=w^{0}}
+   \end{equation}$ </p>
+</li>
+<li><p>计算 $ \frac{{\rm d}L}{{\rm d}w}|_{w=w^0}$  &nbsp;&nbsp; $\begin{equation}
+   w^{2} \leftarrow w^{1}-\left.\eta \frac{d L}{d w}\right|_{w=w^{1}}
+   \end{equation}$</p>
+</li>
+<li><p>…until  $ \frac{{\rm d}L}{{\rm d}w}|_{w=w^n}=0$
+
+[![3rgGsP.md.png](https://s2.ax1x.com/2020/02/28/3rgGsP.md.png)](https://imgchr.com/i/3rgGsP)
+
+**上图迭代过程的几点说明**
+
+-  $\begin{equation}
+  \left.\frac{\mathrm{d} L}{\mathrm{d} w}\right|_{w=w^{i}}
+  \end{equation}$的正负
+
+  如果是negative，也就是该点切线斜率是负的，那应该Increse w，以找到最低点。
+
+  - Negative $\rightarrow$ Increase  w
+  - Positive $\rightarrow$ Decrease w
+
+- $-\left.\eta \frac{d L}{d w}\right|_{w=w^{i}}$：步长
+
+  - $\eta$：learning rate（学习速度），事先设好的值。
+  - $-$(负号)：如果 $\begin{equation}
+    \left.\frac{\mathrm{d} L}{\mathrm{d} w}\right|_{w=w^{i}}
+    \end{equation}$是负的，应该增加w。
+
+- Local optimal：局部最优和全局最优
+
+  - 如果是以上图像，则得到的w不是全局最优。
+  - 但线性回归的损失函数是凸函数，存在一个全局最优，没有局部最优。
+
+###  考虑多个参数  $w^{*},b^{*}$ </p>
+</li>
+</ol>
+<p>微积分知识：gradient（梯度，向量)： $\nabla L=\left[\begin{array}{l}<br>\frac{\partial L}{\partial w} \<br>\frac{\partial L}{\partial b}<br>\end{array}\right]$</p>
+<p>考虑多个参数和考虑一个参数思路相同，每次迭代，迭代两个参数。</p>
+ $w^{*}, b^{*}=\arg \min _{w, b} L(w, b)$ 
+
+<p><strong>步骤</strong>：</p>
+<ol>
+<li><p>随机选取初值 $w^0,b^0$</p>
+</li>
+<li><p>计算 $\left.\left.\frac{\partial L}{\partial w}\right|_{w=w^{0}, b=b^{0},} \frac{\partial L}{\partial b}\right|_{w=w^{0}, b=b^{0}}$ &nbsp; &nbsp; $w^{1} \leftarrow w^{0}-\left.\eta \frac{\partial L}{\partial w}\right|_{w=w^{0}, b=b^{0}} \quad b^{1} \leftarrow b^{0}-\left.\eta \frac{\partial L}{\partial b}\right|_{w=w^{0}, b=b^{0}}$ </p>
+</li>
+<li><p>计算 $\left.\left.\frac{\partial L}{\partial w}\right|_{w=w^{1}, b=b^{1},} \frac{\partial L}{\partial b}\right|_{w=w^{1}, b=b^{1}}$ &nbsp; &nbsp; &nbsp; $w^{2} \leftarrow w^{1}-\left.\eta \frac{\partial L}{\partial w}\right|_{w=w^{1}, b=b^{1}} \quad b^{2} \leftarrow b^{1}-\left.\eta \frac{\partial L}{\partial b}\right|_{w=w^{1}, b=b^{1}}$ </p>
+</li>
+<li><p>…until $ \frac{{\rm d}L}{{\rm d}w}|_{w=w^n}=0$,    $ \frac{{\rm d}L}{{\rm d}b}|_{b=b^n}=0$</p>
+</li>
+</ol>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/3rg1xI"><img src="https://s2.ax1x.com/2020/02/28/3rg1xI.md.png" alt="3rg1xI.md.png"></a></p>
+<p>上图，坐标为 $L(w,b)$函数的参数，Color代表 $L$的大小，越紫值越小。</p>
+<p>每一个点都是一个 $function$，沿着梯度方向（图中法线方向）迭代，找到全局最优点。</p>
+<p><strong>再次说明</strong>：线性回归中，损失函数是convex（凸函数），没有局部最优解。</p>
+<h3 id="frac-partial-L-partial-w-和-frac-partial-L-partial-b-的公式推导"><a href="#frac-partial-L-partial-w-和-frac-partial-L-partial-b-的公式推导" class="headerlink" title="$\frac{\partial L}{\partial w}$和 $\frac{\partial L}{\partial b}$的公式推导"></a>$\frac{\partial L}{\partial w}$和 $\frac{\partial L}{\partial b}$的公式推导</h3><p>$L(w, b)=\sum_{n=1}^{10}\left(\hat{y}^{n}-\left(b+w \cdot x_{c p}^{n}\right)\right)^{2}$</p>
+<p>微积分的知识，显然。</p>
+<blockquote>
+<p>数学真香。———我自己</p>
+</blockquote>
+<p>$\frac{\partial L}{\partial w}=\sum_{n=1}^{10}2\left(\hat{y}^{n}-\left(b+w \cdot x_{c p}^{n}\right)\right)（-x_{cp}^n)$</p>
+<p>$\frac{\partial L}{\partial b}=\sum_{n=1}^{10}2\left(\hat{y}^{n}-\left(b+w \cdot x_{c p}^{n}\right)\right)(-1)$</p>
+<h2 id="实际结果分析"><a href="#实际结果分析" class="headerlink" title="实际结果分析"></a>实际结果分析</h2><h3 id="Training-Data-1"><a href="#Training-Data-1" class="headerlink" title="Training Data"></a>Training Data</h3><p><a target="_blank" rel="noopener" href="https://imgchr.com/i/3rglRA"><img src="https://s2.ax1x.com/2020/02/28/3rglRA.md.png" alt="3rglRA.md.png"></a></p>
+<p>Training Data的Error=31.9，但我们真正关心的是Testing Data的error。</p>
+<p>Testing Data 是new Data：另外的Pokemon！。</p>
+<h3 id="Testing-Data"><a href="#Testing-Data" class="headerlink" title="Testing Data"></a>Testing Data</h3><p><strong>Model 1</strong>： $y = b+w\cdot x_{cp}$</p>
+<p>error = 35,比Training Data error更大。</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/3rglRA"><img src="https://s2.ax1x.com/2020/02/28/3rglRA.md.png" alt="3rglRA.md.png"></a></p>
+<p><strong>Model 2</strong>：$y = b+w_1\cdot x_{cp}+w_2\cdot (x_{cp})^2$</p>
+<p>Testing error=18.4，比Model 1 好。</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/3rgMPH"><img src="https://s2.ax1x.com/2020/02/28/3rgMPH.md.png" alt="3rgMPH.md.png"></a></p>
+<p><strong>Model 3</strong>：$y = b+w_1\cdot x_{cp}+w_2\cdot (x_{cp})^2+w_3\cdot(x_{cp})^3$</p>
+<p>Testing error=18.1，比Model 2好。</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/3rgVr6"><img src="https://s2.ax1x.com/2020/02/28/3rgVr6.md.png" alt="3rgVr6.md.png"></a></p>
+<p><strong>Model 4</strong>:$y = b+w_1\cdot x_{cp}+w_2\cdot (x_{cp})^2+w_3\cdot(x_{cp})^3+w_4 \cdot (x_{cp})^4$</p>
+<p>Testing error =28.8,比Model3更差。</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/3rgZqK"><img src="https://s2.ax1x.com/2020/02/28/3rgZqK.md.png" alt="3rgZqK.md.png"></a></p>
+<p><strong>Model 5</strong>：$y = b+w_1\cdot x_{cp}+w_2\cdot (x_{cp})^2+w_3\cdot(x_{cp})^3+w_4 \cdot (x_{cp})^4+w_5\cdot (x_{cp})^5$</p>
+<p>Testing error = 232.1,爆炸了一样的差。</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/3rgmVO"><img src="https://s2.ax1x.com/2020/02/28/3rgmVO.md.png" alt="3rgmVO.md.png"></a></p>
+<h3 id="Overfiting（过拟合了）"><a href="#Overfiting（过拟合了）" class="headerlink" title="Overfiting（过拟合了）"></a>Overfiting（过拟合了）</h3><p>从上面5个Model中可以得出，越复杂的函数模型，在Testing data上不一定能得到更好的结果。（过拟合使Training data 的误差越来越小）</p>
+<p>所以在选择Model时，需要选择合适的Model。</p>
+<h2 id="对模型进行改进"><a href="#对模型进行改进" class="headerlink" title="对模型进行改进"></a>对模型进行改进</h2><p>如果收集更多的Training Data，可以发现他好像不是一个Linear Model。</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/3rguIe"><img src="https://s2.ax1x.com/2020/02/28/3rguIe.md.png" alt="3rguIe.md.png"></a></p>
+<h3 id="Back-to-step-1-Redesigh-the-Model"><a href="#Back-to-step-1-Redesigh-the-Model" class="headerlink" title="Back  to step 1:Redesigh the Model"></a>Back  to step 1:Redesigh the Model</h3><p>从上面那张图，感觉他不是一个Linear Model,而是需要if 是伊布，模型是…，if 是…,可见是和物种有关系。</p>
+<p>（很抱歉，我只认识右上角时伊布，QAQ，我也说不出名字）</p>
+<p>但用 $\delta$(微积分学的狄拉克函数)表示条件语句，可以发现，他仍然是一个线性模型。</p>
+<blockquote>
+ $\delta(x_s= \text{Pidgey)}\left\{\begin{array}{ll}=1 & \text { If } x_{s}=\text { Pidgey } \\ =0 & \text { otherwise }\end{array}\right.$ 
+</blockquote>
+<p>$y = b_1\cdot \delta_1+w_1\cdot \delta_1+b2\cdot \delta_2+w_2\cdot \delta_2+…$是一个linear model。</p>
+<p>拟合出来，Training Data 和Testing Data的error都蛮小的。</p>
+<p>如果想让拟合误差更小，还可以考虑其他的feature，重量、高度、HP等。</p>
+<p>但同样的，如果函数过于复杂，也会出现Overfitting的情况。</p>
+<h3 id="Back-to-Step-2-Regularization（正则化）"><a href="#Back-to-Step-2-Regularization（正则化）" class="headerlink" title="Back to Step 2:Regularization（正则化）"></a>Back to Step 2:Regularization（正则化）</h3><p>对于Linear Model :$y = b+\sum w_i x_i$</p>
+<h4 id="为什么要正则化？"><a href="#为什么要正则化？" class="headerlink" title="为什么要正则化？"></a>为什么要正则化？</h4><p>我们希望得到的函数是较平滑的，这样测试时，函数的输出对输入的noise不sensitive，即输入x的细微扰动，并不太会影响输出的结果。</p>
+<p>所以当参数越接近0，函数越平滑。因此在原本的loss function后加入 $\lambda \sum(w_i)^2$项（ $\lambda$需手调），可以保证函数较平滑。</p>
+<p><strong>正则化</strong>： $L = \sum_n(\hat{y}^n-(b+\sum w_i x_i))^2 + \lambda\sum(w_i)^2$</p>
+<h4 id="lambda-大小的选择"><a href="#lambda-大小的选择" class="headerlink" title="$\lambda $大小的选择"></a>$\lambda $大小的选择</h4><p><a target="_blank" rel="noopener" href="https://imgchr.com/i/3rgnaD"><img src="https://s2.ax1x.com/2020/02/28/3rgnaD.md.png" alt="3rgnaD.md.png"></a></p>
+<p>可以得出结论：</p>
+<ul>
+<li><p>$\lambda $越大，Training Error变大了。</p>
+<p>当 $\lambda$更大，损失函数更考虑w参数的取值，更关心函数的平滑程度，而更少的关心拟合的error。</p>
+</li>
+<li><p>$\lambda $越大，Testing Error变小了，当 $\lambda$过大时，又变大。</p>
+<p>$\lambda $较小时，$\lambda $增大，函数更平滑，能良好适应数据的扰动。</p>
+<p>$\lambda $较大时，函数过于平滑，宛如直线，这显然不能准确预测。</p>
+</li>
+</ul>
+<p>因此，在调节$\lambda $大小时，也要适当选择。</p>
+<h4 id="正则化的一个注意点"><a href="#正则化的一个注意点" class="headerlink" title="正则化的一个注意点"></a>正则化的一个注意点</h4><p>在regularization中，我们只考虑了w参数，<strong>没有考虑bias偏置值参数</strong>。</p>
+<p>因为正则化是寻找较平滑拟合，而偏置参数只是让函数平移，与平滑无关。</p>
+<p><strong>Again：Regularization不考虑bias</strong></p>
+<h1 id="Fllowing"><a href="#Fllowing" class="headerlink" title="Fllowing"></a>Fllowing</h1><ul>
+<li>Gradient descent[2]</li>
+<li>Overfitting and regularization[3]</li>
+<li>Validation[4]</li>
+</ul>
+<p>由于博主也是在学习阶段，学习后，会po上下面内容的链接。</p>
+<p>希望能在学习、写博客的过程中，锻炼自己的表达能力，尽量让文风言简意赅又科学严谨。</p>
+<p>写博客是为了记录与分享，感谢指正。</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>[1] “周志华西瓜书p55,待补充”</p>
+<p>[2]</p>
+<p>[3]</p>
+<p>[4] </p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「机器学习-李宏毅」：Regression</p><p><a href="https://f7ed.com/2020/02/28/Regression/">https://f7ed.com/2020/02/28/Regression/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2020-02-29</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2020-07-03</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Machine-Learning/">Machine-Learning, </a><a class="link-muted" rel="tag" href="/tags/open-classes/">open-classes, </a><a class="link-muted" rel="tag" href="/tags/Regression/">Regression </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/02/29/Gradient/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「机器学习-李宏毅」：Gradient</span></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "2bcf2db12e5255970b87615574b4ad3c",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">71</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">139</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Regression（回归）"><span class="level-left"><span class="level-item">1</span><span class="level-item">Regression（回归）</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Define"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">Define</span></span></a></li><li><a class="level is-mobile" href="#Example-Application"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">Example Application</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Regression-Case-Pokenmon"><span class="level-left"><span class="level-item">2</span><span class="level-item">Regression Case: Pokenmon</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Step-1-找一个Model（function-set）"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">Step 1: 找一个Model（function set）</span></span></a></li><li><a class="level is-mobile" href="#Step-2-判别Goodness-of-Function-Training-Data"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">Step 2: 判别Goodness of Function(Training Data)</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Training-Data"><span class="level-left"><span class="level-item">2.2.1</span><span class="level-item">Training Data</span></span></a></li><li><a class="level is-mobile" href="#Loss-Function-损失函数"><span class="level-left"><span class="level-item">2.2.2</span><span class="level-item">Loss Function(损失函数)</span></span></a></li><li><a class="level is-mobile" href="#Figure-the-Result"><span class="level-left"><span class="level-item">2.2.3</span><span class="level-item">Figure the Result</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Step-3-迭代找出Best-Function"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">Step 3:迭代找出Best Function</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Gradient-Decent（梯度下降）"><span class="level-left"><span class="level-item">2.3.1</span><span class="level-item">Gradient Decent（梯度下降）</span></span></a></li><li><a class="level is-mobile" href="#考虑一个参数w"><span class="level-left"><span class="level-item">2.3.2</span><span class="level-item">考虑一个参数w*</span></span></a></li><li><a class="level is-mobile" href="#frac-partial-L-partial-w-和-frac-partial-L-partial-b-的公式推导"><span class="level-left"><span class="level-item">2.3.3</span><span class="level-item">$\frac{\partial L}{\partial w}$和 $\frac{\partial L}{\partial b}$的公式推导</span></span></a></li></ul></li><li><a class="level is-mobile" href="#实际结果分析"><span class="level-left"><span class="level-item">2.4</span><span class="level-item">实际结果分析</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Training-Data-1"><span class="level-left"><span class="level-item">2.4.1</span><span class="level-item">Training Data</span></span></a></li><li><a class="level is-mobile" href="#Testing-Data"><span class="level-left"><span class="level-item">2.4.2</span><span class="level-item">Testing Data</span></span></a></li><li><a class="level is-mobile" href="#Overfiting（过拟合了）"><span class="level-left"><span class="level-item">2.4.3</span><span class="level-item">Overfiting（过拟合了）</span></span></a></li></ul></li><li><a class="level is-mobile" href="#对模型进行改进"><span class="level-left"><span class="level-item">2.5</span><span class="level-item">对模型进行改进</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Back-to-step-1-Redesigh-the-Model"><span class="level-left"><span class="level-item">2.5.1</span><span class="level-item">Back  to step 1:Redesigh the Model</span></span></a></li><li><a class="level is-mobile" href="#Back-to-Step-2-Regularization（正则化）"><span class="level-left"><span class="level-item">2.5.2</span><span class="level-item">Back to Step 2:Regularization（正则化）</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Fllowing"><span class="level-left"><span class="level-item">3</span><span class="level-item">Fllowing</span></span></a></li><li><a class="level is-mobile" href="#Reference"><span class="level-left"><span class="level-item">4</span><span class="level-item">Reference</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

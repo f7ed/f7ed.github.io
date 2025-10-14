@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「机器学习-李宏毅」：Tips for Deep Learning - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="这篇文章中，详尽阐述了在训练Deep Neural Network时，改善performance的一些tips。tips从Training和Testing两个方面展开。在Training中结果不尽人意时，可以采取更换新的activation function（如ReLu,Maxout等）和采用Adaptive Learning Rate的GradientDescent算法（除了Adagrad,还有"><meta property="og:type" content="blog"><meta property="og:title" content="「机器学习-李宏毅」：Tips for Deep Learning"><meta property="og:url" content="https://f7ed.com/2020/04/20/tips-for-DL/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="这篇文章中，详尽阐述了在训练Deep Neural Network时，改善performance的一些tips。tips从Training和Testing两个方面展开。在Training中结果不尽人意时，可以采取更换新的activation function（如ReLu,Maxout等）和采用Adaptive Learning Rate的GradientDescent算法（除了Adagrad,还有"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/contest_pc_header_303.png"><meta property="article:published_time" content="2020-04-20T16:00:00.000Z"><meta property="article:modified_time" content="2020-11-23T12:43:04.900Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="机器学习"><meta property="article:tag" content="DeepLearning"><meta property="article:tag" content="DNN"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/contest_pc_header_303.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2020/04/20/tips-for-DL/"},"headline":"「机器学习-李宏毅」：Tips for Deep Learning","image":["https://f7ed.com/gallery/thumbnails/contest_pc_header_303.png"],"datePublished":"2020-04-20T16:00:00.000Z","dateModified":"2020-11-23T12:43:04.900Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"这篇文章中，详尽阐述了在训练Deep Neural Network时，改善performance的一些tips。tips从Training和Testing两个方面展开。在Training中结果不尽人意时，可以采取更换新的activation function（如ReLu,Maxout等）和采用Adaptive Learning Rate的GradientDescent算法（除了Adagrad,还有"}</script><link rel="canonical" href="https://f7ed.com/2020/04/20/tips-for-DL/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「机器学习-李宏毅」：Tips for Deep Learning</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2020-04-20T16:00:00.000Z" title="2020-04-20T16:00:00.000Z">2020-04-21</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2020-11-23T12:43:04.900Z" title="2020-11-23T12:43:04.900Z">2020-11-23</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E6%9D%8E%E5%AE%8F%E6%AF%85/">机器学习-李宏毅</a></span><span class="level-item"><i class="far fa-clock"></i> 32 minutes read (About 4782 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>这篇文章中，详尽阐述了在训练Deep Neural Network时，改善performance的一些tips。<br>tips从Training和Testing两个方面展开。<br>在Training中结果不尽人意时，可以采取更换新的activation function（如ReLu,Maxout等）和采用Adaptive Learning Rate的GradientDescent算法（除了Adagrad,还有RMSprop、Momentum、Adam等）。<br>当在Training中得到好的performance，但在testing中perform bad时，即遇到了overfitting，又该怎么处理呢？文章后半部分详尽介绍了EarlyStopping、Regularization和Dropout三个solution。</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><span id="more"></span>
+
+<h1 id="Recipe-of-Deep-Learning"><a href="#Recipe-of-Deep-Learning" class="headerlink" title="Recipe of Deep Learning"></a>Recipe of Deep Learning</h1><p>Deep Learning 的三个步骤：</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGW8js.md.png" alt="JGW8js.md.png" style="zoom:53%;" />
+
+<p>如果在Training Data中没有得到好的结果，需要重新训练Neural Network。</p>
+<p>如果在Training Data中得到好的结果，在Testing Data（这里的Testing Data是指有Label的Data，比如Kaggle的Public Data或者是从Training Data中划分出的Development Data）没有得到的好的结果，说明Overfitting了，需要重新设计Neural Network的结构。</p>
+<h2 id="Do-not-always-blame-Overfitting"><a href="#Do-not-always-blame-Overfitting" class="headerlink" title="Do not always blame Overfitting"></a>Do not always blame Overfitting</h2><img src="https://s1.ax1x.com/2020/04/21/JGW3cj.md.png" alt="JGW3cj.md.png" style="zoom:50%;" />
+
+<p>如果在Testing Data中，看到上图，20-layer的error小，56-layer的error大，56-layer一定overfitting了。</p>
+<p>No!!!不要总把原因归咎于Overfitting。</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGW13Q.md.png" alt="JGW13Q.md.png" style="zoom:50%;" />
+
+<p>再看Testing Data error之前，先看看Training Data的error。上图中，56-layer的DNN在Training Data的error本来就比20-layer的大，说明56-layer的DNN根本没有train好。</p>
+<p>所以56-layer的DNN在Testing Data上的error大，原因不是overfitting，而是模型根本没有train好。</p>
+<p><strong>注：</strong> Overfitting是在Training Data上error小，但在Testing Data上的error大。</p>
+<p>因此，对于在Training Data上得到不好的结果和在Training Data上得到好的结果但在Testing Data上得到不好的结果这两种情况，需要不同的解决方法。</p>
+<h1 id="Bad-Results-on-Training-Data"><a href="#Bad-Results-on-Training-Data" class="headerlink" title="Bad Results on Training Data"></a>Bad Results on Training Data</h1><p>在不重新设计DNN结构时，如果在Training Data中得到Bad Results，一般有两种方法来改进结果：</p>
+<ul>
+<li>New activation function【neuron换新的激活函数】</li>
+<li>Adaptive Learning Rate</li>
+</ul>
+<h2 id="New-activation-function"><a href="#New-activation-function" class="headerlink" title="New activation function"></a>New activation function</h2><h3 id="Vanishing-Gradient-Problem"><a href="#Vanishing-Gradient-Problem" class="headerlink" title="Vanishing Gradient Problem"></a>Vanishing Gradient Problem</h3><img src="https://s1.ax1x.com/2020/04/21/JGWl9g.md.png" alt="JGWl9g.md.png" style="zoom:50%;" />
+
+<p>上图表示，在手写数字辨识中，Deeper layers并不能有好的performance。</p>
+<p>为什么会这样呢？</p>
+<p>因为出现了Vanishing Gradient Problem，即gradient随着deeper layer逐渐消失的问题。</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGWM4S.md.png" alt="JGWM4S.md.png" style="zoom:70%;" />
+
+<p>上图中，假设neuron的activation function是sigmod函数。</p>
+<p>靠近Input layer层的参数的变化对Loss的影响很小，所以对Loss function做微分，gradient很小，参数更新慢。</p>
+<p>而靠近Output layer层的参数的编号对Loss的影响更大，所以对Loss function做微分，gradient很大，参数更新快。</p>
+<p>因为靠近Output Layer层的参数更新快，所以很快converge（收敛、趋于稳定）；但靠近Input Layer层的参数更新慢，几乎还处在random（随机）的状态。</p>
+<p>当靠近Output Layer层的参数趋于稳定时，由于靠近Output Layer层的参数对Loss影响大，所以观察到的Loss的值也趋于稳定，于是，你就把training停掉了。</p>
+<p>但是，靠近Input层的参数几乎处在random状态，所以拿模型用在Testing Data上，发现结果几乎是随机的。</p>
+<hr>
+<p>怎么直观理解靠近Input Layer的参数的gradient小呢？</p>
+<p>用微分的直观含义来表示gradient $\partial{l}/\partial{w}$ : </p>
+<p><strong>当 $w$ 增加 $\Delta{w}$ 时，如果 $l$ 的变化 $\Delta{l}$ 变化大，说明 $\partial{l}/\partial{w}$ 大，否则 $\partial{l}/\partial{w}$ 小。</strong></p>
+<img src="https://s1.ax1x.com/2020/04/21/JGWKN8.md.png" alt="JGWKN8.md.png" style="zoom:67%;" />
+
+<p>我们在DNN中使用的activation function是sigmod函数，sigmod函数会把值压到0和1之间。</p>
+<p>因此，上图中，其他值不变，只有连接 $x_N$ 的参数 $w$ 增加 $\Delta w$ 时，输入通过neuron的sigmod函数，函数的输出增加的 $\Delta$ 会变小，随着Deeper Layer，neuron的输出的 $\Delta$ 会越变越小，趋至0。</p>
+<p>最后DNN输出的变化对 loss的影响小，即 $\Delta{l}$ 趋至0，即参数的gradient  $\partial{l}/\partial{w}$ 趋至0。（即 Vanishing Gradient）</p>
+<h3 id="ReLu-：Rectified-Linear-Unit"><a href="#ReLu-：Rectified-Linear-Unit" class="headerlink" title="ReLu ：Rectified Linear Unit"></a>ReLu ：Rectified Linear Unit</h3><p>为了防止发生Vanishing Gradient Problem，在DNN中选择使用新的activation function。</p>
+<p>ReLu长下面这个样子：</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGWuAf.md.png" alt="JGWuAf.md.png" style="zoom:33%;" />
+
+<p>z: input</p>
+<p>a: output</p>
+<p>当 $z\leq0$ 时， $a=0$ ；当 $z &gt;0$ 时， $a=z$ 。</p>
+<p><u>Reason :</u> </p>
+<ol>
+<li>Fast to compute</li>
+<li>Biological reason【有生物上的原因】</li>
+<li>Infinite sigmod with different biases. 【是无穷个 有不同bias的sigmod函数 的叠加】</li>
+<li><strong>Vanishing gradient problem</strong> 【最重要的是没有vanishing gradient problem】</li>
+</ol>
+<hr>
+<p>为什么ReLu没有vanishing gradient problem</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGWmHP.md.png" alt="JGWmHP.md.png" style="zoom:67%;" />
+
+<p>上图DNN中，ReLu在输入是负数时，输出是0。因此这些输出是0的neuron可以去掉。</p>
+<p>就变成了下图这个A Thinner linear network。由于ReLu函数的性质，靠近Input Layer的参数不会有smaller gradient。</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGWeBt.md.png" alt="JGWeBt.md.png" style="zoom:75%;" />
+
+<p>这里有一个Q&amp;A: </p>
+<p>Q1: function变成linear的，会不会DNN就变弱了？</p>
+<p>： 当neuron的operation region不变的话，DNN的确是linear的，但是当neuron的operation region改变后，就是unlinear的。</p>
+<p>：即，当input的变化小，operation region不变（即输入不会从大于0变成小于0，小于0变成大于0这种），model还是linear的；但当input的变化大时，很多neuron的operation region都变化了，model其实就是unlinear的。</p>
+<p>Q2: ReLu 怎么微分？</p>
+<p>：ReLu在0点不可微，那就随便指定为0这样（台湾腔QAQ）。</p>
+<h3 id="ReLu-variant"><a href="#ReLu-variant" class="headerlink" title="ReLu - variant"></a>ReLu - variant</h3><p>当 $z\leq 0$ 时，输出为0，就不能更新参数了。于是就有下图变体：</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGWZnI.md.png" alt="JGWZnI.md.png" style="zoom:40%;" />
+
+<p>当 $z\leq0$ 时，gradient都为0.01，为什么不能是其他值。于是就有下图变体：其中 $\alpha$ 也是一个需要学习的参数</p>
+<h3 id="Maxout"><a href="#Maxout" class="headerlink" title="Maxout"></a>Maxout</h3><p>Maxout，如下图，在设计neural network时，会给每一层的neuron分组，成为一个新的neuron。</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGWk1H.md.png" alt="JGWk1H.md.png" style="zoom:75%;" />
+
+<p>Maxout也是一个Learnable activation function。</p>
+<p><strong>ReLu是Maxout学出来的一个特例。</strong></p>
+<img src="https://s1.ax1x.com/2020/04/21/JGWAcd.md.png" alt="JGWAcd.md.png" style="zoom:75%;" />
+
+<p>上图中，左图是ReLu。 ReLu的输入 $z = wx+b$ ，输出 $a$ 如上图的绿色的线。</p>
+<p>右图是Maxout。Maxout的输入 $z_1 =wx+b,z_2=0$ ，那么输出取max，输出 $a$ 如上图中绿色的线，和左图的ReLu相同。</p>
+<hr>
+<p><strong>Maxout is more than ReLu。</strong> </p>
+<p>当参数更新时，Maxout的函数图像如下图：</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGWPhD.md.png" alt="JGWPhD.md.png" style="zoom:77%;" />
+
+<p>DNN中的参数是learnable的，所以Maxout也是一个learnable的activation function。</p>
+<p><u>Reason ：</u></p>
+<ul>
+<li><p>Learnable activation function [Ian J. Goodfellow, ICML’13]</p>
+<ul>
+<li><p>Activation function in maxout network can be any piecewise linear convex function.</p>
+<p>在maxout神经网络中的激活函数可以是任意的分段凸函数。</p>
+</li>
+<li><p>How many pieces depending on how many elements in a group.</p>
+<p>分段函数分几段取决于一组中有多少个元素。</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGWCtO.md.png" alt="JGWCtO.md.png" style="zoom:70%;" />
+
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Maxout-how-to-train"><a href="#Maxout-how-to-train" class="headerlink" title="Maxout : how to train"></a>Maxout : how to train</h3><p>Given a training data x, we know which z would be the max.</p>
+<p>【当给出每笔training data时，我们能知道Maxout neuron中哪一个最大】</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGW9AK.md.png" alt="JGW9AK.md.png" style="zoom:75%;" />
+
+<p>如上图，在这笔training data x中，我们只train this thin and linear network 的参数，即max z相连的参数。</p>
+<p>每笔不同的training data x，会得到不同的thin and linear network，最后，会train到每一个参数。</p>
+<h2 id="Adaptive-Learning-Rate"><a href="#Adaptive-Learning-Rate" class="headerlink" title="Adaptive Learning Rate"></a>Adaptive Learning Rate</h2><h3 id="Review-Adagrad"><a href="#Review-Adagrad" class="headerlink" title="Review Adagrad"></a>Review Adagrad</h3><p>在这篇文章： <a href="/2020/03/01/Gradient/" title="Gradient">Gradient</a> 第一小节讲到一种adaptive learning rate的gradient 算法：Adagrad 算法。在那篇文章中，我们得出的结论是 the best step $\propto$  |First dertivative| / Second derivative.</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGWF9e.md.png" alt="JGWF9e.md.png" style="zoom:67%;" />
+
+<p>在上图中，两个方向，因为蓝色方向的二阶微分更小，所以蓝色方向应该有更大的learning rate。</p>
+<p>因此，在Adagrad中，我们用一阶微分来估量二阶微分的大小：</p>
+
+$$
+w^{t+1}  \leftarrow w^{t}-\frac{\eta}{\sqrt{\sum_{i=0}^{t}\left(g^{i}\right)^{2}}} g^{t}
+$$
+
+
+<h3 id="RMSProp"><a href="#RMSProp" class="headerlink" title="RMSProp"></a>RMSProp</h3><p>但是，在训练NN时，Error Surface（Total Loss对参数的变化）的图像可能会更复杂，如下图：</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGWS76.md.png" alt="JGWS76.md.png" style="zoom:67%;" />
+
+<p>因为函数图像过于复杂，可能在同一方向的不同位置，也需要有不同的learning rate。</p>
+<p>RMSProp是Adagrad的进阶版。</p>
+<p><strong>RMSProp过程：</strong> </p>
+<ol>
+<li> $w^{1} \leftarrow w^{0}-\frac{\eta}{\sigma^{0}} g^{0} \quad \sigma^{0}=g^{0}$ </li>
+<li> $w^{2} \leftarrow w^{1}-\frac{\eta}{\sigma^{1}} g^{1} \quad \sigma^{1}=\sqrt{\alpha (\sigma^{0})^2+(1-\alpha)(g^1)^2}$ </li>
+<li> $w^{3} \leftarrow w^{2}-\frac{\eta}{\sigma^{2}} g^{2} \quad \sigma^{2}=\sqrt{\alpha (\sigma^{1})^2+(1-\alpha)(g^2)^2}$ </li>
+<li><p>…</p>
+</li>
+<li> $w^{t+1} \leftarrow w^{t}-\frac{\eta}{\sigma^{t}} g^{t} \quad \sigma^{t}=\sqrt{\alpha (\sigma^{t-1})^2+(1-\alpha)(g^t)^2}$ 
+
+<p>$\sigma^t$ 也是在算gradients的 root mean squar。</p>
+</li>
+</ol>
+<p>但是在RMSProp中，加入了参数 $\alpha$ (需要手动调节大小的参数)，可以给当前算出来的gradient $g^t$ 更大的权重，即更相信现在gradient的方向，不那么相信以前gradient的方向。</p>
+<h3 id="Momentum"><a href="#Momentum" class="headerlink" title="Momentum"></a>Momentum</h3><p>Momentum，则是引用物理中的惯性。</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGRxn1.md.png" alt="JGRxn1.md.png" style="zoom:47%;" />
+
+<p>上图中，当小球到达local minima时，会因为惯性继续往前更新，则有可能到达minima的位置。</p>
+<p>这里的Momentum，就代指上一次前进（参数更新）的方向。</p>
+<p><strong>Vanilla Gradient Descent</strong> </p>
+<p>如果将Gradient的步骤画出图来，就是下图这样：</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGRXc9.md.png" alt="JGRXc9.md.png" style="zoom:47%;" />
+
+<p>过程：</p>
+<ol>
+<li><p>Start at position $\theta^0$</p>
+</li>
+<li><p>Compute gradietn at $\theta^0$</p>
+<p>Move to  $\theta^1=\theta^0-\eta\nabla{L(\theta^0)}$ </p>
+</li>
+<li><p>Compute gradietn at $\theta^1$ </p>
+<p>Move to  $\theta^2=\theta^1-\eta\nabla{L(\theta^1)}$ </p>
+</li>
+<li><p>… …Stop until $\nabla{L(\theta^t)}\approx0$</p>
+</li>
+</ol>
+<hr>
+<p><strong>Momentum</strong> </p>
+<p>在Momentum中，参数更新方向是当前Gradient方向和Momentum方向（上一次更新方向）的叠加。</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGRjXR.md.png" alt="JGRjXR.md.png" style="zoom:50%;" />
+
+<p>Movement方向：上一次更新方向 - 当前gradient方向。</p>
+<p>过程：</p>
+<ol>
+<li><p>Start at position $\theta^0$</p>
+<p>Movement: $v^0=0$ </p>
+</li>
+<li><p>Compute gradient at $\theta^0$ </p>
+<p>Movement  $v^1=\lambda v^0-\eta\nabla{L(\theta^0)}$  </p>
+<p>Move to  $\theta^1=\theta^0+v^1$ </p>
+</li>
+<li><p>Compute gradient at $\theta^1$  </p>
+<p>Movement  $v^2=\lambda v^1-\eta\nabla{L(\theta^1)}$ </p>
+<p>Move to $\theta^2=\theta^1+v^2$  </p>
+</li>
+<li><p>… …Stop until $\nabla{L(\theta^t)}\approx0$ </p>
+</li>
+</ol>
+<p>和Vanilla Gradient Descent比较，$v^i$ 其实是过去gradient( $\nabla{L(\theta^0)}$ 、$\nabla{L(\theta^1)}$ 、… 、 $\nabla{L(\theta^{i-1})}$  )的加权和。</p>
+<ul>
+<li>迭代过程：<ul>
+<li>$v^0=0$ </li>
+<li> $v^1=-\eta\nabla{L(\theta^0)}$ </li>
+<li> $v^2=-\lambda\eta\nabla{L(\theta^0)}-\eta\nabla{L(\theta^1)}$ </li>
+<li>…</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>再用那个小球的例子来直觉的解释Momentum：</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGRO1J.md.png" alt="JGRO1J.md.png" style="zoom:70%;" />
+
+<p>当小球在local minima时，gradient为0，但是Momentum（即上次移动方向）是继续往前，于是小球可以继续向前更新。</p>
+<h3 id="Adam-RMSProp-Momentum"><a href="#Adam-RMSProp-Momentum" class="headerlink" title="Adam = RMSProp + Momentum"></a>Adam = RMSProp + Momentum</h3><img src="https://s1.ax1x.com/2020/04/21/JGRLp4.md.png" alt="JGRLp4.md.png" style="zoom:77%;" />
+
+<p>Algorithm：Adam, our proposed algorithm for stochastic optimization. </p>
+<p>【Adam，是为了优化stochastic gradient】（至于什么是stochastic gradient，建议戳<a href="#">Post not found: Gradietn 这篇</a>)</p>
+<p>$g_t^2$ indicates the elementwise square $g_t\odot g_t$ .</p>
+<p>【$g_t^2$ 是gradient $g_t$ 向量和 $g_t$ 的元素乘】</p>
+<p>Good default settings for the tested machine learning problems are $\alpha=0.001$ , $\beta_1=0.9$ , $\beta_2=0.999$ and $\epsilon=10^{-8}$ . All operations on vectors are element-wise. With $\beta_1^t$ and $\beta_2^t$ we denote $\beta_1$ and $\beta_2$ to the power t.</p>
+<p>【参数说明：算法默认的参数设置是 $\alpha=0.001$ , $\beta_1=0.9$ , $\beta_2=0.999$ ， $\epsilon=10^{-8}$ 。算法中所有vector之间的操作都是对元素操作。 $\beta_1^t$ 和 $\beta_2^t$ 是 $\beta_1$ 和 $\beta_2$ 的 $t$ 次幂】</p>
+<p><strong>Adam Pseudo Code：</strong> </p>
+<ol start="0">
+<li><p><strong>Require</strong>：$\alpha$ : Stepsize 【步长/learning rate $\eta$ 】</p>
+<p><strong>Require</strong>：$\beta_1,\beta_2\in\left[0,1\right)$ : Exponential decay rates for the moment estimates.</p>
+<p><strong>Require</strong>：$f(\theta)$ : Stochastic objective function with parameters $\theta$ .【参数 $\theta$ 的损失函数】</p>
+<p><strong>Require</strong>: $\theta_0$ ：Initial parameter vector 【初值】</p>
+</li>
+<li><p>$m_0\longleftarrow 0$ (Initial 1st moment vector) 【 $m$ 是Momentum算法中的更新参数后的方向 $v$ 】</p>
+<p>$v_0\longleftarrow 0$ (Initial 2nd moment vector) 【 $v$ 是RMSprop算法中gradient的root mean square $\sigma$ 】</p>
+<p>$t\longleftarrow 0$ (Initial timestep) 【更新次数】</p>
+</li>
+<li><p><strong>while</strong> $\theta_t$ not concerged <strong>do</strong> 【当 $\theta$ 趋于稳定，即 $\nabla{f(\theta)}\approx0$ 时】</p>
+<ol>
+<li><p>$t\longleftarrow t+1$ </p>
+</li>
+<li> $g_t\longleftarrow \nabla{f_t(\theta_{t-1})}$  (Get gradients w.r.t. stochastic objective at timestep t)
+
+<p>【算第t次时 $\theta$ 的gradient】</p>
+</li>
+<li> $m_{t} \leftarrow \beta_{1} \cdot m_{t-1}+\left(1-\beta_{1}\right) \cdot g_{t}$   (Update biased first momen t estimate)
+
+<p>【用Momentum算更新方向】</p>
+</li>
+<li> $v_{t} \leftarrow \beta_{2} \cdot v_{t-1}+\left(1-\beta_{2}\right) \cdot g_{t}^{2}$  (Update biased second raw moment estimate)
+
+<p>【RMSprop估测最佳步长（ 和$v$ 负相关） 】</p>
+</li>
+<li> $\widehat{m}_{t} \leftarrow m_{t} /\left(1-\beta_{1}^{t}\right)$ （Comppute bbi. as-corrected first momen t estima te)
+
+<p>【算出来的值有bias，论文中有具体解释为什么有。当更新次数增加时， $1-\beta_1^t$ 也趋近于1】</p>
+</li>
+<li> $\widehat{v}_{t} \leftarrow v_{t} /\left(1-\beta_{2}^{t}\right)$  (Compute bias-corrected second raw momen t estimate)
+
+<p>【和上同理】</p>
+</li>
+<li> $\theta_{t} \leftarrow \theta_{t-1}-\alpha \cdot \widehat{m}_{t} /(\sqrt{\widehat{v}_{t}}+\epsilon)$ （Update parameters）
+
+<p>【 $\widehat{m}<em>t$ 相当于是更准确的gradient的方向，$\sqrt{\widehat{v}</em>{t}}+\epsilon$ 是为了估测最好的步长，调节learning rate】</p>
+</li>
+</ol>
+</li>
+</ol>
+<h3 id="Gradient-Descent-Limitation？"><a href="#Gradient-Descent-Limitation？" class="headerlink" title="Gradient Descent Limitation？"></a>Gradient Descent Limitation？</h3><p>在<a href="/2020/03/01/Gradient/" title="Gradient">Gradient</a>这篇文章中，讲到过Gradient有一些问题不能处理：</p>
+<ul>
+<li>Stuck at local minima</li>
+<li>Stuck at saddle point</li>
+<li>Very slow at the plateau</li>
+</ul>
+<img src="https://s1.ax1x.com/2020/04/21/JG4l9O.md.png" alt="JG4l9O.md.png" style="zoom:77%;" />
+
+<p>（李老师说的，不是我说的QAQ）：但是Andrew（吴恩达）在2017年说过，不用太担心这个问题。为什么呢？</p>
+<p>如果要stuck at local minima，前提是每一维度都是local minima。</p>
+<p>如果在一个维度遇到local minima的概率是p，当NN很复杂时，有很多参数时，比如1000，那么遇到local minima的概率是 $p^{1000}$ ，趋近于0了，几乎不会发生。</p>
+<p>：所以不用太担心Gradient Descent的局限性。</p>
+<h1 id="Bad-Results-on-Testing-Data"><a href="#Bad-Results-on-Testing-Data" class="headerlink" title="Bad Results on Testing Data"></a>Bad Results on Testing Data</h1><h2 id="Early-Stopping"><a href="#Early-Stopping" class="headerlink" title="Early Stopping"></a>Early Stopping</h2><p>在更新参数时，可能会出现这样曲线图：</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGRbhF.md.png" alt="JGRbhF.md.png" style="zoom:75%;" />
+
+<p>图中，Total Loss在training set中逐渐减小，但在validation set中逐渐增大。</p>
+<p>而我们真正关心的其实是validation set的Loss。</p>
+<p>所以想让参数停在validation set中loss最低时。</p>
+<p>Keras能够实现EarlyStopping功能[1]：click <a target="_blank" rel="noopener" href="https://keras.io/getting-started/faq/#how-can-i-interrupt-training-when-the-validation-loss-isnt-decreasing-anymore">here</a> </p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.callbacks <span class="keyword">import</span> EarlyStopping</span><br><span class="line">early_stopping = EarlyStopping(monitor=<span class="string">&#x27;val_loss&#x27;</span>, patience=<span class="number">2</span>)</span><br><span class="line">model.fit(x, y, validation_split=<span class="number">0.2</span>, callbacks=[early_stopping])</span><br></pre></td></tr></table></figure>
+
+<h2 id="Regularization"><a href="#Regularization" class="headerlink" title="Regularization"></a>Regularization</h2><p>Regularization：Find a set of weight not only minimizing original cost but also close to zero.</p>
+<p>构造一个新的loss function，除了最小化原来的loss function，还能使得参数趋紧0，使得function更平滑。</p>
+<p>function的曲线更平滑，当输入有轻微扰动，不会太影响输出的结果。</p>
+<h3 id="L2-norm-regularization"><a href="#L2-norm-regularization" class="headerlink" title="L2 norm regularization"></a>L2 norm regularization</h3><p><strong>New loss function:</strong> </p>
+
+$$
+\begin{equation}
+\begin{aligned}
+\mathrm{L}^{\prime}(\theta)&=L(\theta)+\lambda \frac{1}{2}\|\theta\|_{2}
+\\ \theta &={w_1,w_2,...}
+\\ \|\theta\|_2&=(w1)^2+(w_2)^2+...
+
+\end{aligned}
+\end{equation}
+$$
+
+
+<p>其中用第二范式 $\lambda\frac{1}{2}|\theta|_2$ 作为regularization term。做regularization是为了使函数更平滑，所以一般不考虑bias)</p>
+<p><strong>New gradient:</strong> </p>
+
+$$
+\frac{\partial \mathrm{L}^{\prime}}{\partial w}=\frac{\partial \mathrm{L}}{\partial w}+\lambda w
+$$
+
+<p><strong>New update:</strong> </p>
+
+$$
+\begin{equation}
+\begin{aligned}
+w^{t+1} &\longrightarrow w^{t}-\eta \frac{\partial \mathrm{L}^{\prime}}{\partial w}
+\\ &=w^{t}-\eta\left(\frac{\partial \mathrm{L}}{\partial w}+\lambda w^{t}\right)
+\\ &=(1-\eta \lambda) w^{t}-\eta \frac{\partial \mathrm{L}}{\partial w}
+\end{aligned}
+\end{equation}
+$$
+
+<p>在更新参数时，先乘一个 $(1-\eta\lambda)$ ，再更新。</p>
+<p>weight decay（权值衰减）：由于 $\eta,\lambda$ 都是很小的值，所以 $w^t$ 每次都会先乘一个小于1的数，即逐渐趋于0，实现regularization。但是，因为更新中还有gradient部分，所以不会等于0。</p>
+<h3 id="L1-norm-regularization"><a href="#L1-norm-regularization" class="headerlink" title="L1 norm regularization"></a>L1 norm regularization</h3><p>Regularization除了用第二范式，还可以用其他的，比如第一范式 $|\theta|_1=|w_1|+|w_2|+…$ </p>
+<p><strong>New loss function:</strong> </p>
+
+$$
+\begin{equation}\begin{aligned}\mathrm{L}^{\prime}(\theta)&=L(\theta)+\lambda \frac{1}{2}\|\theta\|_1\\ \theta &={w_1,w_2,...}
+\\ \|\theta\|_1&=|w_1|+|w_2|+...\end{aligned}\end{equation}
+$$
+
+
+<p>用sgn()符号函数来表示绝对值的求导。</p>
+<blockquote>
+<p>符号函数：Sgn(number)</p>
+<p>如果number 大于0，返回1；等于0，返回0；小于0，返回-1。</p>
+</blockquote>
+<p><strong>New gradient:</strong> </p>
+
+$$
+\frac{\partial \mathrm{L}^{\prime}}{\partial w}=\frac{\partial \mathrm{L}}{\partial w}+\lambda \text{sgn}(w)
+$$
+
+<p><strong>New update:</strong> </p>
+
+$$
+\begin{equation}
+\begin{aligned}
+w^{t+1} &\longrightarrow w^{t}-\eta \frac{\partial \mathrm{L}^{\prime}}{\partial w}
+\\ &=w^{t}-\eta\left(\frac{\partial \mathrm{L}}{\partial w}+\lambda \text{sgn}(w^t)\right)
+\\ &=w^{t}-\eta \frac{\partial \mathrm{L}}{\partial w}-\eta \lambda \operatorname{sgn}\left(w^{t}\right)
+\end{aligned}
+\end{equation}
+$$
+
+
+<p>在用第一范式做regularization时，每次 $w^t$ 都要减一个值 $\eta\lambda\text{sgn}(w^t)$ ，和用第二范式做regularization比较，后者每次都要乘一个小于1的值，即使是乘0.99，w下降也很快。</p>
+<blockquote>
+<p>Weight decay（权值衰减）的生物意义：</p>
+<p>Our brain prunes（修剪） out the useless link between neurons.</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGRHtU.md.png" alt="JGRHtU.md.png" style="zoom:47%;" />
+</blockquote>
+<h2 id="Dropout"><a href="#Dropout" class="headerlink" title="Dropout"></a>Dropout</h2><p>Wiki: <strong>Dropout</strong>是Google提出的一种正则化技术，用以在人工神经网络中对抗过拟合。Dropout有效的原因，是它能够避免在训练数据上产生复杂的相互适应。Dropout这个术语代指在神经网络中丢弃部分神经元（包括隐藏神经元和可见神经元）。在训练阶段，dropout使得每次只有部分网络结构得到更新，因而是一种高效的神经网络模型平均化的方法。[2]</p>
+<p>这里讲Dropout怎么做。</p>
+<h3 id="Training"><a href="#Training" class="headerlink" title="Training"></a>Training</h3><img src="https://s1.ax1x.com/2020/04/21/JG4M4K.md.png" alt="JG4M4K.md.png" style="zoom:55%;" /> 
+
+<ul>
+<li><p>Each time before updating the parameters:</p>
+<ul>
+<li><p>Each neuron has p% to dropout. Using the new thin network for training.</p>
+<p>【如上图，每个neuron有p的概率被dropout。于是NN就变成了下图thinner的NN】</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGR5mq.md.png" alt="JGR5mq.md.png" style="zoom:50%;" /> 
+</li>
+<li><p>For each mini-batch, we resample the dropout neurons.</p>
+<p>【每次mini-batch，都要重新dropout，更新NN的结构】</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Testing"><a href="#Testing" class="headerlink" title="Testing"></a>Testing</h3><p><strong>Testing中不做dropout</strong> </p>
+<ul>
+<li><p>If the dropout rate at training is p%, all the weights times 1-p%.</p>
+<p>【如果在training中 dropout rate是 p%，在testing是，每个参数都乘 （1-p%)】</p>
+<p>【比如dropout rate 是0.5。如果train出来的w是 1，那么testing中 w=0.5】</p>
+</li>
+</ul>
+<h3 id="Why-dropout-in-training：Intuitive-Reason"><a href="#Why-dropout-in-training：Intuitive-Reason" class="headerlink" title="Why dropout in training：Intuitive Reason"></a>Why dropout in training：Intuitive Reason</h3><ol>
+<li><p>这是一个比较有趣的比喻：</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGRI00.md.png" alt="JGRI00.md.png" style="zoom:50%;" /> 
+</li>
+<li><p>这也是一个有趣的比喻hhh:</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGRo7V.md.png" alt="JGRo7V.md.png" style="zoom:50%;" /> 
+
+<p>即，团队合作的时候，如果每个人都认为队友在带我，那每个人都可能划水。</p>
+<p>但是，（training中）如果你知道你的队友在划水，那你可能会做的更好。</p>
+<p>但是，（testing中）发现每个人都有更好地做，都没有划水，那么结果就会很好。</p>
+<p>（hhhh，李老师每次讲Intuitive Reason的时候，都觉得好有道理hhh，科学的直觉orz给我也整一个）</p>
+</li>
+</ol>
+<h3 id="Why-multiply-1-p-in-testing-Intuitive-reason"><a href="#Why-multiply-1-p-in-testing-Intuitive-reason" class="headerlink" title="Why multiply (1-p%) in testing: Intuitive reason"></a>Why multiply (1-p%) in testing: Intuitive reason</h3><p>为什么在testing中 weights要乘（1-p%)?</p>
+<p>用一个具体的例子来直观说明：</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGRf6s.md.png" alt="JGRf6s.md.png" style="zoom:67%;" />
+
+<p>上图中，如果dropout rate=0.5，假设只训练一次， $w_2,w_4$ 相连的neuron都被dropout。</p>
+<p>在testing中，因为不对neurondropout，所以如果不改变weight，计算出的结果 $z’\approx 2z$ 。</p>
+<p>因此将所有weight简单地和(1-p%) 相乘，能尽量保证计算出的结果 $z’\approx z$ 。</p>
+<h3 id="Dropout-is-a-kind-of-ensemble"><a href="#Dropout-is-a-kind-of-ensemble" class="headerlink" title="Dropout is a kind of ensemble"></a>Dropout is a kind of ensemble</h3><p>Ensemble(合奏)，如下图，将testing data丢给train好的NN来估计，最后的估计值取所有NN输出的平均，如下图：</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGRhXn.md.png" alt="JGRhXn.md.png" style="zoom:60%;" />
+
+<p>为什么说dropout is a kind of ensemble?</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGRRpQ.md.png" alt="JGRRpQ.md.png" style="zoom:50%;" />
+
+<ul>
+<li><p>Using one mini-batch to train one network</p>
+<p>【dropout相当于每次用一个mini-batch来训练一个network】</p>
+</li>
+<li><p>Some parameters in the network are shared</p>
+<p>【有些参数可能会在很多个mini-batch都被train到】</p>
+</li>
+</ul>
+<p>由于每个神经元有 p%的概率被dropout，因此理论上，如果有M个neuron，可能会训练 $2^M$ 个network。</p>
+<p>但是在Ensemble中，将每个network存下来，testing的时候输出取平均，这样的过程太复杂了，结果也不一定会很好。</p>
+<p>所以在testing中，no dropout，对原始network中的每个参数乘 (1-p%)，用这样简单的操作来达到ensemble的目的。</p>
+<img src="https://s1.ax1x.com/2020/04/21/JGRWlj.md.png" alt="JGRWlj.md.png" style="zoom:60%;" />
+
+
+
+
+
+
+
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li>Keras: <a target="_blank" rel="noopener" href="https://keras.io/getting-started/faq/#how-can-i-interrupt-training-when-the-validation-loss-isnt-decreasing-anymore">how can i interrupt training when the validation loss isn’t decresing anymore.</a> </li>
+<li>Dropout-wiki：<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Dropout">https://zh.wikipedia.org/wiki/Dropout</a></li>
+</ol>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「机器学习-李宏毅」：Tips for Deep Learning</p><p><a href="https://f7ed.com/2020/04/20/tips-for-DL/">https://f7ed.com/2020/04/20/tips-for-DL/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2020-04-21</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2020-11-23</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习, </a><a class="link-muted" rel="tag" href="/tags/DeepLearning/">DeepLearning, </a><a class="link-muted" rel="tag" href="/tags/DNN/">DNN </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/04/24/CNN/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「机器学习-李宏毅」：Convolution Neural Network（CNN）</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2020/04/17/Backpropagation/"><span class="level-item">「机器学习-李宏毅」：Backpropagation</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "59f06557c200d4a1cbceea190df73357",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">71</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">139</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Recipe-of-Deep-Learning"><span class="level-left"><span class="level-item">1</span><span class="level-item">Recipe of Deep Learning</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Do-not-always-blame-Overfitting"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">Do not always blame Overfitting</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Bad-Results-on-Training-Data"><span class="level-left"><span class="level-item">2</span><span class="level-item">Bad Results on Training Data</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#New-activation-function"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">New activation function</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Vanishing-Gradient-Problem"><span class="level-left"><span class="level-item">2.1.1</span><span class="level-item">Vanishing Gradient Problem</span></span></a></li><li><a class="level is-mobile" href="#ReLu-：Rectified-Linear-Unit"><span class="level-left"><span class="level-item">2.1.2</span><span class="level-item">ReLu ：Rectified Linear Unit</span></span></a></li><li><a class="level is-mobile" href="#ReLu-variant"><span class="level-left"><span class="level-item">2.1.3</span><span class="level-item">ReLu - variant</span></span></a></li><li><a class="level is-mobile" href="#Maxout"><span class="level-left"><span class="level-item">2.1.4</span><span class="level-item">Maxout</span></span></a></li><li><a class="level is-mobile" href="#Maxout-how-to-train"><span class="level-left"><span class="level-item">2.1.5</span><span class="level-item">Maxout : how to train</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Adaptive-Learning-Rate"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">Adaptive Learning Rate</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Review-Adagrad"><span class="level-left"><span class="level-item">2.2.1</span><span class="level-item">Review Adagrad</span></span></a></li><li><a class="level is-mobile" href="#RMSProp"><span class="level-left"><span class="level-item">2.2.2</span><span class="level-item">RMSProp</span></span></a></li><li><a class="level is-mobile" href="#Momentum"><span class="level-left"><span class="level-item">2.2.3</span><span class="level-item">Momentum</span></span></a></li><li><a class="level is-mobile" href="#Adam-RMSProp-Momentum"><span class="level-left"><span class="level-item">2.2.4</span><span class="level-item">Adam = RMSProp + Momentum</span></span></a></li><li><a class="level is-mobile" href="#Gradient-Descent-Limitation？"><span class="level-left"><span class="level-item">2.2.5</span><span class="level-item">Gradient Descent Limitation？</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Bad-Results-on-Testing-Data"><span class="level-left"><span class="level-item">3</span><span class="level-item">Bad Results on Testing Data</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Early-Stopping"><span class="level-left"><span class="level-item">3.1</span><span class="level-item">Early Stopping</span></span></a></li><li><a class="level is-mobile" href="#Regularization"><span class="level-left"><span class="level-item">3.2</span><span class="level-item">Regularization</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#L2-norm-regularization"><span class="level-left"><span class="level-item">3.2.1</span><span class="level-item">L2 norm regularization</span></span></a></li><li><a class="level is-mobile" href="#L1-norm-regularization"><span class="level-left"><span class="level-item">3.2.2</span><span class="level-item">L1 norm regularization</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Dropout"><span class="level-left"><span class="level-item">3.3</span><span class="level-item">Dropout</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Training"><span class="level-left"><span class="level-item">3.3.1</span><span class="level-item">Training</span></span></a></li><li><a class="level is-mobile" href="#Testing"><span class="level-left"><span class="level-item">3.3.2</span><span class="level-item">Testing</span></span></a></li><li><a class="level is-mobile" href="#Why-dropout-in-training：Intuitive-Reason"><span class="level-left"><span class="level-item">3.3.3</span><span class="level-item">Why dropout in training：Intuitive Reason</span></span></a></li><li><a class="level is-mobile" href="#Why-multiply-1-p-in-testing-Intuitive-reason"><span class="level-left"><span class="level-item">3.3.4</span><span class="level-item">Why multiply (1-p%) in testing: Intuitive reason</span></span></a></li><li><a class="level is-mobile" href="#Dropout-is-a-kind-of-ensemble"><span class="level-left"><span class="level-item">3.3.5</span><span class="level-item">Dropout is a kind of ensemble</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Reference"><span class="level-left"><span class="level-item">4</span><span class="level-item">Reference</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

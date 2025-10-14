@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Cryptography-Boneh」:Stream Cipher 2 - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="作为Stream Cipher的第二篇文章。第一部分分析了基于Stream Cipher的两种攻击：第一种是Two time pad,第二种是对与其完整性的攻击，即流密码是可被篡改的。第二部分具体说明了一些使用流密码加密的例子。包括分析基于软件的RC4流密码、基于硬件的CSS流密码和现代的安全流密码:eStream中的Salsa20。"><meta property="og:type" content="blog"><meta property="og:title" content="「Cryptography-Boneh」:Stream Cipher 2"><meta property="og:url" content="https://f7ed.com/2020/03/18/stanford-crypto-streamcipher2/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="作为Stream Cipher的第二篇文章。第一部分分析了基于Stream Cipher的两种攻击：第一种是Two time pad,第二种是对与其完整性的攻击，即流密码是可被篡改的。第二部分具体说明了一些使用流密码加密的例子。包括分析基于软件的RC4流密码、基于硬件的CSS流密码和现代的安全流密码:eStream中的Salsa20。"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/0319.jpg"><meta property="article:published_time" content="2020-03-18T16:00:00.000Z"><meta property="article:modified_time" content="2021-12-28T06:29:37.736Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="公开课"><meta property="article:tag" content="Cryptography"><meta property="article:tag" content="StreamCipher"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/0319.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2020/03/18/stanford-crypto-streamcipher2/"},"headline":"「Cryptography-Boneh」:Stream Cipher 2","image":["https://f7ed.com/gallery/thumbnails/0319.jpg"],"datePublished":"2020-03-18T16:00:00.000Z","dateModified":"2021-12-28T06:29:37.736Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"作为Stream Cipher的第二篇文章。第一部分分析了基于Stream Cipher的两种攻击：第一种是Two time pad,第二种是对与其完整性的攻击，即流密码是可被篡改的。第二部分具体说明了一些使用流密码加密的例子。包括分析基于软件的RC4流密码、基于硬件的CSS流密码和现代的安全流密码:eStream中的Salsa20。"}</script><link rel="canonical" href="https://f7ed.com/2020/03/18/stanford-crypto-streamcipher2/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Cryptography-Boneh」:Stream Cipher 2</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2020-03-18T16:00:00.000Z" title="2020-03-18T16:00:00.000Z">2020-03-19</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2021-12-28T06:29:37.736Z" title="2021-12-28T06:29:37.736Z">2021-12-28</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Cryptography-Boneh/">Cryptography-Boneh</a></span><span class="level-item"><i class="far fa-clock"></i> 28 minutes read (About 4223 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>作为Stream Cipher的第二篇文章。<br>第一部分分析了基于Stream Cipher的两种攻击：第一种是Two time pad,第二种是对与其完整性的攻击，即流密码是可被篡改的。<br>第二部分具体说明了一些使用流密码加密的例子。包括分析基于软件的RC4流密码、基于硬件的CSS流密码和现代的安全流密码:eStream中的Salsa20。</p>
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><span id="more"></span>
+
+<h1 id="Attack-on-OTP-and-stream-ciphers"><a href="#Attack-on-OTP-and-stream-ciphers" class="headerlink" title="Attack on OTP and stream ciphers"></a>Attack on OTP and stream ciphers</h1><h2 id="Attack1-two-time-pad-is-insecure"><a href="#Attack1-two-time-pad-is-insecure" class="headerlink" title="Attack1: two time pad is insecure"></a>Attack1: two time pad is insecure</h2><p><strong><font color=#f00>Never use  strame cipher key more than once!! </font></strong></p>
+<h3 id="why-insecure"><a href="#why-insecure" class="headerlink" title="why insecure"></a>why insecure</h3><p>使用相同的PRG(k)加密不同明文时：<br>$$<br>C_1 \leftarrow m_1 \oplus \text{PRG(k)}\<br>C_2 \leftarrow m_2 \oplus \text{PRG(k)}<br>$$<br>Eavesdropper（窃听者）截获这两段密文 $C_1\ C_2$ ，对密文进行疑惑操作，可得： $C_1 \oplus C_2\rightarrow m_1\oplus m_2$ 。</p>
+<p>在传输中，英语字母是用ASCII编码后再传输，所以这样的编码会带来很多redundancy（冗余），即根据   $m_1\oplus m_2$ ，可以得到 $m_1\ m_2$ 。</p>
+<p>因此，当一个密钥会被使用多次时，就不应该直接用stream cipher，后面的章节会介绍multi-use ciphers。</p>
+<h3 id="Examples-Project-Venona-1941-1946"><a href="#Examples-Project-Venona-1941-1946" class="headerlink" title="Examples: Project Venona(1941-1946)"></a>Examples: <a href="[https://zh.wikipedia.org/wiki/%E7%BB%B4%E8%AF%BA%E9%82%A3%E8%AE%A1%E5%88%92](https://zh.wikipedia.org/wiki/维诺那计划)">Project Venona</a>(1941-1946)</h3><p>我们已经知道：加密应该用OTP，即一次性密钥。</p>
+<p>但是，当时是通过人工掷骰子并记录得到密钥，工作费时费力。因此不得不用生成的密钥加密多条消息。</p>
+<p>最后仅凭截获密文，就破译了3000多条消息。</p>
+<h3 id="Examples-MS-PPTP-Windows-NT"><a href="#Examples-MS-PPTP-Windows-NT" class="headerlink" title="Examples: MS-PPTP(Windows NT)"></a>Examples: MS-PPTP(Windows NT)</h3><p>微软在Windows NT的PPTP协议（point to point transfer protocol）中使用的流密码是：<strong>RC4</strong>。</p>
+<p>在这个协议中允许一个端系统向另一个端系统发送加密后的信息。</p>
+<p>过程如下：</p>
+<img src="https://s1.ax1x.com/2020/03/19/8y4XMn.md.png" alt="8y4XMn.md.png" style="zoom:67%;" />
+
+<ol>
+<li>在一次对话连接中：主机想发送$m_1\ m_1\ m_3$ 三条消息进行查询，服务器想发送 $s_1\ s_1\ s_3$ 三条消息进行响应。</li>
+<li>主机和服务器hava a shared key:k。</li>
+<li>知道密钥不能加密多次，于是主机将三条消息进行concatenation（联结）： $m_1||m_2||m_3$ 。</li>
+<li>主机用k作为密钥，得到G(k)，进行加密 $[m_1||m_2||m_3]\oplus\text{G(k)}$ 。</li>
+<li>同样，服务器也将响应消息进行联结： $s_1||s_2||s_3$ 。</li>
+<li>服务器也用k作为密钥，得到相同的G(k)，对响应消息进行加密 $[s_1||s_2||s_3]\oplus\text{G(k)}$ 。</li>
+</ol>
+<p>因此，在一次对话中，主机和服务器都使用了相同的 G(k)进行加密，也就是 two time pad。</p>
+<h4 id="如何改进"><a href="#如何改进" class="headerlink" title="如何改进"></a>如何改进</h4><p>主机和服务器have a shared pair of key, 即主机和服务器都使用不同的key进行加密。</p>
+<h3 id="Examples-802-11b-WEP"><a href="#Examples-802-11b-WEP" class="headerlink" title="Examples: 802.11b WEP"></a>Examples: 802.11b WEP</h3><h4 id="How-it-works"><a href="#How-it-works" class="headerlink" title="How it works"></a><strong>How it works</strong></h4><p>WEP(Wired Equivalent Privacy)，有效等效加密，是一种用于IEEE 802.11b的一种安全算法。这个算法设计的很糟糕，现已被WPA所淘汰。</p>
+<p>WEP用于Wi-Fi通信，是他的的加密层。</p>
+<p>WEP的算法过程如下：</p>
+<img src="https://s1.ax1x.com/2020/03/19/8y4Lxs.md.png" alt="8y4Lxs.md.png" style="zoom:75%;" />
+
+<p>主机和路由器进行通信：</p>
+<ol>
+<li><p>主机和路由 have a shared key。</p>
+</li>
+<li><p>主机想要发送一段消息，包括明文m和其校验码CRC(m)。</p>
+</li>
+<li><p>PRG’s seed： IV||k, k is a long term key，IV is a counter.</p>
+<p>Length of IV: 24 bits.</p>
+<p>IV的作用：每一次传送数据包时，用IV来改变每次的密钥。</p>
+</li>
+<li><p>用(IV||k作为密钥，得到PRG(IV||k),使用流密码进行加密传输。</p>
+</li>
+<li><p>主机直接发送IV和密文。</p>
+</li>
+<li><p>路由器用收到的IV和k连接，用PRG(IV||k)，对密文解密。</p>
+</li>
+</ol>
+<h4 id="Problems-of-IV"><a href="#Problems-of-IV" class="headerlink" title="Problems of IV"></a><strong>Problems of IV</strong></h4><p> <strong>IV 导致的问题1: two time pad</strong></p>
+<p>Length of IV: 24 bits</p>
+<ul>
+<li><p>Related IV after $2^{24}$ (16M frames)</p>
+<p>【当发送16百万的帧后，PRG又会重复】</p>
+</li>
+<li><p>On some 802.11 cards: IV rests to 0 after power cycle.</p>
+<p>【在有些单片机上，重启后IV会变成0：每次重启都会使用PRG(0||k)加密】</p>
+</li>
+</ul>
+<p><strong>IV 导致的问题2: related keys</strong></p>
+<p>在PRG中，key for frame is related。(IV||k)，k是104 bits, IV 是24 bits，所以key的后104位总是相同的，不同密钥之间的差异也很小。</p>
+<p>对RC4 PRG的攻击：</p>
+<ol>
+<li>Fluhrer, Mantin, and Shamir在2001年:只需要监听 $10^6$ 帧即可破译密钥[1]。</li>
+<li>Recent attacks：只需要监听4000帧，即可破译WEP网络中的密钥。</li>
+</ol>
+<p>所以，密钥关联是灾难性的。</p>
+<p><strong>Avoid related keys！</strong></p>
+<h4 id="A-better-construction"><a href="#A-better-construction" class="headerlink" title="A better construction"></a><strong>A better construction</strong></h4><p>对于WEP，一种更好的做法是：将多个要发送的帧联结起来，得到 $m_1||m_2||…||m_n$ 长流，再用PRG对这个长流加密。</p>
+<img src="https://s1.ax1x.com/2020/03/19/8y4q2j.md.png" alt="8y4q2j.md.png" style="zoom:70%;" />
+
+<p>如上图所示，k扩展后，被分成很多段，用第一段加密第一帧，第二段加密第二帧……。</p>
+<p>这样，加密每一帧的密钥都是一个伪随机密钥。(no relationship, and looks like random)。</p>
+<p>当然，更好的解决方法是使用更强的加密算法（WPA2）。</p>
+<h3 id="Examples-disk-encryption"><a href="#Examples-disk-encryption" class="headerlink" title="Examples: disk encryption"></a>Examples: disk encryption</h3><p>另一个例子是硬盘加密，在这个例子中，你会发现：使用流密码对硬盘加密不是一个好的举措。</p>
+<h4 id="如果使用流密码："><a href="#如果使用流密码：" class="headerlink" title="如果使用流密码："></a>如果使用流密码：</h4><img src="https://s1.ax1x.com/2020/03/19/8y4HPg.md.png" alt="8y4HPg.md.png" style="zoom:67%;" />
+
+<ul>
+<li>Alice 想要给Bob写一封邮件，如上图所示。<ul>
+<li>邮件经过硬盘加密（流密码）后，存入内存块。</li>
+</ul>
+</li>
+<li>Alice 想要对存在这个硬盘中的邮件进行修改。<ul>
+<li>Alice只把Bob改成了Eve，其他部分都没有变，如上图所示。</li>
+<li>保存后，邮件再次经过硬盘加密（流密码）后，存入内存块。</li>
+</ul>
+</li>
+<li>Attacker：他得到了硬盘上最初的密文和修改后的密文。<ul>
+<li>通过分析，他发现两段密文只有前小部分不同。（用相同的流密码密钥加密，修改后，密文很容易看出变化）</li>
+<li>虽然Attacker不知道Alice是怎么修改的，但是他知道了Alice修改的具体位置。</li>
+<li>$\Rightarrow$ attacker得到了他不应该知道的信息，即修改的具体位置。</li>
+</ul>
+</li>
+</ul>
+<p>在硬盘加密中，对于文本内容的修改前后，也使用了相同的密钥段加密不同的消息，即two time pad。</p>
+<p>因此在硬盘加密中，不推荐使用流密码。</p>
+<h3 id="Two-time-pad-Summary"><a href="#Two-time-pad-Summary" class="headerlink" title="Two time pad: Summary"></a>Two time pad: Summary</h3><p><strong>Never use stream cipher key more than once!!</strong></p>
+<ul>
+<li>Network traffic: negotiate new key for every session.</li>
+<li>Disk encryption: typically do not use a stream cipher.</li>
+</ul>
+<h2 id="Attack2-no-integrity-OTP-is-malleable"><a href="#Attack2-no-integrity-OTP-is-malleable" class="headerlink" title="Attack2: no integrity(OTP is malleable)"></a>Attack2: no integrity(OTP is malleable)</h2><p>OPTP和Stream Cipher一样，不提供完整性的保证，只提供机密性的保证。</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/8y4oa8"><img src="https://s1.ax1x.com/2020/03/19/8y4oa8.md.png" alt="8y4oa8.md.png"></a> </p>
+<p>如上图所示：</p>
+<ol>
+<li>如果attacke截获：密文 $m\oplus k$ 。</li>
+<li>并用sub-permutation key（子置换密钥）来对密文进行修改，得到新的密文：$(m\oplus k)\oplus p$</li>
+<li>新的密文最后解密得到的明文是 $m\oplus p$ 。</li>
+</ol>
+<p>所以对于有修改密文能力的攻击者来说，攻击者很容易修改密文，并且修改后的密文，对原本解密后的明文也有很大的影响。</p>
+<h4 id="具体攻击如下："><a href="#具体攻击如下：" class="headerlink" title="具体攻击如下："></a>具体攻击如下：</h4><p><a target="_blank" rel="noopener" href="https://imgchr.com/i/8y4IVf"><img src="https://s1.ax1x.com/2020/03/19/8y4IVf.md.png" alt="8y4IVf.md.png"></a> </p>
+<ol>
+<li><p>Bob想要发送一封邮件：消息开头是From: Bob，使用OTP加密后，发送密文。</p>
+</li>
+<li><p>Attacker：截获了这段密文</p>
+<ul>
+<li><p>假设：attacker知道这封邮件是来自Bob。</p>
+</li>
+<li><p>attacker想修改这封密文邮件，使得它来自others。</p>
+</li>
+<li><p>于是它用一个<strong>子置换密钥</strong>对原密文的特定位置（即Bob密文位置）进行操作，得到新的密文：From： Eve。</p>
+<ul>
+<li><p>这个子置换密钥是什么呢？</p>
+<p>如上图所示，Bob的ASCII码是 42 6F 62，Eve的ASCII码是 45 76 65。</p>
+<p>那么Bob $\oplus$ Eve的ASCII码是 07 19 07。</p>
+<p>因此这个子置换密钥是07 19 07。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>最后收件人进行解密，得到的是明文：From：Eve。</p>
+</li>
+</ol>
+<p>对attacker来说，虽然他不能创建来自Eve的密文，但是他可以通过修改原本的密文，达到相同的目的。</p>
+<p>Conclusion: Modifications to ciphertext are undertected and have predictable impact on plaintext.</p>
+<h1 id="Real-world-Stream-Ciphers"><a href="#Real-world-Stream-Ciphers" class="headerlink" title="Real-world Stream Ciphers"></a>Real-world Stream Ciphers</h1><h2 id="Old-example-SW-RC4"><a href="#Old-example-SW-RC4" class="headerlink" title="Old example(SW): RC4"></a>Old example(SW): RC4</h2><p>RC4流密码，是Ron RivestRC4在1987年设计的。曾用于secure  Web traffic(in the SSL/TLS protocol) 和wireless traffic (in the 802.11b WEP protocol).</p>
+<p>It is designed to operate on 8-bit processors with little internal memory.</p>
+<p>At the heart of the RC4 cipher is a PRG, called the RC4 PRG. The PRG maintains an internal</p>
+<p>state consisting of an array S of 256 bytes plus two additional bytes i,j used as pointers into S.</p>
+<p>【RC4 cipher的核心是一个PRG，called the RC4 PRG。这个PRG的内部状态是一个256字节的数组S和两个指向S数组的指针】</p>
+<h3 id="RC4-stream-cipher-generator"><a href="#RC4-stream-cipher-generator" class="headerlink" title="RC4 stream cipher generator"></a>RC4 stream cipher generator</h3><ul>
+<li><p>setup algorithms:</p>
+<ul>
+<li><p>对S数组进行初始化，0-255都只出现一次入下图所示：</p>
+<img src="https://s1.ax1x.com/2020/03/19/8y4RxA.md.png" alt="8y4RxA.md.png" style="zoom:70%;" />
+</li>
+<li><p>伪代码</p>
+<img src="https://s1.ax1x.com/2020/03/19/8y422d.md.png" alt="8y422d.md.png" style="zoom:75%;" />
+</li>
+</ul>
+</li>
+<li><p>stream generator:</p>
+<ul>
+<li><p>Once tha array S is initialized, the PRG generates pseudo-random output one byte at a time, using the following stream generator:</p>
+<img src="https://s1.ax1x.com/2020/03/19/8y4g8H.md.png" alt="8y4g8H.md.png" style="zoom:70%;" />
+</li>
+<li><p>The procedure runs for as long as necessary.</p>
+<p>Again, the index i runs linearly through the array while the index j jumps around.</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Security-of-RC4"><a href="#Security-of-RC4" class="headerlink" title="Security of RC4"></a>Security of RC4</h3><p>具体参见「A Graduate Course in Applied Cryptography」的p76-78</p>
+<p>挖坑，有空填坑 cryptanalysis of RC4[2]</p>
+<h3 id="Weakness-of-RC4"><a href="#Weakness-of-RC4" class="headerlink" title="Weakness of RC4"></a>Weakness of RC4</h3><ol>
+<li><p>Bias in initial output: Pr[2^nd^ byte=0]=2/256.</p>
+<ul>
+<li><p>如果PRG是随机的，其概率应该是1/256。</p>
+<p>而Pr[2^nd^ byte=0]=2/256的结果是：消息的第二个字节不被加密的概率比正常情况多一倍。（0异或不变）</p>
+</li>
+<li><p>统计的真实情况是，不止第二个字节，前面很多字节的概率很不都均匀。</p>
+<p>因此，如果要使用RC4 PRG，从其输出的257个字节开始使用。</p>
+</li>
+</ul>
+</li>
+<li><p>Prob. of (0,0) is 1/256^2^ +1/256^3^ .</p>
+<ul>
+<li>如果PRG是随机的，00串出现的概率应该是(1/256)^2^ .</li>
+</ul>
+</li>
+<li><p>Related key attackes.</p>
+<p>在上小节中「Examples: 802.11b WEP」，WEP使用的RC4流密码，related key对安全通信也是灾难性的。</p>
+</li>
+</ol>
+<h2 id="Old-example-HW-CSS-badly-broken"><a href="#Old-example-HW-CSS-badly-broken" class="headerlink" title="Old example(HW): CSS (badly broken)"></a>Old example(HW): CSS (badly broken)</h2><p>The Content Scrambling System (CSS) is a system used for protecting movies on DVD disks.</p>
+<p>It uses a stream cipher, called the <strong>CSS stream cipher</strong>, to encrypt movie contents.</p>
+<p>CSS was designed in the 1980’s when exportable encryption was restricted to 40-bits keys. As a result, CSS encrypts movies using a 40-bits key.</p>
+<p>【1980的美国出口法，限制出口的加密算法只能是40位，于是CSS的密钥是40位】[amazing.jpg]</p>
+<p>While ciphers using 40-bit keys are woefully insecure, we show that the CSS stream cipher is particularly weak and can be broken in far less time than an exhaustive search over all 2^40^ keys.</p>
+<p>【虽然40位的密钥本来就不够安全，但是我们能用远小于穷举时间的方法破解CSS】</p>
+<blockquote>
+<p>因为博主也是第一次学，很多东西也不了解。</p>
+<p>所以概述性语言，我用教科书的原文记录，附注一些中文。望海涵～</p>
+</blockquote>
+<h3 id="Linear-feedback-shift-register-LFSR"><a href="#Linear-feedback-shift-register-LFSR" class="headerlink" title="Linear feedback shift register(LFSR)"></a>Linear feedback shift register(LFSR)</h3><p>CSS 流密码是由两个LFSR（线性反馈移位寄存器）组成的，除了CSS，还有很多硬件系统是基于LFSR进行加密操作，但无一例外，都被破解了。</p>
+<ul>
+<li><p>DVD encryption (CSS)：2 LFSRs</p>
+</li>
+<li><p>GSM encryption (A5/,2): 3 LFSRs</p>
+<p>【全球通信系统】</p>
+</li>
+<li><p>Bluetooth(E0): 4LFSRs</p>
+</li>
+</ul>
+<p>LFSR can be implemented in hardware with few transistors. And a result, stream ciphers built from LFSR are attractive for low-cost consumer electronics such as DVD players, cell phones, and Bluetooth devices.</p>
+<p>【LFSR在硬件上运行很快，也很省电，所以虽然基于LFSR的算法都被破解了，但是改硬件有点困难，所以还是有很多系统在使用】</p>
+<hr>
+<img src="https://s1.ax1x.com/2020/03/19/8y4cPe.md.png" alt="8y4cPe.md.png" style="zoom:67%;" />
+
+<p>上图是一个8位LFSR{4,3,2,0}。</p>
+<p>LFSR是由一组寄存器组成，LFSR每个周期输出一位（即0位）。</p>
+<p>有一些位（如上图的4，3，2，0）称为tap positions(出头)，通过这些位计算出feedback bit(反馈位)。</p>
+<p>反馈位和寄存器组的未输出位组成新的寄存器组。</p>
+<p>伪代码如下：</p>
+<img src="https://s1.ax1x.com/2020/03/19/8y4rVK.md.png" alt="8y4rVK.md.png" style="zoom:80%;" />
+
+<p>所以基于LFSR的PGR的seed是寄存器组的初始状态。</p>
+<h3 id="how-CSS-works"><a href="#how-CSS-works" class="headerlink" title="how CSS works"></a>how CSS works</h3><p>CSS的seed=5 bytes=40 bits。</p>
+<p>CSS由两个LFSR组成，如下图所示，一个17-bit LFSR，一个25-bit LFSR。</p>
+<p><strong>seed of LFSR:</strong></p>
+<ol>
+<li>17-bit LFSR: 1||first 2 bytes ，即17位。</li>
+<li>25-bit LFSR: 1||last 3 bytes，即25位。</li>
+</ol>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/8y4N8J"><img src="https://s1.ax1x.com/2020/03/19/8y4N8J.md.png" alt="8y4N8J.md.png"></a> </p>
+<p>CSS过程：</p>
+<ol>
+<li>两个LFSR分别运行8轮，输出8 bits。</li>
+<li>两个8bits 相加mod 256（还有加上前一块的进位）即是CSS一轮的输出：one byte at a time.</li>
+</ol>
+<h3 id="Cryptanalysis-of-CSS-2-16-time-attack"><a href="#Cryptanalysis-of-CSS-2-16-time-attack" class="headerlink" title="Cryptanalysis of CSS (2^16 time attack)"></a>Cryptanalysis of CSS (2^16 time attack)</h3><p>当已知CSS PRG的输出时，我们通过穷举（2^40^  time）破解得到CSS的seed。</p>
+<p>但还有一种更快的破解算法，只需要最多2^16^ 的尝试。</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/8y4avR"><img src="https://s1.ax1x.com/2020/03/19/8y4avR.md.png" alt="8y4avR.md.png"></a> </p>
+<p>破解过程如下：</p>
+<ol>
+<li><p>影片文件一般是MPEG文件，假设我们已知明文MPEG文件的前20个字节。（已知明文的prefix）</p>
+</li>
+<li><p>CSS是流密码，可以通过已知prefix还原出CSS的prefix，即CSS PRG的前20个字节的输出。</p>
+</li>
+<li><p>For all possible initial settings of 17-bit LFSR do:</p>
+<ul>
+<li><p>run 17-it LFSR to get 20 bytes of output.</p>
+<p>【先让17-bit输出20个字节】</p>
+</li>
+<li><p>subtract from CSS prefix $\Rightarrow$ candidate 20 bytes output of 25-bit LFSR.</p>
+<p>【通过还原的CSS PRG的输出，得到25-bit输出的前20个字节】</p>
+</li>
+<li><p>If consistent with 25-bit LFSR, found correct initial settings of both!!</p>
+<p>【具体是如何判别这20个字节是否是一个25-bit LFSR的输出呢？】</p>
+<ol>
+<li>假设前三个字节是y1, y2, y3.</li>
+<li>那么25-bit LFSR的initial :{1, y1 , y2, y3},其中y都是8 bits.</li>
+<li>用这个初始状态生成20个字节，如果和得到的20个字节相同，则正确，否则再次枚举。</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>当得到了两个LFSR的seed, 就可以得到CSS PRG的全部输出，即可破解。</p>
+</li>
+</ol>
+<h2 id="Modern-stream-ciphers-eStream"><a href="#Modern-stream-ciphers-eStream" class="headerlink" title="Modern stream ciphers: eStream"></a>Modern stream ciphers: eStream</h2><h3 id="main-idea"><a href="#main-idea" class="headerlink" title="main idea"></a>main idea</h3><ul>
+<li><p><strong>eStream PRG</strong> ： $\{0,1\}^s\times R \rightarrow \{0,1\}^n$  (n&gt;&gt;s)</p>
+<p>seed: ${0,1}^s$ </p>
+<p>nonce: a non-repeating value for a given key.【就对于确定的seed,nonce绝不重复】</p>
+</li>
+<li><p>Encryption: $\text{E(k, m; r)}=\text{m}\oplus \text{PRG(k; r)} $ </p>
+<p>The pair (k,r) is never used more than once.</p>
+<p>【PRG的输入是(k,r), 确保OTP】</p>
+</li>
+</ul>
+<h3 id="eStram-Salsa-20-SW-HW"><a href="#eStram-Salsa-20-SW-HW" class="headerlink" title="eStram: Salsa 20(SW+HW)"></a>eStram: Salsa 20(SW+HW)</h3><p>Salsa20/12 and Salsa20/20 are fast stream ciphers designed by Dan Bernstein in 2005.</p>
+<p>Salsa 20/12 is one of four Profile 1 stream cipher selected for the eStream portfolio of stream ciphers.</p>
+<p>eStream is a project that identifies fast and secure stream ciphers that are appropriate for practicle use.</p>
+<p>Variants of Salsa20/12 and Salsa20/20, called ChaCha12 and ChaCha20 respectively, were proposed by Bernstein in 2008.</p>
+<p> These stream ciphers have been incorporated into several widely deployed protocols such as TLS and SSH.</p>
+<hr>
+<p>Salsa20 PRG: $\{0,1\}^{128 \text { or } 256} \times\{0,1\}^{64} \longrightarrow\{0,1\}^{n}$ (max n = 2^73^ bits)</p>
+<p>Salsa20 PRG $(\mathrm{k} ; \mathrm{r}):=\mathrm{H}(\mathrm{k},(\mathrm{r}, 0)) | \mathrm{H}(\mathrm{k},(\mathrm{r}, 1)) | \ldots$ 通过计数器，使得输出联结，可以输出as long as you want pseudorandom segment.</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/8y4wK1"><img src="https://s1.ax1x.com/2020/03/19/8y4wK1.md.png" alt="8y4wK1.md.png"></a> </p>
+<p>算法过程如上图所示：Salsa20 PRG $(\mathrm{k} ; \mathrm{r}):=\mathrm{H}(\mathrm{k},(\mathrm{r}, 0)) | \mathrm{H}(\mathrm{k},(\mathrm{r}, 1)) | \ldots$</p>
+<ol>
+<li><p>32 bytes的{k,r,i}通过扩展得到64 bytes的{ $\tau_0,k,\tau_1,r,i,\tau_2,k,\tau_3$ }.</p>
+<ul>
+<li>k :16 bytes的seed.</li>
+<li>i: 8 bytes的index，计数器。</li>
+<li>r: 8 bytes的nonce.</li>
+<li>$\tau_{0,1,2,3}$ 都是4 bytes的常数，Salsa20算法说明书上公开确定的值。</li>
+</ul>
+</li>
+<li><p>64 bytes 通过h函数映射，十轮。</p>
+<ul>
+<li><p>h : invertible function designed to be fast on x86(SEE2).</p>
+<p>在x86上有SEE2指令可以直接运行h函数，所以很快。</p>
+</li>
+<li><p>h是逆函数（也是公开的函数），输出可以通过逆运算得到其输入。</p>
+</li>
+<li><p>h是一个一一映射的map，每一个64bytes的输入都有唯一对应的64 bytes的输出。</p>
+</li>
+</ul>
+</li>
+<li><p>将第十轮H函数的输出和最开始的输入做加法运算，word by word(32位)，即每4 bytes相加。</p>
+<ul>
+<li><p>为什么要有这一步？</p>
+<p>h是可逆运算，如果直接将函数的输出作为PRG的输出，那可以通过h的逆运算得到原64 bytes，也就得到了(k; r).</p>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="Is-Salsa20-secure-unpredictable"><a href="#Is-Salsa20-secure-unpredictable" class="headerlink" title="Is Salsa20 secure(unpredictable)"></a>Is Salsa20 secure(unpredictable)</h3><p>前文我们通过unpredictable来定义PRG的安全（下一篇文章会给出安全PRG更好的定义），所以Salsa20 安全吗？是否是不可预测的？</p>
+<ul>
+<li><p>Unknown：no known <strong>provably</strong> secure PRGs.</p>
+<p>【不能严格证明是一个安全PRG（后文会继续讲解什么是安全的PRG），如果严格证明了，也就证明了P=NP】</p>
+</li>
+<li><p>In reality： no known attacks bertter than exhaustive search.</p>
+<p>【现实中还没有比穷举更快的算法】</p>
+</li>
+</ul>
+<h3 id="Performance"><a href="#Performance" class="headerlink" title="Performance"></a>Performance</h3><p>通过下图的比较，如果在系统中需要使用流密码，建议使用eStream。</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/8y40Dx"><img src="https://s1.ax1x.com/2020/03/19/8y40Dx.md.png" alt="8y40Dx.md.png"></a> </p>
+<p>speed ：该算法每秒加密多少MB的数据。</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li><p>S. Fluhrer, I. Mantin, and A. Shamir. Weaknesses in the key scheduling algorithm of RC4.</p>
+<p>In proceedings of selected areas of cryptography (SAC), pages 1-24, 2001.</p>
+</li>
+<li><p>「A Graduate Course in Applied Cryptography」p76-78:挖坑 待补充</p>
+</li>
+</ol>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Cryptography-Boneh」:Stream Cipher 2</p><p><a href="https://f7ed.com/2020/03/18/stanford-crypto-streamcipher2/">https://f7ed.com/2020/03/18/stanford-crypto-streamcipher2/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2020-03-19</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-12-28</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课, </a><a class="link-muted" rel="tag" href="/tags/Cryptography/">Cryptography, </a><a class="link-muted" rel="tag" href="/tags/StreamCipher/">StreamCipher </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/03/19/Classification1/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「机器学习-李宏毅」:Classification-Probabilistic Generative Model</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2020/03/14/error/"><span class="level-item">「机器学习-李宏毅」：Error</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "855aaf58b56b15436d17aa7a55b148f5",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">71</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">139</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Attack-on-OTP-and-stream-ciphers"><span class="level-left"><span class="level-item">1</span><span class="level-item">Attack on OTP and stream ciphers</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Attack1-two-time-pad-is-insecure"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">Attack1: two time pad is insecure</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#why-insecure"><span class="level-left"><span class="level-item">1.1.1</span><span class="level-item">why insecure</span></span></a></li><li><a class="level is-mobile" href="#Examples-Project-Venona-1941-1946"><span class="level-left"><span class="level-item">1.1.2</span><span class="level-item">Examples: Project Venona(1941-1946)</span></span></a></li><li><a class="level is-mobile" href="#Examples-MS-PPTP-Windows-NT"><span class="level-left"><span class="level-item">1.1.3</span><span class="level-item">Examples: MS-PPTP(Windows NT)</span></span></a></li><li><a class="level is-mobile" href="#Examples-802-11b-WEP"><span class="level-left"><span class="level-item">1.1.4</span><span class="level-item">Examples: 802.11b WEP</span></span></a></li><li><a class="level is-mobile" href="#Examples-disk-encryption"><span class="level-left"><span class="level-item">1.1.5</span><span class="level-item">Examples: disk encryption</span></span></a></li><li><a class="level is-mobile" href="#Two-time-pad-Summary"><span class="level-left"><span class="level-item">1.1.6</span><span class="level-item">Two time pad: Summary</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Attack2-no-integrity-OTP-is-malleable"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">Attack2: no integrity(OTP is malleable)</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Real-world-Stream-Ciphers"><span class="level-left"><span class="level-item">2</span><span class="level-item">Real-world Stream Ciphers</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Old-example-SW-RC4"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">Old example(SW): RC4</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#RC4-stream-cipher-generator"><span class="level-left"><span class="level-item">2.1.1</span><span class="level-item">RC4 stream cipher generator</span></span></a></li><li><a class="level is-mobile" href="#Security-of-RC4"><span class="level-left"><span class="level-item">2.1.2</span><span class="level-item">Security of RC4</span></span></a></li><li><a class="level is-mobile" href="#Weakness-of-RC4"><span class="level-left"><span class="level-item">2.1.3</span><span class="level-item">Weakness of RC4</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Old-example-HW-CSS-badly-broken"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">Old example(HW): CSS (badly broken)</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Linear-feedback-shift-register-LFSR"><span class="level-left"><span class="level-item">2.2.1</span><span class="level-item">Linear feedback shift register(LFSR)</span></span></a></li><li><a class="level is-mobile" href="#how-CSS-works"><span class="level-left"><span class="level-item">2.2.2</span><span class="level-item">how CSS works</span></span></a></li><li><a class="level is-mobile" href="#Cryptanalysis-of-CSS-2-16-time-attack"><span class="level-left"><span class="level-item">2.2.3</span><span class="level-item">Cryptanalysis of CSS (2^16 time attack)</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Modern-stream-ciphers-eStream"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">Modern stream ciphers: eStream</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#main-idea"><span class="level-left"><span class="level-item">2.3.1</span><span class="level-item">main idea</span></span></a></li><li><a class="level is-mobile" href="#eStram-Salsa-20-SW-HW"><span class="level-left"><span class="level-item">2.3.2</span><span class="level-item">eStram: Salsa 20(SW+HW)</span></span></a></li><li><a class="level is-mobile" href="#Is-Salsa20-secure-unpredictable"><span class="level-left"><span class="level-item">2.3.3</span><span class="level-item">Is Salsa20 secure(unpredictable)</span></span></a></li><li><a class="level is-mobile" href="#Performance"><span class="level-left"><span class="level-item">2.3.4</span><span class="level-item">Performance</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Reference"><span class="level-left"><span class="level-item">3</span><span class="level-item">Reference</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>

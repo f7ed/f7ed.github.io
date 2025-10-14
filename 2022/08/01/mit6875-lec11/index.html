@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>「Cryptography-MIT6875」: Lecture 11 - fred&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="fred&#039;s blog"><meta name="msapplication-TileImage" content="/img/heart.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="fred&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Today’s topic is Many-time Digital Signatures"><meta property="og:type" content="blog"><meta property="og:title" content="「Cryptography-MIT6875」: Lecture 11"><meta property="og:url" content="https://f7ed.com/2022/08/01/mit6875-lec11/"><meta property="og:site_name" content="fred&#039;s blog"><meta property="og:description" content="In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Today’s topic is Many-time Digital Signatures"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://f7ed.com/gallery/thumbnails/mit6875-lec11-thumbnial.png"><meta property="article:published_time" content="2022-08-01T16:00:00.000Z"><meta property="article:modified_time" content="2022-10-18T12:28:26.876Z"><meta property="article:author" content="f7ed"><meta property="article:tag" content="Digital Signatures"><meta property="article:tag" content="EUF-CMA Security"><meta property="article:tag" content="Lamport Signature"><meta property="article:tag" content="Many-time Signature"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/gallery/thumbnails/mit6875-lec11-thumbnial.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://f7ed.com/2022/08/01/mit6875-lec11/"},"headline":"「Cryptography-MIT6875」: Lecture 11","image":["https://f7ed.com/gallery/thumbnails/mit6875-lec11-thumbnial.png"],"datePublished":"2022-08-01T16:00:00.000Z","dateModified":"2022-10-18T12:28:26.876Z","author":{"@type":"Person","name":"f7ed"},"publisher":{"@type":"Organization","name":"fred's blog","logo":{"@type":"ImageObject","url":"https://f7ed.com/img/f1ed_logo.png"}},"description":"In this series, I will learn MIT 6.875, Foundations of Cryptography, lectured by Vinod Vaikuntanathan. Any corrections and advice are welcome. ^ - ^    Today’s topic is Many-time Digital Signatures"}</script><link rel="canonical" href="https://f7ed.com/2022/08/01/mit6875-lec11/"><link rel="icon" href="/img/heart.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-M5KG3CQTSF" async></script><script><!-- hexo-inject:begin --><!-- hexo-inject:end -->window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-M5KG3CQTSF');</script><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="fred's blog" type="application/atom+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/liu">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-bars"></i>「Cryptography-MIT6875」: Lecture 11</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="2022-08-01T16:00:00.000Z" title="2022-08-01T16:00:00.000Z">2022-08-02</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="2022-10-18T12:28:26.876Z" title="2022-10-18T12:28:26.876Z">2022-10-18</time></span><span class="level-item"><i class="far fa-folder-open has-text-grey"></i> <a class="link-muted" href="/categories/Cryptography-MIT6875/">Cryptography-MIT6875</a></span><span class="level-item"><i class="far fa-clock"></i> 15 minutes read (About 2176 words)</span><span class="level-item" id="busuanzi_container_page_pv"><i class="far fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><article class="message message-immersive is-info">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="message-body">
+<i class="fas fa-info-circle mr-2"></i>
+In this <a href="/categories/Cryptography-MIT6875">series</a>, I will learn MIT 6.875, <strong>Foundations of Cryptography</strong>, lectured by <strong>Vinod Vaikuntanathan</strong>.
+<br>Any corrections and advice are welcome. ^ - ^
+</div>
+</article>
+
+<p>Today’s topic is Many-time Digital Signatures.</p>
+<p><font color=blue><u><b>Topics Covered: </b></u></font> </p>
+<ul>
+<li>Many-time, stateful, signature schemes.</li>
+<li>Naor-Yung construction: stateless EUF-CMA-secure signature schemes.</li>
+</ul>
+<span id="more"></span>
+
+<p>In last blog was introduced the <strong>definition of Digital Signatures</strong> and the <strong>EUF-CMA Security.</strong></p>
+<p>Moreover, we introduced <strong>Lamport (One-time) Digital Signatures.</strong></p>
+<p>We can use it to <u>sign polynomially many bits with a fixed verification key.</u></p>
+<p>The <strong>main idea</strong> is <u>hashing</u> the message into $n$ bits and <u>signing</u> the hash.</p>
+<p>So far, it’s <strong>one-time security</strong>. The adversary can forge signature on any message <strong>given the signatures on (some) two messages.</strong></p>
+<p>How to achieve <strong>Many-time Signature Scheme ?</strong></p>
+<p>It’s today’s gist.</p>
+<p>We will achieve many-time signature scheme in four+ steps.</p>
+<ol>
+<li>Stateful, Growing Signatures.<br>Idea: Signature <strong>Chains</strong></li>
+<li>How to Shrink the signatures.<br>Idea: Signature <strong>Trees</strong></li>
+<li>How to Shrink Alice’s storage.<br>Idea: <strong>Pseudorandom Trees</strong></li>
+<li>How to make Alice stateless.<br>Idea: <strong>Randomization</strong></li>
+<li>(optional). How to make Alice stateless and deterministic.<br>Idea: <strong>PRFs</strong>.</li>
+</ol>
+<h1 id="S1-Stateful-Many-time-Signatures"><a href="#S1-Stateful-Many-time-Signatures" class="headerlink" title="S1: Stateful Many-time Signatures"></a>S1: Stateful Many-time Signatures</h1><p>The first step is to achieve stateful many-time signatures.</p>
+<p>The main idea is <strong>Signature Chains.</strong></p>
+<h2 id="sign-m1"><a href="#sign-m1" class="headerlink" title="sign m1"></a>sign m1</h2><ul>
+<li>Alice starts with a secret signing Key $SK_0$.<br>Her public verification Key $VK_0$ is stored in the (public) “directory”.</li>
+</ul>
+<img src="https://s1.ax1x.com/2022/08/06/vu9p6K.png" alt="public verification key" style="zoom:33%;" />
+
+<ul>
+<li><p>When <strong>signing</strong> a message $m_1$:</p>
+<ol>
+<li>Generate <strong>a new pair</strong> $(VK_1,SK_1)$.</li>
+<li>Produce signature $\sigma_1\leftarrow Sign(SK_0,m_1||VK_1)$. </li>
+<li>Output $VK_1||\sigma_1$</li>
+<li><strong>Remember</strong> $VK_1||m_1||\sigma_1$  as well as $SK_1$.</li>
+</ol>
+<ul>
+<li>Alice is going to sign not only the message, but <u>the message together with the next verification key.</u></li>
+<li>She uses it to <strong>authenticate a new verification.</strong></li>
+<li>It’s the concatenation of two strings and we can sign polynomially many bits.</li>
+</ul>
+</li>
+<li><p>To <strong>verify</strong> a signature $VK_1||\sigma_1$ for message $m_1$:</p>
+<ul>
+<li><p>Run $Verify(VK_0,m_1||VK_1,\sigma_1)$.</p>
+  <img src="https://s1.ax1x.com/2022/08/06/vupolV.png" alt="verify the first message" style="zoom:25%;" />
+</li>
+<li><p>We use $VK_0$ to verify the signature $\sigma_1$ that $m_1$is sent from Alice and $VK_1$ is authenticated from Alice.</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="sign-m2"><a href="#sign-m2" class="headerlink" title="sign m2"></a>sign m2</h2><p>But how about the next message $m_2$ ?</p>
+<p>Can we just output $VK_2||\sigma_2$ as follows ? (NO!)</p>
+<ul>
+<li>When <strong>signing</strong> the next message $m_2$:<ol>
+<li>Generate <strong>a new pair</strong> $(VK_2,SK_2)$.</li>
+<li>Produce signature $\sigma_2\leftarrow Sign(SK_1,m_2||VK_2)$. </li>
+<li>Output $VK_2||\sigma_2$</li>
+</ol>
+</li>
+</ul>
+<p>The thing to point is that each signing is <strong>independent</strong> and everyone <u>only knows the verification key $VK_0$ in that “directory”.</u></p>
+<p>The verifier <strong>dosen’t know</strong> the <u>verification key</u> $VK_1$ for the signature $\sigma_2$ nor the <u>authentication for $VK_1$</u> when he receives $VK_2||\sigma_2$.</p>
+<hr>
+<p>So Alice needs to <strong>send $VK_1$ as well as the authentication for $VK_1$.</strong></p>
+<p>We should output $VK_1||m_1||\sigma_1||VK_2||\sigma_2$ as follows.</p>
+<ul>
+<li><p>When <strong>signing</strong> the next message $m_2$:</p>
+<ol>
+<li>Generate <strong>a new pair</strong> $(VK_2,SK_2)$.</li>
+<li>Produce signature $\sigma_2\leftarrow Sign(SK_1,m_2||VK_2)$. </li>
+<li><strong>Output</strong> $VK_1||m_1||\sigma_1||VK_2||\sigma_2$.</li>
+<li>(additionally) <strong>Remember</strong> $VK_2||m_2||\sigma_2$  as well as $SK_2$.</li>
+</ol>
+<ul>
+<li>The <strong>first part</strong> $VK_1||m_1||\sigma_1$ is to <u>authenticate the verification key $VK_1$.</u></li>
+<li>The verify uses $VK_1$ to <u>verify the message $m_2$ together with the next verification $VK_2$.</u></li>
+</ul>
+</li>
+<li><p>To <strong>verify</strong> a signature $VK_1||m_1||\sigma_1||VK_2||\sigma_2$ for message $m_2$:</p>
+<ol>
+<li><p>Run $Verify(VK_0,m_1||VK_1,\sigma_1)$ to authenticate $VK_1$.</p>
+</li>
+<li><p>Run $Verify(VK_1,m_2||VK_2,\sigma_2)$ to authenticate the message $m_2$ together with the next verification key $VK_2$.</p>
+ <img src="https://s1.ax1x.com/2022/08/06/vupTyT.png" alt="Verify the sencond message." style="zoom:25%;" />
+
+</li>
+</ol>
+</li>
+</ul>
+<p>It’s <strong>growing signatures</strong> since Alice needs remember the $VK_i||m_i||\sigma_i$ as well as $SK_i$.</p>
+<p>And the <strong>signature chains</strong> is as follows.</p>
+<img src="https://s1.ax1x.com/2022/08/06/vup7OU.png" alt="signature chains" style="zoom:25%;" />
+
+<h2 id="An-optimization"><a href="#An-optimization" class="headerlink" title="An optimization"></a>An optimization</h2><p>In fact, Alice stores the $m_i$ just to use $\sigma_i$ to authenticate $VK_i$.</p>
+<p>So there is an <strong>optimization</strong> that need to <u>remember only the past verification keys</u>, not the past messages.</p>
+<p>Suppose we can split the verification into two halves.</p>
+<p>We use part of $VK_i$ to sign $m_{i+1}$ and the rest to sign $VK_{i+1}$.</p>
+<p>The signature chains is as follows.</p>
+<p>The verifier only needs to <u>verify the past verification keys</u>, not the past messages.</p>
+<img src="https://s1.ax1x.com/2022/08/06/vupbmF.png" alt="only verify the past verification keys" style="zoom:25%;" />
+
+<h2 id="Problems"><a href="#Problems" class="headerlink" title="Problems"></a>Problems</h2><p>There are still two <strong>major problems.</strong></p>
+<ol>
+<li>Alice is <strong>stateful</strong>.<br>Alice needs to remember a whole lot of things, $\mathcal{O}(T)$ information after $T$ steps. </li>
+<li>The signatures <strong>grow</strong>.<br>Length of the signature of the $T$-th message is $\mathcal{O}(T)$. </li>
+</ol>
+<h1 id="S2-How-to-Shrink-the-signatures"><a href="#S2-How-to-Shrink-the-signatures" class="headerlink" title="S2: How to Shrink the signatures ?"></a>S2: How to Shrink the signatures ?</h1><p>The next step is to shrink the signature.</p>
+<p>The main idea is <strong>Signature Trees.</strong></p>
+<ul>
+<li><p>Alice starts with a secret signing Key $SK_\epsilon$.<br>Her <u>public</u> verification Key $VK_\epsilon$ is stored in the (public) “directory”.</p>
+</li>
+<li><p>Alice <u>generates many random $(VK,SK)$ pairs</u> and arrange them <strong>in a tree</strong> of depth = security parameter $\lambda$.<br>There are $2^\lambda$ leaves and Alice <strong>only uses the leaf to sign the message.</strong></p>
+  <img src="https://s1.ax1x.com/2022/08/06/vupqw4.png" alt="signatures tree" style="zoom:33%;" />
+</li>
+<li><p>When <strong>signing</strong> the first message $m_0$</p>
+<ul>
+<li><p>Alice only <u>uses the leaf to sign the message</u> while <u>use the parent node to sign <strong>both</strong> children nodes.</u></p>
+<img src="https://s1.ax1x.com/2022/08/06/vupLTJ.png" alt="sign the first message m0" style="zoom:33%;" />
+</li>
+<li><p>Use $VK_{000}$ to sign $m_0$.</p>
+<ul>
+<li>$\tau_0\gets Sign(SK_{000},m_0)$ </li>
+</ul>
+</li>
+<li><p>“<strong>Authenticate</strong> ” $VK_{000}$ <u>using the “signature path”.</u><br>Alice produces the <strong>authentication path</strong> for $VK_{000}$ : $(\sigma_\epsilon,\sigma_0,\sigma_{00})$.</p>
+<ol>
+<li><p>Authenticate $VK_0$: use $VK_\epsilon$ to <u>sign both</u>  $VK_0$ and $VK_1$<br> $\sigma_\epsilon\gets Sign(SK_\epsilon,VK_{0},VK_{1})$ </p>
+<ol start="2">
+<li><p>Authenticate $VK_{00}$: use $VK_{0}$ to <u>sign both</u>  $VK_{00}$ and $VK_{01}$<br>$\sigma_0\gets Sign(SK_0,VK_{00},VK_{01})$</p>
+</li>
+<li><p>Authenticate $VK_{000}$: use $VK_{00}$ to <u>sign both</u>  $VK_{000}$ and $VK_{001}$</p>
+<p>$\sigma_{00}\gets Sign(SK_{00},VK_{000},VK_{001})$ </p>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+<li><p><strong>Signatures</strong> of $m_0$: (Authentication path for $VK_{000}$, $\tau_0\gets Sign(SK_{000},m_0)$) </p>
+</li>
+</ul>
+</li>
+<li><p>When <strong>signing</strong> the next message $m_1$</p>
+  <img src="https://s1.ax1x.com/2022/08/06/vupXk9.png" alt="sign the next message m1" style="zoom:30%;" />
+
+<ul>
+<li>Use $VK_{001}$ to sign $m_1$.<ul>
+<li>$\tau_1\gets Sign(SK_{001},m_1) $ </li>
+</ul>
+</li>
+<li>“<strong>Authenticate</strong> ” $VK_{001}$ using the “signature path”.<br>Alice produces the <strong>authentication path</strong> for $VK_{001}$ : $(\sigma_\epsilon,\sigma_0,\sigma_{00})$.<ol>
+<li>Authenticate $VK_0$: $\sigma_\epsilon\gets Sign(SK_\epsilon,VK_{0},VK_{1})$ </li>
+<li>Authenticate $VK_{00}$: $\sigma_0\gets Sign(SK_0,VK_{00},VK_{01})$ </li>
+<li>Authenticate $VK_{000}$:  $\sigma_{00}\gets Sign(SK_{00},VK_{000},VK_{001})$ </li>
+</ol>
+</li>
+<li><strong>Signatures</strong> of $m_1$: (Authentication path for $VK_{001}$, $\tau_1\gets Sign(SK_{001},m_1)$) </li>
+</ul>
+</li>
+</ul>
+<p>The <strong>good</strong> news is the <u>signatures consist of $\lambda$ one-time signatures</u> and <strong>do not grow with time.</strong></p>
+<p>But the <strong>bad</strong> news is the <strong>signer</strong> <u>generates and keeps the entire ($\approx 2^\lambda$-size) signature tree</u> in <strong>memory</strong>. </p>
+<p>Besides, the signer also needs to <strong>remember the state</strong> that <u>what is the last leaf used for signing.</u></p>
+<h1 id="S3-How-to-Shrink-Alice’s-storage"><a href="#S3-How-to-Shrink-Alice’s-storage" class="headerlink" title="S3: How to Shrink Alice’s storage."></a>S3: How to Shrink Alice’s storage.</h1><p>The main idea is <strong>Pseudorandom Trees.</strong></p>
+<p>Instead of truly random signature trees, Alice uses <strong>PRF</strong> to <u>build a pseudorandom signature trees.</u></p>
+<img src="https://s1.ax1x.com/2022/08/06/vupvf1.png" alt="pseudorandom signature tree" style="zoom:33%;" />
+
+<ul>
+<li>Alice <u>keeps a secret PRF key</u> $K$.</li>
+<li>Alice <u>populates the nodes with</u> $r_x=PRF(K,x)$</li>
+<li>Use $r_x$ to <u>derive the key pair</u> $(VK_x,SK_x)\gets Gen(1^\lambda;r_x)$.</li>
+<li>The thing to notice is that Alice <u>only registers the verification key</u> $VK_\epsilon$.<br>So the verifier <strong>only knows</strong> $VK_\epsilon$, not the PRF key.</li>
+</ul>
+<p>We can use the pseudorandom signature tree to sign many-time signatures same as above.</p>
+<img src="https://s1.ax1x.com/2022/08/06/vupjYR.png" alt="pseudorandom signature tree" style="zoom:33%;" />
+
+<p>As a matter of fact, the signer can <strong>do lazy evaluation</strong> instead of evaluating every node beforehand.</p>
+<p>So the signer can achieve <strong>short signatures and small storage</strong> at the same time.</p>
+<p>However, it’s still <strong>stateful</strong>.</p>
+<p>The signer still needs to <strong>keep a counter</strong> indicating which leaf (which tells her which secret key) to use next.</p>
+<p>It proceeds to the next step.</p>
+<h1 id="S4-How-to-make-Alice-stateless"><a href="#S4-How-to-make-Alice-stateless" class="headerlink" title="S4: How to make Alice stateless."></a>S4: How to make Alice stateless.</h1><p>The main idea is <strong>randomization</strong>.</p>
+<p>We can achieve <strong>stateless</strong> via randomization.</p>
+<ul>
+<li><p>When <strong>signing</strong> a message $m$</p>
+  <img src="https://s1.ax1x.com/2022/08/06/vupzSx.png" alt="sign the first message" style="zoom:33%;" />
+
+<ol>
+<li>Pick a <strong>random</strong> leaf $r$.</li>
+<li>Use $VK_r$ to sign $m$.<br>$\sigma_r\gets Sign(SK_r,m)$ </li>
+<li>Output $(r,\sigma_r,\text{authentication path for }VK_r)$.</li>
+</ol>
+</li>
+</ul>
+<p>The good news is it’s <strong>stateless</strong>.</p>
+<p>But we <strong>cannot pick the same leaf twice</strong> since we <u>are using the one-time signature scheme.</u></p>
+<p>The key idea of security analysis is <strong>birthday attack.</strong></p>
+<p>If the signer produces $q$ signatures, the <strong>probability</strong> she <u>picks the same leaf twice</u> is $\le q^2/2^\lambda$, which is negligible. </p>
+<h1 id="S5-How-to-make-Alice-stateless-and-deterministic"><a href="#S5-How-to-make-Alice-stateless-and-deterministic" class="headerlink" title="S5: How to make Alice stateless and deterministic."></a>S5: How to make Alice stateless and deterministic.</h1><p>The key idea is generating $r$ <strong>pseudo-randomly.</strong></p>
+<p>Have <strong>another PRF key</strong> $K’$ and let $r=PRF(K’,m)$.</p>
+<ul>
+<li><p>When <strong>signing</strong> a message $m$</p>
+  <img src="https://s1.ax1x.com/2022/08/06/vupzSx.png" alt="stateless and deterministic" style="zoom:33%;" />
+
+<ol>
+<li>Pick a pseudorandom leaf $r=PRF(K’,m)$.</li>
+<li>Use $VK_r$ to sign $m$.<br>$\sigma_r\gets Sign(SK_r,m) $</li>
+<li>Output $(r,\sigma_r,\text{authentication path for }VK_r)$.</li>
+</ol>
+</li>
+</ul>
+<h1 id="Security-Analysis"><a href="#Security-Analysis" class="headerlink" title="Security Analysis"></a>Security Analysis</h1><p>For simplicity, we analyze the <strong>randomization stateless scheme</strong>. (S4)</p>
+<p>The <strong>many-time digital signature</strong> scheme is <u>EUF-CMA secure</u> if the <strong>one-time digital signature</strong> is <u>one-time secure.</u></p>
+<p>Assume for the <strong>contradiction</strong> that there is <u>an adversary breaking the EUF-CMA security,</u> then we <u>can construct a one-time forger</u>.</p>
+<ul>
+<li>We <strong>have the adversary</strong> $\mathcal{A}$ <u>for EUF-CMA security.</u><ol>
+<li>Get the verification key $VK$.</li>
+<li>Request for signatures of $q$ messages. ($q$-time)<ol>
+<li>Request for message $m_i$</li>
+<li>Obtain the signature $\sigma_i$ for $m_i$. </li>
+</ol>
+</li>
+<li>Produce $(m^*,\sigma^*)$ that a signature against a new message $m^*\notin \{m_1,m_2,\dots m_q\}$ with non-negligible advantage.</li>
+</ol>
+</li>
+<li>We <strong>want to construct a forger</strong> $\mathcal{B}$ <u>for one-time security. </u><ol>
+<li>Get the one-time verification key $OVK$.</li>
+<li>Request for the signatures $\sigma$ of a single message $m$. (only one-time)</li>
+<li>Produce $(m’,\sigma’)$ that a signature against a new message $m’\ne m$.</li>
+</ol>
+</li>
+<li>For simplicity, we <strong>condition</strong> on the event $E$ where all our random $r$’s are distinct.<ul>
+<li>$\operatorname{Pr}[\mathcal{A}\text{ wins }\mid E]\ge q^2/2^\lambda$ </li>
+<li>Suppose the probability above dosen’t change very much.</li>
+<li>$\ge \operatorname{Pr}[\mathcal{A}\text{ wins }]-\operatorname{Pr}[E]=1/poly(\lambda)-negl(\lambda)$ </li>
+<li>$\ge 1/poly(\lambda)$. </li>
+<li>So the <strong>advantage</strong> of $\mathcal{A}$ is <u>non-negligible even on the condition. </u></li>
+</ul>
+</li>
+</ul>
+<p>So We need the forger $\mathcal{B}$ to <strong>interact with the adversary $\mathcal{A}$</strong> to win the game. </p>
+<p><font color=blue><u><b><i>Construction of One-time Forger $\mathcal{B}$:</i></b></u></font></p>
+<ul>
+<li><p>Plop $OVK$ <strong>into a random leaf</strong> $r$.</p>
+<ol>
+<li><p>$\mathcal{B}$ get the one-time verification key $OVK$.</p>
+</li>
+<li><p>$\mathcal{B}$ <u>generates the pseudorandom signature trees</u> and <u>plop the $OVK$ into a random leaf $r_{OVK}$.</u></p>
+</li>
+<li><p>$\mathcal{B}$ sends the root verification key $VK_\epsilon$ to $\mathcal{A}$. </p>
+</li>
+<li><p>$\mathcal{A}$ requests for the signatures for $q$ times.<br>For each message $m_i$, there are <strong>two cases.</strong></p>
+<ol>
+<li><p>If $\mathcal{B}$ picks the random leaf $r\ne r_{OVK}$, $\mathcal{B}$ is <u>able to produce the signature. </u></p>
+</li>
+<li><p>If $\mathcal{B}$ picks the random leaf $r= r_{OVK}$, $\mathcal{B}$ <u>cannot produce the signature. </u><br>But $\mathcal{B}$ <strong>can request the signature for a single message.</strong></p>
+<ol>
+<li><p>$\mathcal{B}$ requests for the message $m_i$.</p>
+</li>
+<li><p>$\mathcal{B}$ obtains the signature $\sigma_i$ for the single message $m_i$. </p>
+</li>
+<li><p>$\mathcal{B}$ <u>passes the signature $\sigma_i$ to the $\mathcal{A}$ as</u> the response. </p>
+<p>Note: $\mathcal{B}$ can only picks $r_{OVK}$ <strong>once</strong>. Besides, it’s <strong>necessary</strong> to pick it. </p>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+<li><p>$\mathcal{A}$ promises to <strong>produce the signature for a new message</strong>  $m^*\notin \{m_1,m_2,\dots m_q\}$ </p>
+<ul>
+<li><p>The signature consists of  $(r^*,\sigma^*,\text{authentication path for }VK_{r^*})$ </p>
+</li>
+<li><p>If   $r^*= r_{OVK}$ and $\sigma ^*$  is <u>different from the previous</u> $\sigma_i$ generated by $\mathcal{B}$. </p>
+</li>
+<li><p>Then $\mathcal{B}$ <u>wins</u>. $\mathcal{B}$ just passes the  $(m^*,\sigma^*)$ as the <strong>forgery signature</strong>. </p>
+</li>
+<li><p>But it could happen only if $\mathcal{A}$  picks $r^*$ from one of the leaves $\{r_1,r_2,\dots r_q\}$ given by $\mathcal{B}$.  </p>
+<p>  <font color=blue><u><b>Claim : </b></u></font><br>  If $\mathcal{A}$ picks one of the leaves $\{r_1,r_2,\dots r_q\}$ when forging, then $\mathcal{B}$ can produce the one-time forgery w.p. $1/q$.  </p>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<p>But there is <strong>no guarantee</strong> that $\mathcal{A}$ could pick one of the leaves $\{r_1,r_2,\dots r_q\}$ given from $\mathcal{B}$.  </p>
+<p>Instead, we plop $OVK$ into a <strong>node</strong>.</p>
+<ul>
+<li><p>Plop $OVK$ <em>into</em> the $VK_\epsilon$ location as follows.</p>
+  <img src="https://s1.ax1x.com/2022/08/06/vu9Sl6.png" alt="polp into the the root" style="zoom:33%;" />
+
+<ol>
+<li><p>$\mathcal{B}$ get the one-time verification key $OVK$. </p>
+</li>
+<li><p>$\mathcal{B}$ generates the pseudorandom signature trees and plop the $OVK$ <strong>into the root node</strong>. So $\mathcal{B}$ <u>knows all secret key except $SK_\epsilon$. </u></p>
+</li>
+<li><p>$\mathcal{B}$ sends the root verification key $VK_\epsilon$ to $\mathcal{A}$. </p>
+</li>
+<li><p>$\mathcal{A}$ requests for the signatures for $q$ times.<br>For each message $m_i$, there are <strong>two cases.</strong></p>
+<ol>
+<li>Pick a <strong>random</strong> leaf $r$.</li>
+<li>Use $VK_r$ to sign $m$.<br>$\tau_i\gets Sign(SK_r,m) $</li>
+<li>Produce authentication path for $VK_r$.<br>Signatures for message $m_1$: $(r,\tau_1,(\sigma_\epsilon,\epsilon_0,\epsilon_{01}))$.</li>
+</ol>
+<ul>
+<li>$\mathcal{B}$ <strong>cannot produce the signature</strong> of $\sigma_\epsilon$ since she dosen’t know the $SK_\epsilon$. </li>
+<li>But  $\mathcal{B}$ can <u>request the signature $\sigma_\epsilon$ for a single message</u> $(VK_0||VK_1)$. </li>
+</ul>
+</li>
+<li><p>$\mathcal{A}$ promises to <strong>produce the signature for a new message</strong>  $m^*\notin \{m_1,m_2,\dots m_q\}$ </p>
+<ul>
+<li>The signature consists of  $(r^*,\tau^*,\text{authentication path for }VK_{r^*})$ </li>
+<li>Suppose $\mathcal{A}$ picks $r^*=1$ as above figure.<br>The authentication path for $VK_{001}$: $(\sigma_\epsilon’,\sigma_0’,\sigma_{00}’)$.</li>
+<li>In fact, the output of forgery consists $VK_0’,VK_1’,VK_{00}’,VK_{01}’,VK_{000}’,VK_{001}’$, which could be different from the tree built by $\mathcal{B}$. </li>
+<li>If $VK_0||VK_1 \ne VK_0’||VK_1’$, $\mathcal{A}$ wins. </li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p>Plop $OVK$ into the $VK_0$ location.<br>The analysis is the same.<br>If $VK_{00}||VK_{01} \ne VK_{00}’||VK_{01}’$, $\mathcal{A}$ wins. </p>
+</li>
+</ul>
+<p>The main idea is as above.</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>「Cryptography-MIT6875」: Lecture 11</p><p><a href="https://f7ed.com/2022/08/01/mit6875-lec11/">https://f7ed.com/2022/08/01/mit6875-lec11/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>f7ed</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2022-08-02</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2022-10-18</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a><a class="icons" rel="noopener" target="_blank" title="Share Alike" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="icon fab fa-creative-commons-sa"></i></a><a class="" rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/Digital-Signatures/">Digital Signatures, </a><a class="link-muted" rel="tag" href="/tags/EUF-CMA-Security/">EUF-CMA Security, </a><a class="link-muted" rel="tag" href="/tags/Lamport-Signature/">Lamport Signature, </a><a class="link-muted" rel="tag" href="/tags/Many-time-Signature/">Many-time Signature </a></div></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/img/qrcode_wechat.jpg" alt="Wechat"></span></a><a class="button donate" href="https://www.buymeacoffee.com/f7ed" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/img/qrcode_alipay.jpg" alt="Alipay"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2022/08/03/mit6875-lec12/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">「Cryptography-MIT6875」: Lecture 12</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2022/07/28/mit6875-lec10/"><span class="level-item">「Cryptography-MIT6875」: Lecture 10</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "bba4ceaaa83e7dc79aef03811bcf5a78",
+            repo: "f7ed.github.io",
+            owner: "f7ed",
+            clientID: "ec59f5258ac0ec443907",
+            clientSecret: "f092b308c3e1b46327481c3547ee0dd7fc1bda10",
+            admin: ["f7ed"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "en",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/profile.png" alt="f7ed"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">f7ed</p><p class="is-size-6 is-block">热爱可抵漫长岁月。</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Shanghai, China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">71</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">139</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="mailto:f7edliu@outlook.com" target="_blank" rel="noopener">Email me</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#S1-Stateful-Many-time-Signatures"><span class="level-left"><span class="level-item">1</span><span class="level-item">S1: Stateful Many-time Signatures</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#sign-m1"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">sign m1</span></span></a></li><li><a class="level is-mobile" href="#sign-m2"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">sign m2</span></span></a></li><li><a class="level is-mobile" href="#An-optimization"><span class="level-left"><span class="level-item">1.3</span><span class="level-item">An optimization</span></span></a></li><li><a class="level is-mobile" href="#Problems"><span class="level-left"><span class="level-item">1.4</span><span class="level-item">Problems</span></span></a></li></ul></li><li><a class="level is-mobile" href="#S2-How-to-Shrink-the-signatures"><span class="level-left"><span class="level-item">2</span><span class="level-item">S2: How to Shrink the signatures ?</span></span></a></li><li><a class="level is-mobile" href="#S3-How-to-Shrink-Alice’s-storage"><span class="level-left"><span class="level-item">3</span><span class="level-item">S3: How to Shrink Alice’s storage.</span></span></a></li><li><a class="level is-mobile" href="#S4-How-to-make-Alice-stateless"><span class="level-left"><span class="level-item">4</span><span class="level-item">S4: How to make Alice stateless.</span></span></a></li><li><a class="level is-mobile" href="#S5-How-to-make-Alice-stateless-and-deterministic"><span class="level-left"><span class="level-item">5</span><span class="level-item">S5: How to make Alice stateless and deterministic.</span></span></a></li><li><a class="level is-mobile" href="#Security-Analysis"><span class="level-left"><span class="level-item">6</span><span class="level-item">Security Analysis</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/f1ed_logo.png" alt="fred&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2025 f7ed</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent " target="_blank" rel="noopener" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="f7ed&#039;s GitHub" href="https://github.com/f7ed"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><script>
+      var sc_project=12961083;
+      var sc_invisible=1;
+      var sc_security="ad3fb575";
+      var sc_https=1;
+      var sc_remove_link=1;</script><script src="https://www.statcounter.com/counter/counter.js" async></script><noscript><div class="statcounter"><img class="statcounter" src="https://c.statcounter.com/12961083/0/ad3fb575/1/" alt="real time web analytics"></div></noscript><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body></html>
