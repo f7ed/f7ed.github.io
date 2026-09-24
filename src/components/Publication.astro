@@ -1,0 +1,126 @@
+---
+import type { Publication } from '../data/publications';
+
+interface Props {
+  publication: Publication;
+}
+
+const { publication } = Astro.props;
+const authors = publication.authors.split(',').map((name) => name.trim());
+---
+
+<article class="publication">
+  <div class="publication-content">
+    <h3>{publication.title}</h3>
+    {publication.blurb && <p class="blurb">{publication.blurb}</p>}
+    <p class="meta">
+      <span>
+        {authors.map((author, index) => (
+          <>
+            {index > 0 && ', '}
+            {author === 'Fengrun Liu' ? (
+              <strong class="author-self">{author}</strong>
+            ) : author}
+          </>
+        ))}
+      </span>
+      <span>{publication.venue} · {publication.year}</span>
+    </p>
+
+    <div class="publication-actions">
+      {publication.links?.map((link) => (
+        <a href={link.href} target="_blank" rel="noreferrer">{link.label}</a>
+      ))}
+      {publication.abstract && (
+        <details>
+          <summary>Abstract <span aria-hidden="true">+</span></summary>
+          <div class="abstract">{publication.abstract}</div>
+        </details>
+      )}
+    </div>
+  </div>
+</article>
+
+<style>
+  .publication {
+    padding: 2rem 0;
+    border-top: 1px solid var(--line);
+  }
+
+  h3 {
+    margin: 0;
+    font-size: clamp(1.25rem, 2vw, 1.65rem);
+    font-weight: 520;
+    letter-spacing: -0.025em;
+  }
+
+  .blurb {
+    margin: 0.65rem 0 0.85rem;
+    max-width: 48rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  .author-self {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .publication-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.9rem;
+    margin-top: 1rem;
+    font-size: 0.83rem;
+  }
+
+  .publication-actions > a,
+  summary {
+    color: var(--text);
+    text-decoration: none;
+    cursor: pointer;
+    border-bottom: 1px solid var(--line-dark);
+  }
+
+  details {
+    display: contents;
+  }
+
+  details[open] {
+    display: block;
+    flex-basis: 100%;
+  }
+
+  summary {
+    display: inline-block;
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  details[open] summary span {
+    display: inline-block;
+    transform: rotate(45deg);
+  }
+
+  .abstract {
+    margin-top: 1rem;
+    max-width: 48rem;
+    padding: 1rem 0 0.15rem 1.1rem;
+    border-left: 1px solid var(--line-dark);
+    color: var(--muted);
+    line-height: 1.7;
+  }
+</style>

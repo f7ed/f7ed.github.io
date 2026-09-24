@@ -1,0 +1,132 @@
+---
+import '../styles/global.css';
+import Publication from '../components/Publication.astro';
+import { publications, preprints } from '../data/publications';
+
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta
+      name="description"
+      content="Fengrun Liu — PhD student in Computer Science at Carnegie Mellon University working on cryptography, privacy-preserving systems, and verifiable computation."
+    />
+    <title>Fengrun Liu · Cryptography & Systems</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="site-header">
+        <a class="wordmark" href="/">FL</a>
+        <nav aria-label="Primary navigation">
+          <a href="#publications">Publications</a>
+          <a href="#preprints">Preprints</a>
+          <a href="#experience">Experience</a>
+          <a href="https://f7ed.github.io/blog/">Blog ↗</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero" aria-labelledby="page-title">
+          <figure class="portrait">
+            <div class="portrait-frame">
+              <img
+                src="/profile.JPG"
+                alt="Portrait of Fengrun Liu"
+                width="2160"
+                height="2880"
+                decoding="async"
+              />
+            </div>
+          </figure>
+          <div class="hero-main">
+            <h1 id="page-title">Fengrun Liu</h1>
+            <p class="preferred-name">I also go by Freya</p>
+            <p class="affiliation">PhD student @ CMU</p>
+          </div>
+
+          <div class="hero-copy">
+            <p class="role">Cryptography · Verifiable AI · Systems</p>
+            <p class="intro">
+              I design and build efficient cryptographic systems for privacy-preserving
+              and verifiable computation. I am particularly interested in lattice-based
+              proof systems. I am also interested in applying these techniques to AI
+              systems, especially verifiable agent execution.
+            </p>
+            <div class="links">
+              <a class="inline-link" href="mailto:freya@cmu.edu">Email</a>
+              <a class="inline-link" href="https://github.com/f7ed" target="_blank" rel="noreferrer">GitHub</a>
+              <a class="inline-link" href="https://www.linkedin.com/in/fengrun-liu-699157340/" target="_blank" rel="noreferrer">LinkedIn</a>
+              <a class="inline-link" href="https://f7ed.github.io/blog/">Blog ↗</a>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="publications">
+          <div class="section-label">
+            <h2>Publications</h2>
+          </div>
+          <div class="section-body">
+            {publications.map((publication) => (
+              <Publication publication={publication} />
+            ))}
+          </div>
+        </section>
+
+        <section class="section" id="preprints">
+          <div class="section-label">
+            <h2>Preprints</h2>
+          </div>
+          <div class="section-body">
+            {preprints.map((publication) => (
+              <Publication publication={publication} />
+            ))}
+          </div>
+        </section>
+
+        <section class="section" id="experience">
+          <div class="section-label">
+            <h2>Experience</h2>
+          </div>
+          <div class="section-body">
+            <article class="experience-item">
+              <div class="experience-heading">
+                <h3>LayerZero</h3>
+                <span>Cryptography Intern · Summer 2026</span>
+              </div>
+              <p>
+                Contributed to <a href="https://github.com/LayerZero-Labs/akita" target="_blank" rel="noreferrer">Akita</a>,
+                a high-performance lattice-based polynomial commitment scheme, with a
+                focus on GPU-friendly protocol design, verifier optimization, and
+                documentation in the <a href="https://layerzero-labs.github.io/akita/" target="_blank" rel="noreferrer">Akita Book</a>.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="writing">
+          <div class="section-label">
+            <h2>Writing</h2>
+          </div>
+          <div class="section-body">
+            <a class="writing-link" href="https://f7ed.github.io/blog/">
+              Technical notes & older writing <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <span>© {year} Fengrun Liu</span>
+        <span>
+          Built with Astro · Design inspiration:
+          <a href="https://gfenzi.io/" target="_blank" rel="noreferrer">Giacomo Fenzi</a>
+        </span>
+      </footer>
+    </div>
+  </body>
+</html>
