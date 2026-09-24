@@ -1,0 +1,142 @@
+---
+import '../styles/global.css';
+import Publication from '../components/Publication.astro';
+import { publications } from '../data/publications';
+
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta
+      name="description"
+      content="Freya Liu — PhD student at Carnegie Mellon University working on cryptography, zero-knowledge proofs, and verifiable machine learning."
+    />
+    <title>Freya Liu · Cryptography & Verifiable ML</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="site-header">
+        <a class="wordmark" href="/">FL</a>
+        <nav aria-label="Primary navigation">
+          <a href="#research">Research</a>
+          <a href="#publications">Publications</a>
+          <a href="#projects">Projects</a>
+          <a href="https://f7ed.github.io/blog/">Blog ↗</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero" aria-labelledby="page-title">
+          <div>
+            <p class="eyebrow">Carnegie Mellon University</p>
+            <h1 id="page-title">Freya<br />Liu</h1>
+          </div>
+          <div class="hero-copy">
+            <p class="role">PhD student · Cryptography · Verifiable ML</p>
+            <p class="intro">
+              I work on efficient proof systems for large-scale and long-running
+              machine-learning computations, with a focus on reducing prover memory
+              without giving up practical efficiency.
+            </p>
+            <div class="links">
+              <a class="inline-link" href="https://github.com/f7ed" target="_blank" rel="noreferrer">GitHub</a>
+              <a class="inline-link" href="https://f7ed.github.io/blog/">Technical blog ↗</a>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="research">
+          <div class="section-label">
+            <p class="section-index">00</p>
+            <h2>Research</h2>
+          </div>
+          <div class="section-body">
+            <p class="lead">
+              How can proof systems scale to computations whose witnesses are too
+              large to comfortably fit in memory?
+            </p>
+            <div class="focus-list" aria-label="Research interests">
+              <span>zero-knowledge proofs</span>
+              <span>verifiable machine learning</span>
+              <span>streaming provers</span>
+              <span>memory-efficient proving</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="publications">
+          <div class="section-label">
+            <p class="section-index">01</p>
+            <h2>Publications</h2>
+          </div>
+          <div class="section-body">
+            {publications.length > 0 ? (
+              publications.map((publication, index) => (
+                <Publication publication={publication} index={index} />
+              ))
+            ) : (
+              <p class="empty-state">
+                Selected publications will appear here. Entries support PDF, ePrint,
+                code, BibTeX, and an abstract that expands in place.
+              </p>
+            )}
+          </div>
+        </section>
+
+        <section class="section" id="projects">
+          <div class="section-label">
+            <p class="section-index">02</p>
+            <h2>Projects</h2>
+          </div>
+          <div class="section-body">
+            <article class="project">
+              <h3>Small-space zkML</h3>
+              <p>
+                Exploring proof architectures for long-context and long-running ML
+                inference with low prover RAM overhead and practical proving time.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="writing">
+          <div class="section-label">
+            <p class="section-index">03</p>
+            <h2>Writing</h2>
+          </div>
+          <div class="section-body">
+            <a class="writing-link" href="https://f7ed.github.io/blog/">
+              Technical notes & older writing <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </section>
+
+        <section class="section" id="contact">
+          <div class="section-label">
+            <p class="section-index">04</p>
+            <h2>Contact</h2>
+          </div>
+          <div class="section-body">
+            <p class="lead">The best place to follow my public work is GitHub.</p>
+            <div class="links">
+              <a class="inline-link" href="https://github.com/f7ed" target="_blank" rel="noreferrer">github.com/f7ed ↗</a>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <span>© {year} Freya Liu</span>
+        <span>
+          Built with Astro · Design inspiration:
+          <a href="https://gfenzi.io/" target="_blank" rel="noreferrer">Giacomo Fenzi</a>
+        </span>
+      </footer>
+    </div>
+  </body>
+</html>

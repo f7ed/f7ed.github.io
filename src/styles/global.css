@@ -1,0 +1,265 @@
+:root {
+  --bg: #f8f7f3;
+  --text: #171714;
+  --muted: #6f6d65;
+  --line: #dcdad2;
+  --line-dark: #8b887f;
+  --accent: #171714;
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: #dedbd1;
+}
+
+.shell {
+  width: min(1120px, calc(100% - 3rem));
+  margin: 0 auto;
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2.25rem 0;
+  font-size: 0.86rem;
+}
+
+.wordmark {
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+
+nav {
+  display: flex;
+  gap: 1.15rem;
+}
+
+nav a,
+.inline-link {
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+nav a:hover,
+.inline-link:hover {
+  border-color: var(--line-dark);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.48fr);
+  gap: 5rem;
+  padding: 9rem 0 10rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.eyebrow,
+.section-index {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(3.9rem, 9vw, 8.6rem);
+  font-weight: 400;
+  line-height: 0.92;
+  letter-spacing: -0.065em;
+}
+
+.hero-copy {
+  align-self: end;
+  padding-bottom: 0.5rem;
+}
+
+.role {
+  margin: 0 0 1.25rem;
+  font-size: 1.05rem;
+}
+
+.intro {
+  margin: 0;
+  max-width: 34rem;
+  color: var(--muted);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  line-height: 1.55;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.95rem;
+  margin-top: 1.75rem;
+  font-size: 0.86rem;
+}
+
+.section {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  gap: 2rem;
+  padding: 6rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.section-label {
+  position: sticky;
+  top: 2rem;
+  align-self: start;
+}
+
+.section-label h2 {
+  margin: 0;
+  font-size: 0.87rem;
+  font-weight: 550;
+  letter-spacing: -0.01em;
+}
+
+.section-body {
+  max-width: 52rem;
+}
+
+.lead {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.75rem, 3.3vw, 3rem);
+  line-height: 1.25;
+  letter-spacing: -0.035em;
+}
+
+.focus-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.75rem;
+  margin-top: 2.5rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.focus-list span:not(:last-child)::after {
+  content: "·";
+  margin-left: 0.75rem;
+  color: var(--line-dark);
+}
+
+.empty-state {
+  margin: 0;
+  padding: 2rem 0;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.project {
+  padding: 2rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.project h3 {
+  margin: 0 0 0.65rem;
+  font-size: 1.4rem;
+  font-weight: 520;
+}
+
+.project p {
+  margin: 0;
+  max-width: 45rem;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.writing-link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 1rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.8rem, 3vw, 2.7rem);
+  text-decoration: none;
+}
+
+.writing-link span {
+  font-family: Inter, ui-sans-serif, sans-serif;
+  font-size: 1rem;
+  transition: transform 160ms ease;
+}
+
+.writing-link:hover span {
+  transform: translate(0.25rem, -0.15rem);
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 2rem 0 3rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+footer a {
+  text-decoration: none;
+  border-bottom: 1px solid var(--line-dark);
+}
+
+@media (max-width: 780px) {
+  .shell {
+    width: min(100% - 2rem, 1120px);
+  }
+
+  .site-header {
+    padding: 1.5rem 0;
+  }
+
+  nav a:nth-child(2) {
+    display: none;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    padding: 6rem 0 6.5rem;
+  }
+
+  .section {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 4.5rem 0;
+  }
+
+  .section-label {
+    position: static;
+  }
+
+  footer {
+    flex-direction: column;
+  }
+}
