@@ -64,72 +64,66 @@ nav a:hover,
 
 .hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.65fr);
-  gap: 5rem;
-  padding: 8rem 0 9rem;
+  grid-template-columns: 10rem minmax(0, 1fr);
+  gap: 1.75rem 3rem;
+  padding: 5rem 0 6rem;
   border-bottom: 1px solid var(--line);
 }
 
 .hero-main {
-  align-self: end;
-}
-
-.eyebrow,
-.section-index {
-  margin: 0 0 1rem;
-  color: var(--muted);
-  font-size: 0.76rem;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
+  align-self: center;
 }
 
 h1 {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(4rem, 8.5vw, 8rem);
+  font-size: clamp(1.6rem, 3.2vw, 2.5rem);
   font-weight: 400;
-  line-height: 0.92;
-  letter-spacing: -0.065em;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
 }
 
-.full-name {
+.affiliation {
   margin: 1rem 0 0;
-  color: var(--muted);
-  font-size: 0.78rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
-.hero-side {
-  display: grid;
-  grid-template-columns: minmax(8.5rem, 11rem) 1fr;
-  gap: 1.5rem;
-  align-items: end;
+.preferred-name {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.portrait {
+  margin: 0;
 }
 
 .portrait-frame {
+  position: relative;
+  width: 10rem;
   aspect-ratio: 1 / 1;
   border: 1px solid var(--line);
-  display: grid;
-  place-items: center;
   overflow: hidden;
-  background:
-    linear-gradient(135deg, rgba(23,23,20,0.025), rgba(23,23,20,0.065));
-  color: var(--muted);
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  background: var(--bg);
 }
 
 .portrait-frame img {
+  position: absolute;
+  inset: 0;
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 32%;
+  object-position: 56% 20%;
+  /* Leave room for the shoulders and upper body in the square crop. */
+  transform: scale(1.1);
+  transform-origin: 56% 20%;
 }
 
 .hero-copy {
-  align-self: end;
+  grid-column: 2;
 }
 
 .role {
@@ -144,13 +138,6 @@ h1 {
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(1.08rem, 1.7vw, 1.3rem);
   line-height: 1.55;
-}
-
-.intro.secondary {
-  margin-top: 0.85rem;
-  font-family: Inter, ui-sans-serif, sans-serif;
-  font-size: 0.88rem;
-  line-height: 1.6;
 }
 
 .links {
@@ -186,42 +173,6 @@ h1 {
   max-width: 55rem;
 }
 
-.lead {
-  margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.6rem, 3vw, 2.65rem);
-  line-height: 1.28;
-  letter-spacing: -0.035em;
-}
-
-.body-copy {
-  margin: 1.6rem 0 0;
-  max-width: 48rem;
-  color: var(--muted);
-  line-height: 1.75;
-}
-
-.focus-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.55rem 0.75rem;
-  margin-top: 2.2rem;
-  color: var(--muted);
-  font-size: 0.88rem;
-}
-
-.focus-list span:not(:last-child)::after {
-  content: "·";
-  margin-left: 0.75rem;
-  color: var(--line-dark);
-}
-
-.section-note {
-  margin: 1.3rem 0 0;
-  color: var(--muted);
-  font-size: 0.76rem;
-}
-
 .experience-item {
   padding: 2rem 0;
   border-top: 1px solid var(--line);
@@ -251,28 +202,6 @@ h1 {
   max-width: 48rem;
   color: var(--muted);
   line-height: 1.7;
-}
-
-.education-list {
-  display: grid;
-}
-
-.education-list > div {
-  display: grid;
-  grid-template-columns: minmax(15rem, 1fr) auto;
-  gap: 1rem;
-  padding: 1.35rem 0;
-  border-top: 1px solid var(--line);
-}
-
-.education-list strong {
-  font-weight: 520;
-}
-
-.education-list span {
-  color: var(--muted);
-  font-size: 0.86rem;
-  text-align: right;
 }
 
 .writing-link {
@@ -308,17 +237,6 @@ footer a {
   border-bottom: 1px solid var(--line-dark);
 }
 
-@media (max-width: 900px) {
-  .hero {
-    grid-template-columns: 1fr;
-    gap: 3.5rem;
-  }
-
-  .hero-side {
-    grid-template-columns: 9rem minmax(0, 1fr);
-  }
-}
-
 @media (max-width: 700px) {
   .shell {
     width: min(100% - 2rem, 1120px);
@@ -328,18 +246,22 @@ footer a {
     padding: 1.5rem 0;
   }
 
-  nav a:nth-child(1),
-  nav a:nth-child(3) {
+  nav a[href="#experience"] {
     display: none;
   }
 
   .hero {
+    grid-template-columns: 6rem minmax(0, 1fr);
+    gap: 1.75rem 1rem;
     padding: 5rem 0 5.5rem;
   }
 
-  .hero-side {
-    grid-template-columns: 7rem minmax(0, 1fr);
-    gap: 1rem;
+  .portrait-frame {
+    width: 6rem;
+  }
+
+  .hero-copy {
+    grid-column: 1 / -1;
   }
 
   .section {
@@ -359,15 +281,6 @@ footer a {
   .experience-heading span {
     display: block;
     margin-top: 0.35rem;
-  }
-
-  .education-list > div {
-    grid-template-columns: 1fr;
-    gap: 0.35rem;
-  }
-
-  .education-list span {
-    text-align: left;
   }
 
   footer {
